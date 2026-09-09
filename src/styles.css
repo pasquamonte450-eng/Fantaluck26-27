@@ -1,13 +1,1152 @@
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap');
-:root{font-family:"Work Sans",sans-serif;color:#f4f8f4;background:#07140e;line-height:1.4}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#163e29 0,#07140e 48%);min-height:100vh}
-button,input{font:inherit}button{cursor:pointer;border:0}.wrap{width:min(920px,calc(100% - 28px));margin:0 auto;padding:28px 0 100px}
-header{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid #173423;background:#07140ef2;position:sticky;top:0;z-index:5}.brand,.logo{font-family:Oswald;font-weight:700;letter-spacing:1px}.brand{font-size:20px}header span{font-size:13px;color:#a9b8ae}
-.hero{padding:42px 26px 48px;border:1px solid #1e4b31;border-radius:24px;background:linear-gradient(145deg,#0e2a1a,#0a1b11);overflow:hidden;position:relative}.hero:after{content:"⚽";position:absolute;right:8%;bottom:-30px;font-size:170px;opacity:.06}.badge,.qtype{color:#e6b84a;font-weight:700;letter-spacing:2px;font-size:12px}.hero h1,.title h1,.penalty h1{font-family:Oswald;font-size:clamp(48px,10vw,88px);line-height:.9;margin:18px 0}.hero em{color:#72c887;font-style:normal}.hero p{color:#a9b8ae}.hero button,.loginCard button,.next,.adminForm button{background:#d9aa3f;color:#10170f;font-weight:800;padding:14px 22px;border-radius:10px;margin-top:16px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.card,.quizCard,.table,.penalty{background:#0c2014;border:1px solid #1a4129;border-radius:18px}.card{padding:20px}.card small,.mult small{display:block;color:#81998a;font-size:11px}.card strong{display:block;font-family:Oswald;font-size:28px;margin:5px 0}.card span{color:#70c987;font-size:12px}
-.login{min-height:100vh;display:grid;place-items:center;padding:20px}.loginCard{width:min(390px,100%);padding:34px 26px;background:#0c2014;border:1px solid #245335;border-radius:22px;text-align:center}.logo{font-size:34px}.tag{font-size:11px;letter-spacing:3px;color:#81998a}.loginCard form{display:grid;gap:10px;margin-top:28px}.loginCard input,.adminForm input{background:#07140e;border:1px solid #285139;color:white;padding:13px;border-radius:9px;outline:none}.error{color:#ff9c8c;background:#3a1714;border:1px solid #6d2c25;padding:9px;border-radius:8px;margin-top:12px;font-size:13px}
-.progress{font-family:Oswald;color:#91a69a;letter-spacing:1px}.progress>div{height:4px;background:#183624;border-radius:10px;margin:10px 0 24px}.progress i{display:block;height:100%;background:#d9aa3f;border-radius:10px}.quizCard{padding:28px}.quizCard h2{font-family:Oswald;font-size:32px;line-height:1.08;margin:12px 0 26px}.answers{display:grid;gap:10px}.answers button{display:flex;align-items:center;gap:14px;text-align:left;padding:15px;background:#102a19;border:1px solid #245335;color:#eaf0eb;border-radius:11px}.answers button.selected{border-color:#d9aa3f;background:#2b2615}.answers span{color:#c3d0c6}.next{width:100%}
-.penalty{text-align:center;padding:28px}.keeper{height:110px;border:4px solid #b7c3ba;border-bottom:0;width:min(560px,90%);margin:0 auto;display:grid;place-items:center;font-size:48px;position:relative}.keeper span{font-family:Oswald;font-size:12px;letter-spacing:2px;position:absolute;bottom:6px}.penalty h1{font-size:52px;margin:20px 0 4px}.penalty p{color:#8fa398}.goalGrid{width:min(560px,100%);margin:20px auto;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:10px;border:2px solid #b7c3ba;border-top:0}.goalGrid button{aspect-ratio:1.2;background:#173b24;border:1px solid #2b6940;color:#e7b949;font-size:24px;border-radius:5px}.goalGrid button.used{background:#3a2417}.mult{margin-top:14px}.mult strong{display:block;font-family:Oswald;font-size:42px;color:#e7b949}.mult span{font-size:12px;color:#81998a}
-.title small{color:#e7b949;letter-spacing:2px}.title h1{font-size:58px}.table{overflow:hidden}.row{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 18px;border-bottom:1px solid #173423}.row:last-child{border-bottom:0}.row>b{font-family:Oswald;color:#d9aa3f;font-size:20px}.row span{flex:1}.row span small{display:block;color:#81998a;font-size:11px}.row strong{font-family:Oswald;font-size:22px}.row button{padding:8px 12px;border-radius:7px;background:#d9aa3f;font-weight:700}.danger{background:#54231e!important;color:#fff}.tabs{display:flex;gap:8px;margin:15px 0}.tabs button{background:#102a19;color:#a9b8ae;padding:10px 15px;border-radius:8px}.tabs .on{background:#d9aa3f;color:#111}.adminForm{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-bottom:14px}.empty{text-align:center;color:#9aad9f;padding:50px 20px}
-nav{position:fixed;bottom:0;left:0;right:0;height:68px;background:#08170ff5;border-top:1px solid #173423;display:flex;justify-content:center;z-index:10}nav button{width:110px;background:none;color:#789084;font-size:19px}nav button span{display:block;font-size:10px;margin-top:2px}nav button.active{color:#e5b74a}.loading{min-height:100vh;display:grid;place-items:center;font-size:50px}
-@media(max-width:650px){.grid2{grid-template-columns:1fr}.adminForm{grid-template-columns:1fr}.hero h1{font-size:60px}.quizCard h2{font-size:28px}.goalGrid{grid-template-columns:repeat(3,1fr)}header{padding:0 14px}}
+
+:root {
+  font-family: "Work Sans", sans-serif;
+  color: #f4f8f4;
+  background: #06110b;
+  line-height: 1.4;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: #06110b;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% -10%, #17452b 0%, #0a1c11 35%, #06110b 72%);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+input,
+textarea,
+select {
+  outline: none;
+}
+
+.wrap {
+  width: min(1050px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 30px 0 110px;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+header {
+  height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid #193a27;
+  background: rgba(5, 17, 11, 0.94);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(14px);
+}
+
+.brand {
+  font-family: Oswald, sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+header > span {
+  color: #9fb1a5;
+  font-size: 13px;
+}
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+.login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background:
+    radial-gradient(circle at 50% 20%, #16452b 0%, #07150d 55%, #040b07 100%);
+}
+
+.loginCard {
+  width: min(410px, 100%);
+  padding: 38px 28px;
+  text-align: center;
+  background: rgba(10, 31, 19, 0.94);
+  border: 1px solid #28573a;
+  border-radius: 26px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+}
+
+.logo {
+  font-family: Oswald, sans-serif;
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.tag {
+  margin: 7px 0 0;
+  color: #7f9b8a;
+  font-size: 11px;
+  letter-spacing: 3px;
+}
+
+.loginCard form {
+  display: grid;
+  gap: 11px;
+  margin-top: 30px;
+}
+
+.loginCard input,
+.adminForm input,
+.adminEditor input,
+.adminEditor textarea,
+.questionEditor input,
+.questionEditor textarea,
+.questionEditor select {
+  width: 100%;
+  color: #f4f8f4;
+  background: #06130b;
+  border: 1px solid #28543a;
+  border-radius: 11px;
+  padding: 13px 14px;
+}
+
+.loginCard input:focus,
+.adminForm input:focus,
+.adminEditor input:focus,
+.questionEditor input:focus,
+.questionEditor textarea:focus,
+.questionEditor select:focus {
+  border-color: #dcb34c;
+}
+
+.loginCard button {
+  margin-top: 5px;
+}
+
+/* =========================================================
+   GENERIC BUTTONS
+   ========================================================= */
+
+.hero button,
+.loginCard button,
+.next,
+.adminForm button,
+.primaryAdminButton,
+.saveBig,
+.publishButton,
+.shotResult button,
+.completedCard button {
+  color: #11170f;
+  background: linear-gradient(135deg, #e8c45b, #c9962e);
+  font-weight: 800;
+  padding: 14px 21px;
+  border-radius: 11px;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.hero button:hover,
+.loginCard button:hover,
+.next:hover,
+.adminForm button:hover,
+.primaryAdminButton:hover,
+.saveBig:hover,
+.publishButton:hover,
+.shotResult button:hover,
+.completedCard button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 46px 30px 50px;
+  border: 1px solid #245438;
+  border-radius: 27px;
+  background:
+    linear-gradient(145deg, #102e1d, #091a10);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.18);
+}
+
+.hero::after {
+  content: "⚽";
+  position: absolute;
+  right: 5%;
+  bottom: -55px;
+  font-size: 190px;
+  opacity: 0.055;
+  pointer-events: none;
+}
+
+.badge,
+.qtype,
+.title small {
+  color: #e3b947;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 12px;
+}
+
+.hero h1,
+.title h1,
+.penalty h1 {
+  position: relative;
+  z-index: 1;
+  margin: 18px 0;
+  font-family: Oswald, sans-serif;
+  font-size: clamp(52px, 9vw, 90px);
+  line-height: 0.91;
+  text-transform: uppercase;
+}
+
+.hero h1 em {
+  color: #70c98a;
+  font-style: normal;
+}
+
+.hero p {
+  position: relative;
+  z-index: 1;
+  color: #a8b9ae;
+  font-size: 16px;
+}
+
+.notice {
+  margin-top: 20px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 13px 16px;
+  border: 1px solid #315a3e;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.035);
+  color: #c7d5cb;
+  font-size: 13px;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.card,
+.quizCard,
+.table,
+.penalty,
+.completedCard,
+.adminEditor,
+.resultsAdmin {
+  background: rgba(10, 31, 19, 0.93);
+  border: 1px solid #1e452e;
+  border-radius: 19px;
+}
+
+.card {
+  padding: 22px;
+}
+
+.card small,
+.mult small {
+  display: block;
+  color: #7f9889;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+.card strong {
+  display: block;
+  margin: 5px 0;
+  font-family: Oswald, sans-serif;
+  font-size: 29px;
+}
+
+.card span {
+  color: #70c987;
+  font-size: 12px;
+}
+
+/* =========================================================
+   QUIZ
+   ========================================================= */
+
+.progress {
+  color: #91a69a;
+  font-family: Oswald, sans-serif;
+  letter-spacing: 1.5px;
+  font-size: 13px;
+}
+
+.progress > div {
+  height: 5px;
+  margin: 10px 0 25px;
+  overflow: hidden;
+  background: #163522;
+  border-radius: 10px;
+}
+
+.progress i {
+  display: block;
+  height: 100%;
+  background: #d9aa3f;
+  border-radius: 10px;
+  transition: width 0.2s ease;
+}
+
+.quizCard {
+  padding: 30px;
+}
+
+.quizCard h2 {
+  max-width: 850px;
+  margin: 12px 0 27px;
+  font-family: Oswald, sans-serif;
+  font-size: clamp(28px, 5vw, 43px);
+  line-height: 1.06;
+}
+
+.answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px;
+}
+
+.answers button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 65px;
+  padding: 15px 17px;
+  text-align: left;
+  color: #e8eee9;
+  background: #10291a;
+  border: 1px solid #28573a;
+  border-radius: 12px;
+  transition: 0.15s ease;
+}
+
+.answers button:hover {
+  border-color: #789a83;
+}
+
+.answers button.selected {
+  color: #fff;
+  background: #2b2918;
+  border-color: #dfb746;
+  box-shadow: inset 0 0 0 1px rgba(223, 183, 70, 0.2);
+}
+
+.answers button > span {
+  color: #c5d1c9;
+}
+
+.next {
+  width: 100%;
+  margin-top: 22px;
+}
+
+/* =========================================================
+   RIGORI
+   ========================================================= */
+
+.penalty {
+  position: relative;
+  overflow: hidden;
+  padding: 28px 20px 35px;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 15%, #173e27 0%, #0a2114 48%, #08170f 100%);
+}
+
+.penalty::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+
+.penalty > * {
+  position: relative;
+  z-index: 1;
+}
+
+.penaltyTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: min(620px, 100%);
+  margin: 0 auto 15px;
+  color: #91aa99;
+  font-family: Oswald, sans-serif;
+  letter-spacing: 1.5px;
+}
+
+.penaltyTop strong {
+  color: #e3b947;
+}
+
+.keeper {
+  width: min(620px, 96%);
+  height: 120px;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  position: relative;
+  border: 5px solid #d5ddd7;
+  border-bottom: 0;
+  border-radius: 12px 12px 0 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.025), rgba(255,255,255,0.01));
+  font-size: 55px;
+}
+
+.keeper::before,
+.keeper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  background-image:
+    linear-gradient(90deg, transparent 49%, #fff 50%, transparent 51%),
+    linear-gradient(transparent 49%, #fff 50%, transparent 51%);
+  background-size: 35px 35px;
+  pointer-events: none;
+}
+
+.keeper span {
+  position: absolute;
+  bottom: 8px;
+  font-family: Oswald, sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #d3ddd5;
+}
+
+.penalty h1 {
+  margin: 19px 0 3px;
+  font-size: 58px;
+}
+
+.penalty p {
+  margin: 0;
+  color: #94a99a;
+}
+
+.difficulty {
+  width: min(500px, 100%);
+  margin: 22px auto 14px;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0b1e12;
+  border: 1px solid #21482f;
+  border-radius: 10px;
+}
+
+.difficulty b {
+  color: #e3b947;
+  font-family: Oswald, sans-serif;
+  font-size: 20px;
+}
+
+.difficulty span {
+  color: #8ea295;
+  font-size: 12px;
+}
+
+.goalGrid {
+  width: min(620px, 96%);
+  margin: 0 auto;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  border: 5px solid #d5ddd7;
+  border-top: 0;
+  border-radius: 0 0 13px 13px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.goalGrid button {
+  aspect-ratio: 1.35;
+  display: grid;
+  place-items: center;
+  color: #f1d271;
+  background:
+    linear-gradient(145deg, #17472a, #102d1b);
+  border: 1px solid #39764b;
+  border-radius: 6px;
+  font-family: Oswald, sans-serif;
+  font-size: 23px;
+  transition: 0.12s ease;
+}
+
+.goalGrid button:hover:not(:disabled) {
+  transform: scale(1.035);
+  border-color: #e2ba49;
+  background: #245d35;
+}
+
+.goalGrid button.selectedCell {
+  color: #fff;
+  background: #a77d22;
+  border-color: #f2d36c;
+  transform: scale(1.025);
+}
+
+.mult {
+  margin-top: 20px;
+}
+
+.mult strong {
+  display: block;
+  margin: 2px 0;
+  color: #e7bc4e;
+  font-family: Oswald, sans-serif;
+  font-size: 46px;
+}
+
+.mult span {
+  color: #81998a;
+  font-size: 12px;
+}
+
+.shotResult {
+  width: min(500px, 100%);
+  margin: 25px auto 0;
+  padding: 23px;
+  border-radius: 17px;
+  animation: resultIn 0.2s ease;
+}
+
+.goalResult {
+  background: rgba(31, 88, 48, 0.8);
+  border: 1px solid #4b995e;
+}
+
+.missResult {
+  background: rgba(85, 35, 28, 0.8);
+  border: 1px solid #9a4b3d;
+}
+
+.resultIcon {
+  font-size: 45px;
+}
+
+.shotResult h2 {
+  margin: 6px 0;
+  font-family: Oswald, sans-serif;
+  font-size: 38px;
+}
+
+.shotResult p {
+  margin-bottom: 18px;
+}
+
+@keyframes resultIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   COMPLETED
+   ========================================================= */
+
+.completedCard {
+  max-width: 650px;
+  margin: 70px auto;
+  padding: 45px 28px;
+  text-align: center;
+}
+
+.completedIcon {
+  font-size: 62px;
+}
+
+.completedCard h1 {
+  margin: 16px 0;
+  font-family: Oswald, sans-serif;
+  font-size: 43px;
+}
+
+.completedCard p {
+  color: #9caea3;
+}
+
+.completedCard button {
+  margin-top: 17px;
+}
+
+/* =========================================================
+   TITLES
+   ========================================================= */
+
+.title {
+  margin-bottom: 22px;
+}
+
+.title h1 {
+  margin: 8px 0 0;
+  font-size: 60px;
+}
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.table {
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 68px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #173524;
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.row > b {
+  min-width: 28px;
+  color: #dcb34c;
+  font-family: Oswald, sans-serif;
+  font-size: 21px;
+}
+
+.row > span {
+  flex: 1;
+}
+
+.row span strong {
+  display: block;
+}
+
+.row span small {
+  display: block;
+  margin-top: 3px;
+  color: #81998b;
+  font-size: 11px;
+}
+
+.row > strong {
+  font-family: Oswald, sans-serif;
+  font-size: 23px;
+}
+
+.currentPlayer {
+  background: rgba(215, 174, 61, 0.08);
+}
+
+/* =========================================================
+   ADMIN
+   ========================================================= */
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tabs button {
+  padding: 11px 17px;
+  color: #9caea3;
+  background: #10291a;
+  border: 1px solid #21492f;
+  border-radius: 9px;
+}
+
+.tabs button.on {
+  color: #11170f;
+  background: #dfb547;
+  border-color: #dfb547;
+}
+
+.primaryAdminButton {
+  margin-bottom: 15px;
+}
+
+.success {
+  margin-bottom: 15px;
+  padding: 12px 14px;
+  color: #b9e5c3;
+  background: #12351f;
+  border: 1px solid #326b42;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.adminForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.adminForm button {
+  margin: 0;
+}
+
+.adminWeek {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 18px;
+  border-bottom: 1px solid #173524;
+}
+
+.adminWeek:last-child {
+  border-bottom: 0;
+}
+
+.adminWeek > div:first-child b {
+  display: block;
+  font-family: Oswald, sans-serif;
+  font-size: 20px;
+}
+
+.adminWeek > div:first-child small {
+  display: block;
+  margin-top: 4px;
+  color: #82c991;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.adminActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.adminActions button,
+.backButton,
+.publishBox button {
+  padding: 9px 12px;
+  color: #dce6df;
+  background: #173522;
+  border: 1px solid #2a5b3c;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.adminActions button:hover,
+.backButton:hover,
+.publishBox button:hover {
+  border-color: #d9ad42;
+}
+
+.danger {
+  color: #fff !important;
+  background: #59251f !important;
+  border-color: #7c342b !important;
+}
+
+.backButton {
+  margin-bottom: 14px;
+}
+
+.adminEditor,
+.resultsAdmin {
+  padding: 22px;
+}
+
+.adminEditor > h2,
+.resultsAdmin > h2 {
+  margin-top: 0;
+  font-family: Oswald, sans-serif;
+  font-size: 32px;
+}
+
+.adminEditor > label {
+  display: block;
+  margin: 14px 0;
+  color: #9fb0a5;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.adminEditor > label input {
+  margin-top: 6px;
+}
+
+.questionSection {
+  margin-top: 30px;
+}
+
+.questionSection > h2 {
+  margin-bottom: 13px;
+  color: #e1b644;
+  font-family: Oswald, sans-serif;
+  font-size: 26px;
+}
+
+.questionEditor {
+  margin-bottom: 14px;
+  padding: 17px;
+  background: #08190f;
+  border: 1px solid #1c412a;
+  border-radius: 14px;
+}
+
+.questionNumber {
+  margin-bottom: 9px;
+  color: #7fa18b;
+  font-family: Oswald, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.questionEditor textarea {
+  min-height: 78px;
+  resize: vertical;
+}
+
+.optionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.questionEditor select {
+  margin-top: 8px;
+}
+
+.correctInfo {
+  margin: 20px 0;
+  padding: 15px;
+  color: #c3d0c7;
+  background: #10281a;
+  border: 1px solid #28583a;
+  border-radius: 11px;
+  font-size: 13px;
+}
+
+.saveBig {
+  width: 100%;
+  margin-top: 5px;
+}
+
+.resultsAdmin {
+  margin-top: 5px;
+}
+
+.publishBox {
+  margin-bottom: 18px;
+  padding: 18px;
+  background: #08190f;
+  border: 1px solid #21492f;
+  border-radius: 14px;
+}
+
+.publishBox h3 {
+  margin: 0 0 5px;
+  font-family: Oswald, sans-serif;
+  font-size: 22px;
+}
+
+.publishBox p {
+  color: #8fa399;
+  font-size: 13px;
+}
+
+.publishBox button {
+  margin-right: 7px;
+  margin-top: 8px;
+}
+
+.publishBox .publishButton {
+  color: #11170f;
+  background: linear-gradient(135deg, #e8c45b, #c9962e);
+  border-color: #c9962e;
+}
+
+/* =========================================================
+   EMPTY / ERRORS / LOADING
+   ========================================================= */
+
+.empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: #91a59a;
+}
+
+.empty h2 {
+  color: #dbe5de;
+  font-family: Oswald, sans-serif;
+}
+
+.empty p {
+  max-width: 450px;
+  margin: auto;
+}
+
+.bigEmoji {
+  font-size: 55px;
+  margin-bottom: 8px;
+}
+
+.error {
+  margin-top: 12px;
+  padding: 10px 12px;
+  color: #ffb2a5;
+  background: #3c1814;
+  border: 1px solid #713028;
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.loading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #06110b;
+  font-size: 55px;
+}
+
+/* =========================================================
+   BOTTOM NAV
+   ========================================================= */
+
+nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 72px;
+  display: flex;
+  justify-content: center;
+  background: rgba(5, 17, 11, 0.96);
+  border-top: 1px solid #193a27;
+  z-index: 30;
+  backdrop-filter: blur(14px);
+}
+
+nav button {
+  width: 115px;
+  color: #6f887a;
+  background: transparent;
+  font-size: 20px;
+}
+
+nav button span {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+}
+
+nav button.active {
+  color: #e5b74a;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  .wrap {
+    width: min(100% - 20px, 1050px);
+    padding-top: 20px;
+  }
+
+  header {
+    height: 59px;
+    padding: 0 13px;
+  }
+
+  .brand {
+    font-size: 18px;
+  }
+
+  header > span {
+    font-size: 11px;
+  }
+
+  .hero {
+    padding: 34px 21px 40px;
+    border-radius: 21px;
+  }
+
+  .hero h1 {
+    font-size: 57px;
+  }
+
+  .hero::after {
+    font-size: 120px;
+    bottom: -35px;
+  }
+
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .quizCard {
+    padding: 21px 17px;
+  }
+
+  .quizCard h2 {
+    font-size: 29px;
+  }
+
+  .answers {
+    grid-template-columns: 1fr;
+  }
+
+  .answers button {
+    min-height: 59px;
+  }
+
+  .penalty {
+    padding: 20px 11px 28px;
+  }
+
+  .penaltyTop {
+    font-size: 11px;
+  }
+
+  .keeper {
+    height: 88px;
+    border-width: 4px;
+  }
+
+  .keeper::before,
+  .keeper::after {
+    background-size: 25px 25px;
+  }
+
+  .keeper {
+    font-size: 42px;
+  }
+
+  .penalty h1 {
+    font-size: 49px;
+  }
+
+  .goalGrid {
+    width: 100%;
+    padding: 8px;
+    gap: 6px;
+    border-width: 4px;
+  }
+
+  .goalGrid button {
+    font-size: 20px;
+    aspect-ratio: 1.2;
+  }
+
+  .difficulty {
+    font-size: 11px;
+  }
+
+  .mult strong {
+    font-size: 40px;
+  }
+
+  .title h1 {
+    font-size: 50px;
+  }
+
+  .adminForm {
+    grid-template-columns: 1fr;
+  }
+
+  .adminWeek {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .adminActions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .adminActions button {
+    flex: 1;
+  }
+
+  .adminEditor,
+  .resultsAdmin {
+    padding: 15px;
+  }
+
+  .optionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .questionEditor {
+    padding: 13px;
+  }
+
+  .publishBox button {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .completedCard {
+    margin: 40px auto;
+    padding: 35px 20px;
+  }
+
+  nav button {
+    width: 20%;
+  }
+}
