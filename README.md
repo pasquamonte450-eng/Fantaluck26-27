@@ -45,3 +45,4 @@ admin / admin123
 giocatore1 / start1
 
 Cambiale prima dell'uso reale.
+.
