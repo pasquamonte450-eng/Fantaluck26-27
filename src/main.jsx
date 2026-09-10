@@ -1,4 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { createRoot } from "react-dom/client";
 import { supabase } from "./supabase";
 import "./styles.css";
@@ -10,20 +14,8 @@ import "./styles.css";
 
 const EMPTY_OPTIONS = ["", "", "", ""];
 
-/*
-   Le risposte corrette ora sono un ARRAY.
-   Esempio:
-   correct: ["Inter", "Milan"]
-
-   Manteniamo comunque la compatibilità con
-   le vecchie domande che avevano:
-   correct: "Inter"
-*/
-
 const makeQuestion = (type, index) => ({
-  id: `${type}-${index + 1}-${Date.now()}-${Math.random()
-    .toString(36)
-    .slice(2)}`,
+  id: `${type}-${index + 1}-${Date.now()}`,
   text: "",
   options: [...EMPTY_OPTIONS],
   correct: [],
@@ -33,56 +25,6 @@ const makeQuestions = (type) =>
   Array.from({ length: 10 }, (_, i) =>
     makeQuestion(type, i)
   );
-
-/* =========================================================
-   NORMALIZZAZIONE RISPOSTE CORRETTE
-   ========================================================= */
-
-function getCorrectAnswers(question) {
-  if (Array.isArray(question?.correct)) {
-    return question.correct.filter(Boolean);
-  }
-
-  if (question?.correct) {
-    return [question.correct];
-  }
-
-  return [];
-}
-
-function normalizeQuestion(question, type, index) {
-  return {
-    ...question,
-    id:
-      question?.id ||
-      `${type}-${index + 1}-${Date.now()}-${Math.random()
-        .toString(36)
-        .slice(2)}`,
-    text: question?.text || "",
-    options:
-      Array.isArray(question?.options)
-        ? [
-            ...question.options,
-            ...EMPTY_OPTIONS,
-          ].slice(0, 4)
-        : [...EMPTY_OPTIONS],
-    correct: getCorrectAnswers(question),
-  };
-}
-
-function normalizeQuestions(questions, type) {
-  if (!Array.isArray(questions) || questions.length !== 10) {
-    return makeQuestions(type);
-  }
-
-  return questions.map((question, index) =>
-    normalizeQuestion(question, type, index)
-  );
-}
-
-/* =========================================================
-   NUOVA SETTIMANA
-   ========================================================= */
 
 const newWeek = (number) => ({
   id: `week-${number}-${Date.now()}`,
@@ -99,7 +41,7 @@ const newWeek = (number) => ({
 });
 
 /* =========================================================
-   LOCAL STORAGE
+   HELPERS
    ========================================================= */
 
 function localGet(key, fallback) {
@@ -117,24 +59,84 @@ function localSet(key, value) {
 
 function uid() {
   return (
-    crypto?.randomUUID?.() ||
+    globalThis.crypto?.randomUUID?.() ||
     `${Date.now()}-${Math.random()
       .toString(36)
       .slice(2)}`
   );
 }
 
-/* =========================================================
-   DATE / DATETIME LOCAL
-   ========================================================= */
-
 /*
-   Converte una data salvata in formato ISO
-   nel formato richiesto da <input type="datetime-local">.
+   Compatibilità:
+   vecchie domande:
+   correct: "Inter"
 
-   Evita che l'orario visualizzato dall'Admin
-   venga spostato a causa del fuso orario.
+   nuove domande:
+   correct: ["Inter", "Milan"]
 */
+
+function getCorrectAnswers(question) {
+  if (Array.isArray(question?.correct)) {
+    return question.correct.filter(Boolean);
+  }
+
+  if (question?.correct) {
+    return [question.correct];
+  }
+
+  return [];
+}
+
+function normalizeQuestion(
+  question,
+  type,
+  index
+) {
+  return {
+    ...question,
+
+    id:
+      question?.id ||
+      `${type}-${index + 1}-${Date.now()}`,
+
+    text: question?.text || "",
+
+    options: Array.from(
+      { length: 4 },
+      (_, i) =>
+        question?.options?.[i] || ""
+    ),
+
+    correct:
+      getCorrectAnswers(question),
+  };
+}
+
+function normalizeWeek(week) {
+  return {
+    ...week,
+
+    matchQuestions: Array.from(
+      { length: 10 },
+      (_, i) =>
+        normalizeQuestion(
+          week?.matchQuestions?.[i],
+          "match",
+          i
+        )
+    ),
+
+    playerQuestions: Array.from(
+      { length: 10 },
+      (_, i) =>
+        normalizeQuestion(
+          week?.playerQuestions?.[i],
+          "player",
+          i
+        )
+    ),
+  };
+}
 
 function toDateTimeLocalValue(value) {
   if (!value) return "";
@@ -142,12 +144,15 @@ function toDateTimeLocalValue(value) {
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) {
-    return String(value).slice(0, 16);
+    return "";
   }
 
-  const offset = date.getTimezoneOffset();
+  const offset =
+    date.getTimezoneOffset();
 
-  return new Date(date.getTime() - offset * 60000)
+  return new Date(
+    date.getTime() - offset * 60000
+  )
     .toISOString()
     .slice(0, 16);
 }
@@ -217,35 +222,19 @@ async function dbWeeks() {
 }
 
 async function saveWeek(week) {
-  /*
-     Prima di salvare, normalizziamo sempre
-     le domande in modo che correct sia un array.
-  */
-
-  const normalizedWeek = {
-    ...week,
-
-    matchQuestions: normalizeQuestions(
-      week.matchQuestions,
-      "match"
-    ),
-
-    playerQuestions: normalizeQuestions(
-      week.playerQuestions,
-      "player"
-    ),
-  };
-
   if (!supabase) {
-    const weeks = localGet("fl_weeks", []);
+    const weeks = localGet(
+      "fl_weeks",
+      []
+    );
 
     const next = weeks.filter(
-      (w) => w.id !== normalizedWeek.id
+      (w) => w.id !== week.id
     );
 
     localSet("fl_weeks", [
       ...next,
-      normalizedWeek,
+      week,
     ]);
 
     return;
@@ -253,7 +242,7 @@ async function saveWeek(week) {
 
   const { error } = await supabase
     .from("weeks")
-    .upsert(normalizedWeek, {
+    .upsert(week, {
       onConflict: "id",
     });
 
@@ -262,11 +251,16 @@ async function saveWeek(week) {
 
 async function deleteWeek(id) {
   if (!supabase) {
-    const weeks = localGet("fl_weeks", []);
+    const weeks = localGet(
+      "fl_weeks",
+      []
+    );
 
     localSet(
       "fl_weeks",
-      weeks.filter((w) => w.id !== id)
+      weeks.filter(
+        (w) => w.id !== id
+      )
     );
 
     return;
@@ -288,10 +282,11 @@ async function dbAttempts(weekId) {
     );
   }
 
-  const { data, error } = await supabase
-    .from("attempts")
-    .select("*")
-    .eq("week_id", weekId);
+  const { data, error } =
+    await supabase
+      .from("attempts")
+      .select("*")
+      .eq("week_id", weekId);
 
   if (error) throw error;
 
@@ -306,7 +301,8 @@ async function saveAttempt(attempt) {
     );
 
     const next = attempts.filter(
-      (a) => a.username !== attempt.username
+      (a) =>
+        a.username !== attempt.username
     );
 
     localSet(
@@ -320,13 +316,17 @@ async function saveAttempt(attempt) {
   const { error } = await supabase
     .from("attempts")
     .upsert(attempt, {
-      onConflict: "week_id,username",
+      onConflict:
+        "week_id,username",
     });
 
   if (error) throw error;
 }
 
-async function updateAttempt(id, values) {
+async function updateAttempt(
+  id,
+  values
+) {
   if (!supabase) {
     return;
   }
@@ -349,11 +349,15 @@ function getWeekState(week) {
   const now = Date.now();
 
   const start = week.starts_at
-    ? new Date(week.starts_at).getTime()
+    ? new Date(
+        week.starts_at
+      ).getTime()
     : null;
 
   const end = week.deadline
-    ? new Date(week.deadline).getTime()
+    ? new Date(
+        week.deadline
+      ).getTime()
     : null;
 
   if (week.status === "closed") {
@@ -383,14 +387,70 @@ function getWeekState(week) {
    COUNTDOWN
    ========================================================= */
 
-function formatCountdown(milliseconds) {
-  if (milliseconds <= 0) {
-    return "00g 00h 00m 00s";
+function Countdown({ week }) {
+  const state = getWeekState(week);
+
+  const target =
+    state === "waiting"
+      ? week?.starts_at
+      : state === "open"
+      ? week?.deadline
+      : null;
+
+  const [remaining, setRemaining] =
+    useState(() =>
+      target
+        ? Math.max(
+            0,
+            new Date(
+              target
+            ).getTime() -
+              Date.now()
+          )
+        : 0
+    );
+
+  useEffect(() => {
+    if (!target) {
+      setRemaining(0);
+      return;
+    }
+
+    const update = () => {
+      setRemaining(
+        Math.max(
+          0,
+          new Date(
+            target
+          ).getTime() -
+            Date.now()
+        )
+      );
+    };
+
+    update();
+
+    const timer = setInterval(
+      update,
+      1000
+    );
+
+    return () =>
+      clearInterval(timer);
+  }, [target]);
+
+  if (
+    !target ||
+    (state !== "waiting" &&
+      state !== "open")
+  ) {
+    return null;
   }
 
-  const totalSeconds = Math.floor(
-    milliseconds / 1000
-  );
+  const totalSeconds =
+    Math.floor(
+      remaining / 1000
+    );
 
   const days = Math.floor(
     totalSeconds / 86400
@@ -404,96 +464,66 @@ function formatCountdown(milliseconds) {
     (totalSeconds % 3600) / 60
   );
 
-  const seconds = totalSeconds % 60;
-
-  return `${String(days).padStart(
-    2,
-    "0"
-  )}g ${String(hours).padStart(
-    2,
-    "0"
-  )}h ${String(minutes).padStart(
-    2,
-    "0"
-  )}m ${String(seconds).padStart(
-    2,
-    "0"
-  )}s`;
-}
-
-function Countdown({ week }) {
-  const state = getWeekState(week);
-
-  const target =
-    state === "waiting"
-      ? week?.starts_at
-      : state === "open"
-      ? week?.deadline
-      : null;
-
-  const [remaining, setRemaining] =
-    useState(() => {
-      if (!target) return 0;
-
-      return Math.max(
-        0,
-        new Date(target).getTime() -
-          Date.now()
-      );
-    });
-
-  useEffect(() => {
-    if (!target) {
-      setRemaining(0);
-      return;
-    }
-
-    const update = () => {
-      setRemaining(
-        Math.max(
-          0,
-          new Date(target).getTime() -
-            Date.now()
-        )
-      );
-    };
-
-    update();
-
-    const interval = setInterval(
-      update,
-      1000
-    );
-
-    return () =>
-      clearInterval(interval);
-  }, [target]);
-
-  if (
-    !target ||
-    (state !== "waiting" &&
-      state !== "open")
-  ) {
-    return null;
-  }
+  const seconds =
+    totalSeconds % 60;
 
   return (
     <div className="countdownCard">
-      <small>
-        {state === "waiting"
-          ? "⏳ INIZIO TRA"
-          : "⏰ CHIUSURA TRA"}
-      </small>
+      <div className="countdownLabel">
+        <span className="countdownDot" />
 
-      <strong>
-        {formatCountdown(remaining)}
-      </strong>
-
-      <span>
         {state === "waiting"
-          ? "Preparati alla sfida"
-          : "Affrettati a completare la sfida"}
-      </span>
+          ? "LA SFIDA INIZIA TRA"
+          : "PUOI GIOCARE FINO A"}
+      </div>
+
+      <div className="countdownNumbers">
+        <div>
+          <strong>
+            {String(days).padStart(
+              2,
+              "0"
+            )}
+          </strong>
+          <small>GIORNI</small>
+        </div>
+
+        <b>:</b>
+
+        <div>
+          <strong>
+            {String(hours).padStart(
+              2,
+              "0"
+            )}
+          </strong>
+          <small>ORE</small>
+        </div>
+
+        <b>:</b>
+
+        <div>
+          <strong>
+            {String(minutes).padStart(
+              2,
+              "0"
+            )}
+          </strong>
+          <small>MIN</small>
+        </div>
+
+        <b>:</b>
+
+        <div>
+          <strong>
+            {String(seconds).padStart(
+              2,
+              "0"
+            )}
+          </strong>
+          <small>SEC</small>
+        </div>
+      </div>
     </div>
   );
 }
@@ -524,13 +554,12 @@ function calculateQuizScore(
       const correctAnswers =
         getCorrectAnswers(question);
 
-      const userAnswer =
-        answers[index];
-
       if (
-        correctAnswers.length > 0 &&
-        userAnswer &&
-        correctAnswers.includes(userAnswer)
+        correctAnswers.length &&
+        answers[index] &&
+        correctAnswers.includes(
+          answers[index]
+        )
       ) {
         correct++;
       }
@@ -539,7 +568,8 @@ function calculateQuizScore(
 
   return {
     correct,
-    baseScore: correct * 10,
+    baseScore:
+      correct * 10,
   };
 }
 
@@ -547,7 +577,9 @@ function calculateQuizScore(
    RANDOM RIGORI
    ========================================================= */
 
-function createRandomSaves(goalCount) {
+function createRandomSaves(
+  goalCount
+) {
   const cells = Array.from(
     { length: 12 },
     (_, i) => i
@@ -745,134 +777,13 @@ function Nav({
         </button>
       )}
 
-      <button onClick={onLogout}>
+      <button
+        onClick={onLogout}
+      >
         ↪
         <span>Esci</span>
       </button>
     </nav>
-  );
-}
-
-/* =========================================================
-   REGOLAMENTO
-   ========================================================= */
-
-function RulesCard({ week }) {
-  return (
-    <div className="rulesCard">
-      <div className="rulesHeader">
-        <div>
-          <small>FANTALUCK</small>
-          <h2>📜 Regolamento</h2>
-        </div>
-      </div>
-
-      <div className="rulesList">
-        <div className="ruleItem">
-          <b>1.</b>
-          <span>
-            La sfida è composta da{" "}
-            <strong>
-              20 domande
-            </strong>
-            : 10 sulle partite e 10 sui
-            giocatori.
-          </span>
-        </div>
-
-        <div className="ruleItem">
-          <b>2.</b>
-          <span>
-            Ogni risposta corretta vale{" "}
-            <strong>10 punti</strong>.
-          </span>
-        </div>
-
-        <div className="ruleItem">
-          <b>3.</b>
-          <span>
-            Al termine del quiz si passa
-            alla prova dei{" "}
-            <strong>rigori</strong>.
-          </span>
-        </div>
-
-        <div className="ruleItem">
-          <b>4.</b>
-          <span>
-            La porta ha{" "}
-            <strong>
-              {Number(
-                week?.rigoriCells || 12
-              )}
-              /12
-            </strong>{" "}
-            caselle. La possibilità di
-            segnare diminuisce ogni due
-            rigori, fino a un minimo di
-            2/12.
-          </span>
-        </div>
-
-        <div className="ruleItem">
-          <b>5.</b>
-          <span>
-            Ogni gol aumenta il
-            moltiplicatore di{" "}
-            <strong>
-              +
-              {Number(
-                week?.multiplierStep ||
-                  0.15
-              ).toFixed(2)}
-            </strong>
-            , partendo da{" "}
-            <strong>
-              x
-              {Number(
-                week?.multiplierBase || 1
-              ).toFixed(2)}
-            </strong>
-            .
-          </span>
-        </div>
-
-        <div className="ruleItem">
-          <b>6.</b>
-          <span>
-            Un rigore parato{" "}
-            <strong>
-              termina la serie
-            </strong>
-            .
-          </span>
-        </div>
-
-        <div className="ruleItem">
-          <b>7.</b>
-          <span>
-            Il punteggio finale è dato dal
-            punteggio del quiz
-            moltiplicato per il
-            moltiplicatore finale dei
-            rigori.
-          </span>
-        </div>
-
-        <div className="ruleItem">
-          <b>8.</b>
-          <span>
-            Se una domanda ha più
-            alternative corrette, è
-            sufficiente scegliere{" "}
-            <strong>
-              una delle risposte indicate
-            </strong>{" "}
-            dall'organizzatore.
-          </span>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -886,11 +797,14 @@ function Home({
   setPage,
   attempt,
 }) {
-  const state = getWeekState(week);
+  const state =
+    getWeekState(week);
+
+  const [rulesOpen, setRulesOpen] =
+    useState(false);
 
   return (
     <div className="wrap">
-
       <section className="hero">
         <div className="badge">
           🍀 FANTALUCK
@@ -903,8 +817,8 @@ function Home({
         </h1>
 
         <p>
-          Conosci il calcio. Indovina.
-          Segna.
+          Conosci il calcio.
+          Indovina. Segna.
         </p>
 
         {state === "open" &&
@@ -916,6 +830,24 @@ function Home({
             >
               GIOCA ORA →
             </button>
+          )}
+
+        {state === "waiting" && (
+          <div className="notice">
+            La nuova sfida non è
+            ancora iniziata.
+          </div>
+        )}
+
+        {state === "closed" &&
+          !week?.results_published && (
+            <div className="notice">
+              La settimana è chiusa.
+              <br />
+              I risultati saranno
+              pubblicati
+              dall'organizzatore.
+            </div>
           )}
 
         {attempt &&
@@ -941,7 +873,6 @@ function Home({
       </section>
 
       <div className="grid2">
-
         <div className="card">
           <small>SETTIMANA</small>
 
@@ -959,7 +890,8 @@ function Home({
             {state === "closed" &&
               "CHIUSA"}
 
-            {state === "published" &&
+            {state ===
+              "published" &&
               "RISULTATI PUBBLICATI"}
 
             {state === "draft" &&
@@ -983,17 +915,136 @@ function Home({
             @{user.username}
           </span>
         </div>
-
       </div>
-
-      {/* COUNTDOWN */}
 
       <Countdown week={week} />
 
-      {/* REGOLAMENTO */}
+      <button
+        className="rulesToggle"
+        onClick={() =>
+          setRulesOpen(
+            !rulesOpen
+          )
+        }
+      >
+        <span>
+          <small>FANTALUCK</small>
+          <strong>
+            REGOLAMENTO
+          </strong>
+        </span>
 
-      <RulesCard week={week} />
+        <span
+          className={
+            rulesOpen
+              ? "rulesArrow open"
+              : "rulesArrow"
+          }
+        >
+          ↓
+        </span>
+      </button>
 
+      {rulesOpen && (
+        <div className="rulesCard">
+          <div className="rulesList">
+            <div className="ruleItem">
+              <b>01</b>
+
+              <span>
+                20 domande: 10 sulle
+                partite e 10 sui
+                giocatori.
+              </span>
+            </div>
+
+            <div className="ruleItem">
+              <b>02</b>
+
+              <span>
+                Ogni risposta corretta
+                vale 10 punti.
+              </span>
+            </div>
+
+            <div className="ruleItem">
+              <b>03</b>
+
+              <span>
+                Terminato il quiz si
+                passa alla sfida dei
+                rigori.
+              </span>
+            </div>
+
+            <div className="ruleItem">
+              <b>04</b>
+
+              <span>
+                Ogni rigore ha 12
+                caselle. La possibilità
+                di segnare diminuisce
+                ogni 2 rigori, fino a
+                un minimo di 2/12.
+              </span>
+            </div>
+
+            <div className="ruleItem">
+              <b>05</b>
+
+              <span>
+                Il moltiplicatore parte
+                da x1.00 e aumenta di
+                0.15 per ogni gol.
+              </span>
+            </div>
+
+            <div className="ruleItem">
+              <b>06</b>
+
+              <span>
+                Un rigore parato
+                interrompe la serie.
+              </span>
+            </div>
+
+            <div className="ruleItem">
+              <b>07</b>
+
+              <span>
+                Il punteggio finale è il
+                punteggio del quiz
+                moltiplicato per il
+                moltiplicatore.
+              </span>
+            </div>
+
+            <div className="ruleItem">
+              <b>08</b>
+
+              <span>
+                Se una domanda ha più
+                risposte corrette, è
+                sufficiente scegliere
+                una delle alternative
+                valide.
+              </span>
+            </div>
+
+            <div className="ruleItem">
+              <b>09</b>
+
+              <span>
+                I risultati vengono
+                pubblicati
+                dall'organizzatore dopo
+                la chiusura della
+                settimana.
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1008,8 +1059,10 @@ function Quiz({
 }) {
   const questions = useMemo(
     () => [
-      ...(week?.matchQuestions || []),
-      ...(week?.playerQuestions || []),
+      ...(week?.matchQuestions ||
+        []),
+      ...(week?.playerQuestions ||
+        []),
     ],
     [week]
   );
@@ -1026,7 +1079,8 @@ function Quiz({
   if (!week) {
     return (
       <div className="empty">
-        Nessuna settimana disponibile.
+        Nessuna settimana
+        disponibile.
       </div>
     );
   }
@@ -1056,12 +1110,10 @@ function Quiz({
   };
 
   const previous = () => {
-    if (index === 0) {
-      return;
+    if (index > 0) {
+      setIndex(index - 1);
+      setError("");
     }
-
-    setIndex(index - 1);
-    setError("");
   };
 
   const next = () => {
@@ -1102,12 +1154,10 @@ function Quiz({
     }
 
     setIndex(index + 1);
-    setError("");
   };
 
   return (
     <div className="wrap">
-
       <div className="progress">
         DOMANDA {index + 1} /{" "}
         {questions.length}
@@ -1126,7 +1176,6 @@ function Quiz({
       </div>
 
       <div className="quizCard">
-
         <div className="qtype">
           {index < 10
             ? "DOMANDA PARTITA"
@@ -1182,7 +1231,6 @@ function Quiz({
         )}
 
         <div className="quizNavigation">
-
           <button
             className="previousButton"
             onClick={previous}
@@ -1200,9 +1248,7 @@ function Quiz({
               ? "VAI AI RIGORI"
               : "AVANTI →"}
           </button>
-
         </div>
-
       </div>
     </div>
   );
@@ -1286,9 +1332,7 @@ function Rigori({
   };
 
   const continueShot = () => {
-    if (!result) {
-      return;
-    }
+    if (!result) return;
 
     if (!result.goal) {
       setFinished(true);
@@ -1327,13 +1371,13 @@ function Rigori({
   };
 
   const goalCount =
-    goalsAvailableForShot(shot);
+    goalsAvailableForShot(
+      shot
+    );
 
   return (
     <div className="wrap">
-
       <div className="penalty">
-
         <div className="penaltyTop">
           <span>RIGORI</span>
 
@@ -1352,8 +1396,8 @@ function Rigori({
         <p>
           Scegli una casella.
           <br />
-          Non sai dove si trova la
-          parata.
+          Non sai dove si trova
+          la parata.
         </p>
 
         <div className="difficulty">
@@ -1367,7 +1411,6 @@ function Rigori({
         </div>
 
         <div className="goalGrid">
-
           {Array.from(
             { length: 12 },
             (_, cell) => (
@@ -1389,7 +1432,6 @@ function Rigori({
               </button>
             )
           )}
-
         </div>
 
         <div className="mult">
@@ -1398,7 +1440,10 @@ function Rigori({
           </small>
 
           <strong>
-            x{multiplier.toFixed(2)}
+            x
+            {multiplier.toFixed(
+              2
+            )}
           </strong>
 
           <span>
@@ -1446,14 +1491,13 @@ function Rigori({
             </button>
           </div>
         )}
-
       </div>
     </div>
   );
 }
 
 /* =========================================================
-   PARTECIPAZIONE COMPLETA
+   PARTICIPATION COMPLETE
    ========================================================= */
 
 function Completed({
@@ -1461,27 +1505,27 @@ function Completed({
 }) {
   return (
     <div className="wrap">
-
       <div className="completedCard">
-
         <div className="completedIcon">
           🍀
         </div>
 
         <h1>
-          Partecipazione registrata!
+          Partecipazione
+          registrata!
         </h1>
 
         <p>
-          Le tue risposte e il risultato
-          dei rigori sono stati salvati.
+          Le tue risposte e il
+          risultato dei rigori sono
+          stati salvati.
         </p>
 
         <p>
-          Il punteggio sarà calcolato e
-          pubblicato dall'organizzatore
-          dopo la chiusura della
-          settimana.
+          Il punteggio sarà
+          calcolato e pubblicato
+          dall'organizzatore dopo la
+          chiusura della settimana.
         </p>
 
         <button
@@ -1491,14 +1535,13 @@ function Completed({
         >
           TORNA ALLA HOME
         </button>
-
       </div>
     </div>
   );
 }
 
 /* =========================================================
-   REVISIONE RISPOSTE
+   ANSWER REVIEW
    ========================================================= */
 
 function AnswerReview({
@@ -1520,7 +1563,7 @@ function AnswerReview({
 
   const renderQuestion = (
     question,
-    userAnswer,
+    answer,
     index
   ) => {
     const correctAnswers =
@@ -1530,9 +1573,9 @@ function AnswerReview({
 
     const isCorrect =
       Boolean(
-        userAnswer &&
+        answer &&
           correctAnswers.includes(
-            userAnswer
+            answer
           )
       );
 
@@ -1544,7 +1587,7 @@ function AnswerReview({
             : "reviewQuestion reviewWrong"
         }
         key={
-          question.id ||
+          question?.id ||
           index
         }
       >
@@ -1556,13 +1599,13 @@ function AnswerReview({
           <strong>
             {isCorrect
               ? "✓ CORRETTA"
-              : "✗ ERRATA"}
+              : "✕ ERRATA"}
           </strong>
         </div>
 
         <h3>
-          {question.text ||
-            "Domanda senza testo"}
+          {question?.text ||
+            "Domanda"}
         </h3>
 
         <div className="reviewAnswer">
@@ -1571,7 +1614,7 @@ function AnswerReview({
           </small>
 
           <strong>
-            {userAnswer ||
+            {answer ||
               "Nessuna risposta"}
           </strong>
         </div>
@@ -1579,10 +1622,6 @@ function AnswerReview({
         <div className="reviewCorrectAnswer">
           <small>
             RISPOSTA CORRETTA
-            {correctAnswers.length >
-            1
-              ? " / RISPOSTE CORRETTE"
-              : ""}
           </small>
 
           <strong>
@@ -1590,7 +1629,7 @@ function AnswerReview({
               ? correctAnswers.join(
                   " / "
                 )
-              : "Non ancora inserita"}
+              : "Non disponibile"}
           </strong>
         </div>
       </div>
@@ -1598,18 +1637,26 @@ function AnswerReview({
   };
 
   return (
-    <div className="reviewOverlay">
+    <div
+      className="reviewOverlay"
+      onMouseDown={(e) => {
+        if (
+          e.target === e.currentTarget
+        ) {
+          onClose();
+        }
+      }}
+    >
       <div className="reviewModal">
-
         <div className="reviewHeader">
           <div>
             <small>
-              SETTIMANA #
+              FANTALUCK · SETTIMANA #
               {week?.number}
             </small>
 
             <h2>
-              Le tue risposte
+              La tua partecipazione
             </h2>
           </div>
 
@@ -1622,32 +1669,47 @@ function AnswerReview({
         </div>
 
         <div className="reviewSummary">
-          <strong>
-            {attempt?.correct_answers ||
-              0}
-            /20 corrette
-          </strong>
+          <div>
+            <small>
+              RISPOSTE CORRETTE
+            </small>
 
-          <span>
-            Punteggio quiz:{" "}
-            {attempt?.base_score ||
-              0}{" "}
-            punti
-          </span>
+            <strong>
+              {attempt?.correct_answers ??
+                0}
+              /20
+            </strong>
+          </div>
 
-          <span>
-            Rigori:{" "}
-            {attempt?.goals || 0} gol
-            · Moltiplicatore x
-            {Number(
-              attempt?.multiplier || 1
-            ).toFixed(2)}
-          </span>
+          <div>
+            <small>
+              MOLTIPLICATORE
+            </small>
+
+            <strong>
+              x
+              {Number(
+                attempt?.multiplier ||
+                  1
+              ).toFixed(2)}
+            </strong>
+          </div>
+
+          <div>
+            <small>
+              PUNTEGGIO FINALE
+            </small>
+
+            <strong>
+              {attempt?.final_score ||
+                0}
+            </strong>
+          </div>
         </div>
 
-        <div className="reviewSection">
+        <section className="reviewSection">
           <h3>
-            ⚽ Domande partita
+            ⚽ DOMANDE PARTITA
           </h3>
 
           {matchQuestions.map(
@@ -1658,11 +1720,11 @@ function AnswerReview({
                 index
               )
           )}
-        </div>
+        </section>
 
-        <div className="reviewSection">
+        <section className="reviewSection">
           <h3>
-            👤 Domande giocatore
+            👤 DOMANDE GIOCATORE
           </h3>
 
           {playerQuestions.map(
@@ -1670,25 +1732,24 @@ function AnswerReview({
               renderQuestion(
                 question,
                 playerAnswers[index],
-                index + 10
+                index
               )
           )}
-        </div>
+        </section>
 
         <button
           className="reviewBottomClose"
           onClick={onClose}
         >
-          CHIUDI
+          CHIUDI REVISIONE
         </button>
-
       </div>
     </div>
   );
 }
 
 /* =========================================================
-   CLASSIFICA
+   RANKING
    ========================================================= */
 
 function Rank({
@@ -1702,13 +1763,14 @@ function Rank({
   if (!week?.results_published) {
     return (
       <div className="wrap">
-
         <div className="title">
           <small>
             FANTALUCK
           </small>
 
-          <h1>Classifica</h1>
+          <h1>
+            Classifica
+          </h1>
         </div>
 
         <div className="empty">
@@ -1722,12 +1784,12 @@ function Rank({
           </h2>
 
           <p>
-            L'organizzatore deve prima
-            correggere le risposte e
-            pubblicare i risultati.
+            L'organizzatore deve
+            prima correggere le
+            risposte e pubblicare i
+            risultati.
           </p>
         </div>
-
       </div>
     );
   }
@@ -1750,36 +1812,36 @@ function Rank({
         )
     );
 
-  const myPublishedAttempt =
-    rows.find(
-      (attempt) =>
-        attempt.username ===
+  const myAttempt =
+    attempts.find(
+      (a) =>
+        a.username ===
         user.username
     );
 
   return (
     <div className="wrap">
-
       <div className="title">
         <small>
           SETTIMANA #{week.number}
         </small>
 
-        <h1>Classifica</h1>
+        <h1>
+          Classifica
+        </h1>
       </div>
 
       <div className="table">
-
         {rows.map(
           (attempt, index) => {
-            const isCurrentPlayer =
+            const isMine =
               attempt.username ===
               user.username;
 
             return (
               <div
                 className={
-                  isCurrentPlayer
+                  isMine
                     ? "row currentPlayer clickableRow"
                     : "row"
                 }
@@ -1787,34 +1849,7 @@ function Rank({
                   attempt.username
                 }
                 onClick={() => {
-                  if (
-                    isCurrentPlayer
-                  ) {
-                    setReviewOpen(
-                      true
-                    );
-                  }
-                }}
-                role={
-                  isCurrentPlayer
-                    ? "button"
-                    : undefined
-                }
-                tabIndex={
-                  isCurrentPlayer
-                    ? 0
-                    : undefined
-                }
-                onKeyDown={(event) => {
-                  if (
-                    isCurrentPlayer &&
-                    (event.key ===
-                      "Enter" ||
-                      event.key ===
-                        " ")
-                  ) {
-                    event.preventDefault();
-
+                  if (isMine) {
                     setReviewOpen(
                       true
                     );
@@ -1838,17 +1873,14 @@ function Rank({
                     {attempt.goals ||
                       0}{" "}
                     gol
-
-                    {isCurrentPlayer && (
-                      <>
-                        <br />
-                        <em>
-                          Clicca per rivedere
-                          le tue risposte
-                        </em>
-                      </>
-                    )}
                   </small>
+
+                  {isMine && (
+                    <em>
+                      CLICCA PER RIVEDERE
+                      LE RISPOSTE
+                    </em>
+                  )}
                 </span>
 
                 <strong>
@@ -1866,22 +1898,20 @@ function Rank({
             disponibile.
           </div>
         )}
-
       </div>
 
       {reviewOpen &&
-        myPublishedAttempt && (
+        myAttempt && (
           <AnswerReview
             week={week}
-            attempt={
-              myPublishedAttempt
-            }
+            attempt={myAttempt}
             onClose={() =>
-              setReviewOpen(false)
+              setReviewOpen(
+                false
+              )
             }
           />
         )}
-
     </div>
   );
 }
@@ -1917,39 +1947,53 @@ function QuestionEditor({
   ) => {
     const next = [...questions];
 
+    const currentQuestion =
+      next[questionIndex];
+
     const options = [
-      ...(next[questionIndex]
-        .options || []),
+      ...(currentQuestion.options ||
+        []),
     ];
 
     const oldValue =
       options[optionIndex];
 
-    options[optionIndex] = value;
-
-    /*
-       Se modifichiamo il testo di una
-       risposta, eliminiamo il vecchio
-       valore dalle risposte corrette.
-    */
+    options[optionIndex] =
+      value;
 
     let correct =
       getCorrectAnswers(
-        next[questionIndex]
+        currentQuestion
       );
 
     if (
       oldValue &&
-      oldValue !== value
+      correct.includes(oldValue)
     ) {
-      correct = correct.filter(
-        (answer) =>
-          answer !== oldValue
-      );
+      if (value) {
+        correct = correct.map(
+          (item) =>
+            item === oldValue
+              ? value
+              : item
+        );
+      } else {
+        correct =
+          correct.filter(
+            (item) =>
+              item !== oldValue
+          );
+      }
     }
 
+    correct = [
+      ...new Set(
+        correct.filter(Boolean)
+      ),
+    ];
+
     next[questionIndex] = {
-      ...next[questionIndex],
+      ...currentQuestion,
       options,
       correct,
     };
@@ -1961,28 +2005,28 @@ function QuestionEditor({
     questionIndex,
     option
   ) => {
-    if (!option) return;
-
     const next = [...questions];
+
+    const question =
+      next[questionIndex];
 
     const current =
       getCorrectAnswers(
-        next[questionIndex]
+        question
       );
 
-    const isAlreadyCorrect =
+    const exists =
       current.includes(option);
 
-    const correct =
-      isAlreadyCorrect
-        ? current.filter(
-            (answer) =>
-              answer !== option
-          )
-        : [...current, option];
+    const correct = exists
+      ? current.filter(
+          (item) =>
+            item !== option
+        )
+      : [...current, option];
 
     next[questionIndex] = {
-      ...next[questionIndex],
+      ...question,
       correct,
     };
 
@@ -1991,7 +2035,6 @@ function QuestionEditor({
 
   return (
     <div className="questionSection">
-
       <h2>{title}</h2>
 
       {questions.map(
@@ -2006,7 +2049,6 @@ function QuestionEditor({
               className="questionEditor"
               key={question.id}
             >
-
               <div className="questionNumber">
                 DOMANDA {index + 1}
               </div>
@@ -2026,7 +2068,6 @@ function QuestionEditor({
               />
 
               <div className="optionGrid">
-
                 {Array.from(
                   { length: 4 },
                   (_, optionIndex) => (
@@ -2054,90 +2095,92 @@ function QuestionEditor({
                     />
                   )
                 )}
-
               </div>
 
               <div className="correctAnswersEditor">
-
                 <div className="correctAnswersTitle">
-                  ✓ RISPOSTE CORRETTE
+                  RISPOSTE CORRETTE
                 </div>
 
                 <p>
-                  Puoi selezionare una o
-                  più alternative corrette.
+                  Puoi selezionare
+                  anche più alternative.
                 </p>
 
                 <div className="correctCheckboxes">
-
                   {question.options
                     ?.filter(Boolean)
                     .map(
                       (
                         option,
-                        i
-                      ) => (
-                        <label
-                          key={i}
-                          className={
-                            correctAnswers.includes(
-                              option
-                            )
-                              ? "correctCheckbox checked"
-                              : "correctCheckbox"
-                          }
-                        >
-                          <input
-                            type="checkbox"
-                            checked={correctAnswers.includes(
-                              option
-                            )}
-                            onChange={() =>
-                              toggleCorrect(
-                                index,
-                                option
-                              )
+                        optionIndex
+                      ) => {
+                        const checked =
+                          correctAnswers.includes(
+                            option
+                          );
+
+                        return (
+                          <label
+                            className={
+                              checked
+                                ? "correctCheckbox checked"
+                                : "correctCheckbox"
                             }
-                          />
+                            key={
+                              `${question.id}-${optionIndex}`
+                            }
+                          >
+                            <input
+                              type="checkbox"
+                              checked={
+                                checked
+                              }
+                              onChange={() =>
+                                toggleCorrect(
+                                  index,
+                                  option
+                                )
+                              }
+                            />
 
-                          <span>
-                            {String.fromCharCode(
-                              65 + i
-                            )}{" "}
-                            — {option}
-                          </span>
-                        </label>
-                      )
+                            <span>
+                              {String.fromCharCode(
+                                65 +
+                                  optionIndex
+                              )}
+                              {" — "}
+                              {option}
+                            </span>
+                          </label>
+                        );
+                      }
                     )}
-
                 </div>
 
-                {!correctAnswers.length && (
+                {!question.options?.some(
+                  Boolean
+                ) && (
                   <div className="noCorrectAnswer">
-                    Nessuna risposta corretta
-                    selezionata.
+                    Inserisci prima le
+                    alternative.
                   </div>
                 )}
 
                 {correctAnswers.length >
                   0 && (
                   <div className="selectedCorrectInfo">
-                    Selezionate:{" "}
-                    <strong>
-                      {correctAnswers.join(
-                        " / "
-                      )}
-                    </strong>
+                    Corrette:{" "}
+                    {correctAnswers.join(
+                      " / "
+                    )}
                   </div>
                 )}
-
               </div>
-
             </div>
           );
         }
       )}
-
     </div>
   );
 }
@@ -2173,18 +2216,18 @@ function Admin({
       name: "",
     });
 
-  const [
-    editingWeek,
-    setEditingWeek,
-  ] = useState(null);
+  const [editingWeek, setEditingWeek] =
+    useState(null);
 
   const [attempts, setAttempts] =
     useState([]);
 
-  const selectedWeek = weeks.find(
-    (w) =>
-      w.id === selectedWeekId
-  );
+  const selectedWeek =
+    weeks.find(
+      (w) =>
+        w.id ===
+        selectedWeekId
+    );
 
   /* -------------------------------------
      USERS
@@ -2220,12 +2263,9 @@ function Admin({
     const user = {
       username:
         userForm.username.trim(),
-
       password:
         userForm.password,
-
       role: "participant",
-
       name:
         userForm.name.trim(),
     };
@@ -2310,21 +2350,9 @@ function Admin({
 
       try {
         const normalizedWeek =
-          {
-            ...editingWeek,
-
-            matchQuestions:
-              normalizeQuestions(
-                editingWeek.matchQuestions,
-                "match"
-              ),
-
-            playerQuestions:
-              normalizeQuestions(
-                editingWeek.playerQuestions,
-                "player"
-              ),
-          };
+          normalizeWeek(
+            editingWeek
+          );
 
         await saveWeek(
           normalizedWeek
@@ -2350,6 +2378,7 @@ function Admin({
             ];
 
         setWeeks(next);
+
         setEditingWeek(
           normalizedWeek
         );
@@ -2368,24 +2397,13 @@ function Admin({
       }
     };
 
-  const editWeek = (
-    week
-  ) => {
-    setEditingWeek({
-      ...week,
+  const editWeek = (week) => {
+    const normalized =
+      normalizeWeek(week);
 
-      matchQuestions:
-        normalizeQuestions(
-          week.matchQuestions,
-          "match"
-        ),
-
-      playerQuestions:
-        normalizeQuestions(
-          week.playerQuestions,
-          "player"
-        ),
-    });
+    setEditingWeek(
+      normalized
+    );
 
     setSelectedWeekId(
       week.id
@@ -2420,8 +2438,13 @@ function Admin({
       selectedWeekId ===
       week.id
     ) {
-      setSelectedWeekId(null);
-      setEditingWeek(null);
+      setSelectedWeekId(
+        null
+      );
+
+      setEditingWeek(
+        null
+      );
     }
   };
 
@@ -2438,7 +2461,8 @@ function Admin({
 
     const updated = {
       ...week,
-      status: nextStatus,
+      status:
+        nextStatus,
     };
 
     await saveWeek(
@@ -2471,7 +2495,6 @@ function Admin({
       );
 
     setAttempts(data);
-
     setTab("results");
   };
 
@@ -2485,8 +2508,7 @@ function Admin({
       ];
 
       return (
-        questions.length ===
-          20 &&
+        questions.length === 20 &&
         questions.every(
           (q) =>
             getCorrectAnswers(
@@ -2504,7 +2526,7 @@ function Admin({
         )
       ) {
         alert(
-          "Inserisci tutte le 20 risposte corrette prima di pubblicare."
+          "Inserisci almeno una risposta corretta per tutte le 20 domande prima di pubblicare."
         );
 
         return;
@@ -2525,9 +2547,7 @@ function Admin({
         return;
       }
 
-      for (
-        const attempt of currentAttempts
-      ) {
+      for (const attempt of currentAttempts) {
         const score =
           calculateQuizScore(
             week,
@@ -2584,7 +2604,8 @@ function Admin({
       const updatedWeek = {
         ...week,
         status: "published",
-        results_published: true,
+        results_published:
+          true,
       };
 
       await saveWeek(
@@ -2616,7 +2637,6 @@ function Admin({
 
   return (
     <div className="wrap">
-
       <div className="title">
         <small>
           CONTROL ROOM
@@ -2626,7 +2646,6 @@ function Admin({
       </div>
 
       <div className="tabs">
-
         <button
           className={
             tab === "weeks"
@@ -2652,7 +2671,6 @@ function Admin({
         >
           Utenti
         </button>
-
       </div>
 
       {message && (
@@ -2661,13 +2679,8 @@ function Admin({
         </div>
       )}
 
-      {/* ===============================
-          WEEKS
-          =============================== */}
-
       {tab === "weeks" && (
         <>
-
           <button
             className="primaryAdminButton"
             onClick={
@@ -2678,127 +2691,114 @@ function Admin({
           </button>
 
           <div className="table">
-
-            {weeks.map(
-              (week) => {
-                const state =
-                  getWeekState(
-                    week
-                  );
-
-                return (
-                  <div
-                    className="adminWeek"
-                    key={week.id}
-                  >
-
-                    <div>
-                      <b>
-                        SETTIMANA #
-                        {week.number}
-                      </b>
-
-                      <small>
-                        {state ===
-                          "open" &&
-                          "APERTA"}
-
-                        {state ===
-                          "waiting" &&
-                          "IN ATTESA"}
-
-                        {state ===
-                          "closed" &&
-                          "CHIUSA"}
-
-                        {state ===
-                          "published" &&
-                          "RISULTATI PUBBLICATI"}
-
-                        {state ===
-                          "draft" &&
-                          "BOZZA"}
-                      </small>
-                    </div>
-
-                    <div className="adminActions">
-
-                      <button
-                        onClick={() =>
-                          editWeek(
-                            week
-                          )
-                        }
-                      >
-                        MODIFICA
-                      </button>
-
-                      <button
-                        onClick={() =>
-                          openResults(
-                            week
-                          )
-                        }
-                      >
-                        RISULTATI
-                      </button>
-
-                      <button
-                        onClick={() =>
-                          toggleWeek(
-                            week
-                          )
-                        }
-                      >
-                        {state ===
-                        "open"
-                          ? "CHIUDI"
-                          : "APRI"}
-                      </button>
-
-                      <button
-                        className="danger"
-                        onClick={() =>
-                          removeWeek(
-                            week
-                          )
-                        }
-                      >
-                        ELIMINA
-                      </button>
-
-                    </div>
-
-                  </div>
+            {weeks.map((week) => {
+              const state =
+                getWeekState(
+                  week
                 );
-              }
-            )}
+
+              return (
+                <div
+                  className="adminWeek"
+                  key={week.id}
+                >
+                  <div>
+                    <b>
+                      SETTIMANA #
+                      {week.number}
+                    </b>
+
+                    <small>
+                      {state ===
+                        "open" &&
+                        "APERTA"}
+
+                      {state ===
+                        "waiting" &&
+                        "IN ATTESA"}
+
+                      {state ===
+                        "closed" &&
+                        "CHIUSA"}
+
+                      {state ===
+                        "published" &&
+                        "RISULTATI PUBBLICATI"}
+
+                      {state ===
+                        "draft" &&
+                        "BOZZA"}
+                    </small>
+                  </div>
+
+                  <div className="adminActions">
+                    <button
+                      onClick={() =>
+                        editWeek(
+                          week
+                        )
+                      }
+                    >
+                      MODIFICA
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        openResults(
+                          week
+                        )
+                      }
+                    >
+                      RISULTATI
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        toggleWeek(
+                          week
+                        )
+                      }
+                    >
+                      {state ===
+                      "open"
+                        ? "CHIUDI"
+                        : "APRI"}
+                    </button>
+
+                    <button
+                      className="danger"
+                      onClick={() =>
+                        removeWeek(
+                          week
+                        )
+                      }
+                    >
+                      ELIMINA
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
 
             {!weeks.length && (
               <div className="empty">
                 Nessuna settimana
                 creata.
                 <br />
-                Crea la Settimana #1.
+                Crea la Settimana
+                #1.
               </div>
             )}
-
           </div>
         </>
       )}
 
-      {/* ===============================
-          USERS
-          =============================== */}
-
       {tab === "users" && (
         <>
-
           <form
             className="adminForm"
             onSubmit={addUser}
           >
-
             <input
               placeholder="Nome"
               value={
@@ -2807,8 +2807,8 @@ function Admin({
               onChange={(e) =>
                 setUserForm({
                   ...userForm,
-                  name:
-                    e.target.value,
+                  name: e.target
+                    .value,
                 })
               }
             />
@@ -2844,11 +2844,9 @@ function Admin({
             <button>
               AGGIUNGI
             </button>
-
           </form>
 
           <div className="table">
-
             {users.map(
               (user) => (
                 <div
@@ -2857,7 +2855,6 @@ function Admin({
                     user.username
                   }
                 >
-
                   <span>
                     <b>
                       {user.name}
@@ -2888,34 +2885,27 @@ function Admin({
                       ELIMINA
                     </button>
                   )}
-
                 </div>
               )
             )}
-
           </div>
         </>
       )}
 
-      {/* ===============================
-          EDIT WEEK
-          =============================== */}
-
       {tab === "editWeek" &&
         editingWeek && (
           <div>
-
             <button
               className="backButton"
               onClick={() =>
                 setTab("weeks")
               }
             >
-              ← TORNA ALLE SETTIMANE
+              ← TORNA ALLE
+              SETTIMANE
             </button>
 
             <div className="adminEditor">
-
               <h2>
                 Settimana #
                 {
@@ -2934,11 +2924,10 @@ function Admin({
                   onChange={(e) =>
                     setEditingWeek({
                       ...editingWeek,
-                      number:
-                        Number(
-                          e.target
-                            .value
-                        ),
+                      number: Number(
+                        e.target
+                          .value
+                      ),
                     })
                   }
                 />
@@ -3015,13 +3004,10 @@ function Admin({
               />
 
               <div className="correctInfo">
-                💡 Puoi selezionare anche
-                più risposte corrette per
-                ogni domanda. Al momento
-                della correzione, il
-                partecipante riceverà i 10
-                punti se avrà scelto una
-                delle alternative corrette.
+                💡 Puoi selezionare
+                una o più risposte
+                corrette per ogni
+                domanda.
               </div>
 
               <button
@@ -3035,47 +3021,42 @@ function Admin({
                   ? "SALVATAGGIO..."
                   : "SALVA SETTIMANA"}
               </button>
-
             </div>
           </div>
         )}
 
-      {/* ===============================
-          RESULTS
-          =============================== */}
-
       {tab === "results" &&
         selectedWeek && (
           <div>
-
             <button
               className="backButton"
               onClick={() =>
                 setTab("weeks")
               }
             >
-              ← TORNA ALLE SETTIMANE
+              ← TORNA ALLE
+              SETTIMANE
             </button>
 
             <div className="resultsAdmin">
-
               <h2>
-                Risultati — Settimana #
+                Risultati —
+                Settimana #
                 {
                   selectedWeek.number
                 }
               </h2>
 
               <div className="publishBox">
-
                 <h3>
                   Correzione risposte
                 </h3>
 
                 <p>
-                  Inserisci le risposte
-                  corrette modificando
-                  la settimana.
+                  Inserisci le
+                  risposte corrette
+                  modificando la
+                  settimana.
                 </p>
 
                 <button
@@ -3100,18 +3081,17 @@ function Admin({
                   CALCOLA E PUBBLICA
                   RISULTATI
                 </button>
-
               </div>
 
               <div className="table">
-
                 {attempts.map(
                   (attempt) => (
                     <div
                       className="row"
-                      key={attempt.id}
+                      key={
+                        attempt.id
+                      }
                     >
-
                       <span>
                         <b>
                           {attempt.name ||
@@ -3129,23 +3109,20 @@ function Admin({
                           ? attempt.final_score
                           : "—"}
                       </strong>
-
                     </div>
                   )
                 )}
 
                 {!attempts.length && (
                   <div className="empty">
-                    Nessun partecipante.
+                    Nessun
+                    partecipante.
                   </div>
                 )}
-
               </div>
-
             </div>
           </div>
         )}
-
     </div>
   );
 }
@@ -3195,36 +3172,12 @@ function App() {
           dbWeeks(),
         ]);
 
-        /*
-           Normalizziamo anche le settimane
-           già presenti nel database.
-        */
-
-        const normalizedWeeks =
-          loadedWeeks.map(
-            (week) => ({
-              ...week,
-
-              matchQuestions:
-                normalizeQuestions(
-                  week.matchQuestions,
-                  "match"
-                ),
-
-              playerQuestions:
-                normalizeQuestions(
-                  week.playerQuestions,
-                  "player"
-                ),
-            })
-          );
-
         setUsers(
           loadedUsers
         );
 
         setWeeks(
-          normalizedWeeks
+          loadedWeeks
         );
       } catch (error) {
         console.error(error);
@@ -3239,7 +3192,8 @@ function App() {
   /*
      Settimana attiva:
      viene scelta quella aperta.
-     Se non c'è, mostriamo la più recente.
+     Se non c'è, mostriamo
+     quella più recente.
   */
 
   const activeWeek =
@@ -3299,9 +3253,7 @@ function App() {
   };
 
   const finishRigori =
-    async (
-      rigoriResult
-    ) => {
+    async (rigoriResult) => {
       if (
         !activeWeek ||
         !user
@@ -3321,11 +3273,6 @@ function App() {
         name:
           user.name,
 
-        /*
-           LE RISPOSTE VENGONO SALVATE.
-           NON vengono ancora corrette.
-        */
-
         match_answers:
           quizAnswers?.matchAnswers ||
           [],
@@ -3334,10 +3281,6 @@ function App() {
           quizAnswers?.playerAnswers ||
           [],
 
-        /*
-           RISULTATO RIGORI
-        */
-
         rigori_result:
           rigoriResult,
 
@@ -3345,17 +3288,15 @@ function App() {
 
         correct_answers: 0,
 
-        goals:
-          Number(
-            rigoriResult.goals ||
-              0
-          ),
+        goals: Number(
+          rigoriResult.goals ||
+            0
+        ),
 
-        multiplier:
-          Number(
-            rigoriResult.multiplier ||
-              1
-          ),
+        multiplier: Number(
+          rigoriResult.multiplier ||
+            1
+        ),
 
         final_score: 0,
 
@@ -3377,10 +3318,7 @@ function App() {
       );
 
       setFinished(true);
-
-      setPage(
-        "completed"
-      );
+      setPage("completed");
     };
 
   const logout = () => {
@@ -3391,8 +3329,6 @@ function App() {
     setUser(null);
     setPage("home");
     setAttempts([]);
-    setQuizAnswers(null);
-    setFinished(false);
   };
 
   if (loading) {
@@ -3407,9 +3343,7 @@ function App() {
     return (
       <Login
         users={users}
-        onLogin={(
-          loggedUser
-        ) => {
+        onLogin={(loggedUser) => {
           setUser(
             loggedUser
           );
@@ -3449,18 +3383,14 @@ function App() {
       {page === "quiz" && (
         <Quiz
           week={activeWeek}
-          onDone={
-            finishQuiz
-          }
+          onDone={finishQuiz}
         />
       )}
 
       {page === "rigori" && (
         <Rigori
           week={activeWeek}
-          onDone={
-            finishRigori
-          }
+          onDone={finishRigori}
         />
       )}
 
@@ -3479,17 +3409,12 @@ function App() {
       )}
 
       {page === "admin" &&
-        user.role ===
-          "admin" && (
+        user.role === "admin" && (
           <Admin
             users={users}
             weeks={weeks}
-            setUsers={
-              setUsers
-            }
-            setWeeks={
-              setWeeks
-            }
+            setUsers={setUsers}
+            setWeeks={setWeeks}
           />
         )}
 
@@ -3504,7 +3429,5 @@ function App() {
 }
 
 createRoot(
-  document.getElementById(
-    "root"
-  )
+  document.getElementById("root")
 ).render(<App />);
