@@ -1149,4 +1149,444 @@ nav button.active {
   nav button {
     width: 20%;
   }
+/* =========================================================
+   FANTALUCK - NUOVE FUNZIONI
+   ========================================================= */
+
+/* ===============================
+   COUNTDOWN
+   =============================== */
+
+.countdownCard {
+  margin-top: 18px;
+  padding: 24px;
+  border-radius: 20px;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0.03)
+  );
+  border: 1px solid rgba(255,255,255,0.1);
+  text-align: center;
+}
+
+.countdownCard small {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  font-weight: 800;
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+
+.countdownCard strong {
+  display: block;
+  font-size: clamp(28px, 6vw, 48px);
+  letter-spacing: 1px;
+  line-height: 1.1;
+}
+
+.countdownCard span {
+  display: block;
+  margin-top: 8px;
+  opacity: 0.65;
+  font-size: 13px;
+}
+
+
+/* ===============================
+   REGOLAMENTO
+   =============================== */
+
+.rulesCard {
+  margin-top: 20px;
+  padding: 24px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.rulesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.rulesHeader small {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  opacity: 0.6;
+}
+
+.rulesHeader h2 {
+  margin: 5px 0 0;
+}
+
+.rulesList {
+  display: grid;
+  gap: 12px;
+}
+
+.ruleItem {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.035);
+}
+
+.ruleItem b {
+  min-width: 24px;
+  font-size: 14px;
+}
+
+.ruleItem span {
+  font-size: 14px;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+
+/* ===============================
+   QUIZ NAVIGATION
+   =============================== */
+
+.quizNavigation {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  margin-top: 18px;
+}
+
+.quizNavigation .next {
+  flex: 1;
+}
+
+.previousButton {
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: inherit;
+  border-radius: 12px;
+  padding: 13px 18px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.previousButton:hover:not(:disabled) {
+  background: rgba(255,255,255,0.1);
+}
+
+.previousButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+
+/* ===============================
+   ADMIN - RISPOSTE MULTIPLE
+   =============================== */
+
+.correctAnswersEditor {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.correctAnswersTitle {
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.correctAnswersEditor p {
+  margin: 6px 0 14px;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.correctCheckboxes {
+  display: grid;
+  gap: 8px;
+}
+
+.correctCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.025);
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.correctCheckbox:hover {
+  background: rgba(255,255,255,0.07);
+}
+
+.correctCheckbox.checked {
+  border-color: rgba(100,220,130,0.45);
+  background: rgba(100,220,130,0.08);
+}
+
+.correctCheckbox input {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+}
+
+.noCorrectAnswer {
+  margin-top: 10px;
+  font-size: 12px;
+  opacity: 0.55;
+}
+
+.selectedCorrectInfo {
+  margin-top: 12px;
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+
+/* ===============================
+   CLASSIFICA - RIGA CLICCABILE
+   =============================== */
+
+.clickableRow {
+  cursor: pointer;
+}
+
+.clickableRow:hover {
+  transform: translateY(-1px);
+}
+
+.currentPlayer em {
+  font-style: normal;
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+
+/* ===============================
+   REVIEW RISPOSTE
+   =============================== */
+
+.reviewOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.reviewModal {
+  width: min(900px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 22px;
+  background: #111;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 30px 100px rgba(0,0,0,0.5);
+  padding: 24px;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.reviewHeader small {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  opacity: 0.55;
+}
+
+.reviewHeader h2 {
+  margin: 5px 0 0;
+}
+
+.reviewClose {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  color: inherit;
+  font-size: 25px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.reviewSummary {
+  display: grid;
+  gap: 6px;
+  padding: 18px;
+  border-radius: 15px;
+  background: rgba(255,255,255,0.05);
+  margin-bottom: 25px;
+}
+
+.reviewSummary strong {
+  font-size: 22px;
+}
+
+.reviewSummary span {
+  font-size: 13px;
+  opacity: 0.65;
+}
+
+.reviewSection {
+  margin-top: 28px;
+}
+
+.reviewSection > h3 {
+  margin-bottom: 14px;
+}
+
+.reviewQuestion {
+  padding: 18px;
+  border-radius: 15px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.reviewCorrect {
+  background: rgba(60,180,90,0.08);
+  border-color: rgba(60,180,90,0.22);
+}
+
+.reviewWrong {
+  background: rgba(220,70,70,0.07);
+  border-color: rgba(220,70,70,0.2);
+}
+
+.reviewQuestionTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 10px;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+}
+
+.reviewQuestionTop span {
+  opacity: 0.5;
+}
+
+.reviewCorrect .reviewQuestionTop strong {
+  opacity: 0.9;
+}
+
+.reviewWrong .reviewQuestionTop strong {
+  opacity: 0.9;
+}
+
+.reviewQuestion h3 {
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0 0 15px;
+}
+
+.reviewAnswer,
+.reviewCorrectAnswer {
+  padding: 11px 13px;
+  border-radius: 10px;
+  margin-top: 8px;
+  background: rgba(255,255,255,0.04);
+}
+
+.reviewAnswer small,
+.reviewCorrectAnswer small {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 1px;
+  opacity: 0.5;
+  margin-bottom: 4px;
+}
+
+.reviewAnswer strong,
+.reviewCorrectAnswer strong {
+  display: block;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.reviewBottomClose {
+  width: 100%;
+  margin-top: 25px;
+  padding: 14px;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+
+/* ===============================
+   MOBILE
+   =============================== */
+
+@media (max-width: 600px) {
+
+  .countdownCard {
+    padding: 20px 12px;
+  }
+
+  .countdownCard strong {
+    font-size: 25px;
+  }
+
+  .rulesCard {
+    padding: 18px;
+  }
+
+  .ruleItem {
+    padding: 10px;
+  }
+
+  .ruleItem span {
+    font-size: 13px;
+  }
+
+  .quizNavigation {
+    flex-direction: column-reverse;
+  }
+
+  .previousButton {
+    width: 100%;
+  }
+
+  .reviewOverlay {
+    padding: 8px;
+    align-items: flex-start;
+  }
+
+  .reviewModal {
+    max-height: 96vh;
+    padding: 17px;
+    border-radius: 17px;
+  }
+
+  .reviewQuestion {
+    padding: 14px;
+  }
+
+  .reviewQuestion h3 {
+    font-size: 14px;
+  }
+
+}
 }
