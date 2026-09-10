@@ -10,15 +10,79 @@ import "./styles.css";
 
 const EMPTY_OPTIONS = ["", "", "", ""];
 
+/*
+   Le risposte corrette ora sono un ARRAY.
+   Esempio:
+   correct: ["Inter", "Milan"]
+
+   Manteniamo comunque la compatibilità con
+   le vecchie domande che avevano:
+   correct: "Inter"
+*/
+
 const makeQuestion = (type, index) => ({
-  id: `${type}-${index + 1}-${Date.now()}`,
+  id: `${type}-${index + 1}-${Date.now()}-${Math.random()
+    .toString(36)
+    .slice(2)}`,
   text: "",
   options: [...EMPTY_OPTIONS],
-  correct: "",
+  correct: [],
 });
 
 const makeQuestions = (type) =>
-  Array.from({ length: 10 }, (_, i) => makeQuestion(type, i));
+  Array.from({ length: 10 }, (_, i) =>
+    makeQuestion(type, i)
+  );
+
+/* =========================================================
+   NORMALIZZAZIONE RISPOSTE CORRETTE
+   ========================================================= */
+
+function getCorrectAnswers(question) {
+  if (Array.isArray(question?.correct)) {
+    return question.correct.filter(Boolean);
+  }
+
+  if (question?.correct) {
+    return [question.correct];
+  }
+
+  return [];
+}
+
+function normalizeQuestion(question, type, index) {
+  return {
+    ...question,
+    id:
+      question?.id ||
+      `${type}-${index + 1}-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2)}`,
+    text: question?.text || "",
+    options:
+      Array.isArray(question?.options)
+        ? [
+            ...question.options,
+            ...EMPTY_OPTIONS,
+          ].slice(0, 4)
+        : [...EMPTY_OPTIONS],
+    correct: getCorrectAnswers(question),
+  };
+}
+
+function normalizeQuestions(questions, type) {
+  if (!Array.isArray(questions) || questions.length !== 10) {
+    return makeQuestions(type);
+  }
+
+  return questions.map((question, index) =>
+    normalizeQuestion(question, type, index)
+  );
+}
+
+/* =========================================================
+   NUOVA SETTIMANA
+   ========================================================= */
 
 const newWeek = (number) => ({
   id: `week-${number}-${Date.now()}`,
@@ -26,13 +90,17 @@ const newWeek = (number) => ({
   status: "draft",
   starts_at: "",
   deadline: "",
-  matchQuestions: makeQuestions("match", 0),
-  playerQuestions: makeQuestions("player", 0),
+  matchQuestions: makeQuestions("match"),
+  playerQuestions: makeQuestions("player"),
   rigoriCells: 12,
   multiplierBase: 1,
   multiplierStep: 0.15,
   results_published: false,
 });
+
+/* =========================================================
+   LOCAL STORAGE
+   ========================================================= */
 
 function localGet(key, fallback) {
   try {
@@ -50,8 +118,38 @@ function localSet(key, value) {
 function uid() {
   return (
     crypto?.randomUUID?.() ||
-    `${Date.now()}-${Math.random().toString(36).slice(2)}`
+    `${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2)}`
   );
+}
+
+/* =========================================================
+   DATE / DATETIME LOCAL
+   ========================================================= */
+
+/*
+   Converte una data salvata in formato ISO
+   nel formato richiesto da <input type="datetime-local">.
+
+   Evita che l'orario visualizzato dall'Admin
+   venga spostato a causa del fuso orario.
+*/
+
+function toDateTimeLocalValue(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value).slice(0, 16);
+  }
+
+  const offset = date.getTimezoneOffset();
+
+  return new Date(date.getTime() - offset * 60000)
+    .toISOString()
+    .slice(0, 16);
 }
 
 /* =========================================================
@@ -82,6 +180,7 @@ async function dbUsers() {
     .order("username");
 
   if (error) throw error;
+
   return data || [];
 }
 
@@ -93,7 +192,9 @@ async function saveUsers(users) {
 
   const { error } = await supabase
     .from("users")
-    .upsert(users, { onConflict: "username" });
+    .upsert(users, {
+      onConflict: "username",
+    });
 
   if (error) throw error;
 }
@@ -106,23 +207,55 @@ async function dbWeeks() {
   const { data, error } = await supabase
     .from("weeks")
     .select("*")
-    .order("number", { ascending: true });
+    .order("number", {
+      ascending: true,
+    });
 
   if (error) throw error;
+
   return data || [];
 }
 
 async function saveWeek(week) {
+  /*
+     Prima di salvare, normalizziamo sempre
+     le domande in modo che correct sia un array.
+  */
+
+  const normalizedWeek = {
+    ...week,
+
+    matchQuestions: normalizeQuestions(
+      week.matchQuestions,
+      "match"
+    ),
+
+    playerQuestions: normalizeQuestions(
+      week.playerQuestions,
+      "player"
+    ),
+  };
+
   if (!supabase) {
     const weeks = localGet("fl_weeks", []);
-    const next = weeks.filter((w) => w.id !== week.id);
-    localSet("fl_weeks", [...next, week]);
+
+    const next = weeks.filter(
+      (w) => w.id !== normalizedWeek.id
+    );
+
+    localSet("fl_weeks", [
+      ...next,
+      normalizedWeek,
+    ]);
+
     return;
   }
 
   const { error } = await supabase
     .from("weeks")
-    .upsert(week, { onConflict: "id" });
+    .upsert(normalizedWeek, {
+      onConflict: "id",
+    });
 
   if (error) throw error;
 }
@@ -130,10 +263,12 @@ async function saveWeek(week) {
 async function deleteWeek(id) {
   if (!supabase) {
     const weeks = localGet("fl_weeks", []);
+
     localSet(
       "fl_weeks",
       weeks.filter((w) => w.id !== id)
     );
+
     return;
   }
 
@@ -147,7 +282,10 @@ async function deleteWeek(id) {
 
 async function dbAttempts(weekId) {
   if (!supabase) {
-    return localGet(`fl_attempts_${weekId}`, []);
+    return localGet(
+      `fl_attempts_${weekId}`,
+      []
+    );
   }
 
   const { data, error } = await supabase
@@ -156,21 +294,25 @@ async function dbAttempts(weekId) {
     .eq("week_id", weekId);
 
   if (error) throw error;
+
   return data || [];
 }
 
 async function saveAttempt(attempt) {
   if (!supabase) {
-    const attempts = localGet(`fl_attempts_${attempt.week_id}`, []);
+    const attempts = localGet(
+      `fl_attempts_${attempt.week_id}`,
+      []
+    );
 
     const next = attempts.filter(
       (a) => a.username !== attempt.username
     );
 
-    localSet(`fl_attempts_${attempt.week_id}`, [
-      ...next,
-      attempt,
-    ]);
+    localSet(
+      `fl_attempts_${attempt.week_id}`,
+      [...next, attempt]
+    );
 
     return;
   }
@@ -185,7 +327,9 @@ async function saveAttempt(attempt) {
 }
 
 async function updateAttempt(id, values) {
-  if (!supabase) return;
+  if (!supabase) {
+    return;
+  }
 
   const { error } = await supabase
     .from("attempts")
@@ -212,22 +356,157 @@ function getWeekState(week) {
     ? new Date(week.deadline).getTime()
     : null;
 
-  if (week.status === "closed") return "closed";
-  if (week.status === "published") return "published";
+  if (week.status === "closed") {
+    return "closed";
+  }
 
-  if (start && now < start) return "waiting";
-  if (end && now > end) return "closed";
+  if (week.status === "published") {
+    return "published";
+  }
 
-  if (week.status === "open") return "open";
+  if (start && now < start) {
+    return "waiting";
+  }
+
+  if (end && now > end) {
+    return "closed";
+  }
+
+  if (week.status === "open") {
+    return "open";
+  }
 
   return "draft";
+}
+
+/* =========================================================
+   COUNTDOWN
+   ========================================================= */
+
+function formatCountdown(milliseconds) {
+  if (milliseconds <= 0) {
+    return "00g 00h 00m 00s";
+  }
+
+  const totalSeconds = Math.floor(
+    milliseconds / 1000
+  );
+
+  const days = Math.floor(
+    totalSeconds / 86400
+  );
+
+  const hours = Math.floor(
+    (totalSeconds % 86400) / 3600
+  );
+
+  const minutes = Math.floor(
+    (totalSeconds % 3600) / 60
+  );
+
+  const seconds = totalSeconds % 60;
+
+  return `${String(days).padStart(
+    2,
+    "0"
+  )}g ${String(hours).padStart(
+    2,
+    "0"
+  )}h ${String(minutes).padStart(
+    2,
+    "0"
+  )}m ${String(seconds).padStart(
+    2,
+    "0"
+  )}s`;
+}
+
+function Countdown({ week }) {
+  const state = getWeekState(week);
+
+  const target =
+    state === "waiting"
+      ? week?.starts_at
+      : state === "open"
+      ? week?.deadline
+      : null;
+
+  const [remaining, setRemaining] =
+    useState(() => {
+      if (!target) return 0;
+
+      return Math.max(
+        0,
+        new Date(target).getTime() -
+          Date.now()
+      );
+    });
+
+  useEffect(() => {
+    if (!target) {
+      setRemaining(0);
+      return;
+    }
+
+    const update = () => {
+      setRemaining(
+        Math.max(
+          0,
+          new Date(target).getTime() -
+            Date.now()
+        )
+      );
+    };
+
+    update();
+
+    const interval = setInterval(
+      update,
+      1000
+    );
+
+    return () =>
+      clearInterval(interval);
+  }, [target]);
+
+  if (
+    !target ||
+    (state !== "waiting" &&
+      state !== "open")
+  ) {
+    return null;
+  }
+
+  return (
+    <div className="countdownCard">
+      <small>
+        {state === "waiting"
+          ? "⏳ INIZIO TRA"
+          : "⏰ CHIUSURA TRA"}
+      </small>
+
+      <strong>
+        {formatCountdown(remaining)}
+      </strong>
+
+      <span>
+        {state === "waiting"
+          ? "Preparati alla sfida"
+          : "Affrettati a completare la sfida"}
+      </span>
+    </div>
+  );
 }
 
 /* =========================================================
    SCORE
    ========================================================= */
 
-function calculateQuizScore(week, matchAnswers, playerAnswers) {
+function calculateQuizScore(
+  week,
+  matchAnswers,
+  playerAnswers
+) {
   const allQuestions = [
     ...(week.matchQuestions || []),
     ...(week.playerQuestions || []),
@@ -240,15 +519,23 @@ function calculateQuizScore(week, matchAnswers, playerAnswers) {
 
   let correct = 0;
 
-  allQuestions.forEach((question, index) => {
-    if (
-      question.correct &&
-      answers[index] &&
-      answers[index] === question.correct
-    ) {
-      correct++;
+  allQuestions.forEach(
+    (question, index) => {
+      const correctAnswers =
+        getCorrectAnswers(question);
+
+      const userAnswer =
+        answers[index];
+
+      if (
+        correctAnswers.length > 0 &&
+        userAnswer &&
+        correctAnswers.includes(userAnswer)
+      ) {
+        correct++;
+      }
     }
-  });
+  );
 
   return {
     correct,
@@ -261,44 +548,79 @@ function calculateQuizScore(week, matchAnswers, playerAnswers) {
    ========================================================= */
 
 function createRandomSaves(goalCount) {
-  const cells = Array.from({ length: 12 }, (_, i) => i);
+  const cells = Array.from(
+    { length: 12 },
+    (_, i) => i
+  );
 
-  for (let i = cells.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [cells[i], cells[j]] = [cells[j], cells[i]];
+  for (
+    let i = cells.length - 1;
+    i > 0;
+    i--
+  ) {
+    const j = Math.floor(
+      Math.random() * (i + 1)
+    );
+
+    [cells[i], cells[j]] = [
+      cells[j],
+      cells[i],
+    ];
   }
 
-  const saveCount = 12 - goalCount;
+  const saveCount =
+    12 - goalCount;
 
-  return new Set(cells.slice(0, saveCount));
+  return new Set(
+    cells.slice(0, saveCount)
+  );
 }
 
-function goalsAvailableForShot(shotNumber) {
-  const pair = Math.floor(shotNumber / 2);
+function goalsAvailableForShot(
+  shotNumber
+) {
+  const pair = Math.floor(
+    shotNumber / 2
+  );
 
-  return Math.max(2, 11 - pair);
+  return Math.max(
+    2,
+    11 - pair
+  );
 }
 
 /* =========================================================
    LOGIN
    ========================================================= */
 
-function Login({ users, onLogin }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+function Login({
+  users,
+  onLogin,
+}) {
+  const [username, setUsername] =
+    useState("");
+
+  const [password, setPassword] =
+    useState("");
+
+  const [error, setError] =
+    useState("");
 
   const submit = (event) => {
     event.preventDefault();
 
     const user = users.find(
       (u) =>
-        u.username === username.trim() &&
+        u.username ===
+          username.trim() &&
         u.password === password
     );
 
     if (!user) {
-      setError("Username o password non validi.");
+      setError(
+        "Username o password non validi."
+      );
+
       return;
     }
 
@@ -308,7 +630,9 @@ function Login({ users, onLogin }) {
   return (
     <main className="login">
       <div className="loginCard">
-        <div className="logo">🍀 FANTALUCK</div>
+        <div className="logo">
+          🍀 FANTALUCK
+        </div>
 
         <p className="tag">
           LA SFIDA SETTIMANALE
@@ -319,7 +643,9 @@ function Login({ users, onLogin }) {
             placeholder="Username"
             value={username}
             onChange={(e) =>
-              setUsername(e.target.value)
+              setUsername(
+                e.target.value
+              )
             }
           />
 
@@ -328,7 +654,9 @@ function Login({ users, onLogin }) {
             type="password"
             value={password}
             onChange={(e) =>
-              setPassword(e.target.value)
+              setPassword(
+                e.target.value
+              )
             }
           />
 
@@ -360,24 +688,42 @@ function Nav({
   return (
     <nav>
       <button
-        className={page === "home" ? "active" : ""}
-        onClick={() => setPage("home")}
+        className={
+          page === "home"
+            ? "active"
+            : ""
+        }
+        onClick={() =>
+          setPage("home")
+        }
       >
         🏠
         <span>Home</span>
       </button>
 
       <button
-        className={page === "quiz" ? "active" : ""}
-        onClick={() => setPage("quiz")}
+        className={
+          page === "quiz"
+            ? "active"
+            : ""
+        }
+        onClick={() =>
+          setPage("quiz")
+        }
       >
         ⚽
         <span>Gioca</span>
       </button>
 
       <button
-        className={page === "rank" ? "active" : ""}
-        onClick={() => setPage("rank")}
+        className={
+          page === "rank"
+            ? "active"
+            : ""
+        }
+        onClick={() =>
+          setPage("rank")
+        }
       >
         🏆
         <span>Classifica</span>
@@ -385,8 +731,14 @@ function Nav({
 
       {user.role === "admin" && (
         <button
-          className={page === "admin" ? "active" : ""}
-          onClick={() => setPage("admin")}
+          className={
+            page === "admin"
+              ? "active"
+              : ""
+          }
+          onClick={() =>
+            setPage("admin")
+          }
         >
           ⚙️
           <span>Admin</span>
@@ -398,6 +750,129 @@ function Nav({
         <span>Esci</span>
       </button>
     </nav>
+  );
+}
+
+/* =========================================================
+   REGOLAMENTO
+   ========================================================= */
+
+function RulesCard({ week }) {
+  return (
+    <div className="rulesCard">
+      <div className="rulesHeader">
+        <div>
+          <small>FANTALUCK</small>
+          <h2>📜 Regolamento</h2>
+        </div>
+      </div>
+
+      <div className="rulesList">
+        <div className="ruleItem">
+          <b>1.</b>
+          <span>
+            La sfida è composta da{" "}
+            <strong>
+              20 domande
+            </strong>
+            : 10 sulle partite e 10 sui
+            giocatori.
+          </span>
+        </div>
+
+        <div className="ruleItem">
+          <b>2.</b>
+          <span>
+            Ogni risposta corretta vale{" "}
+            <strong>10 punti</strong>.
+          </span>
+        </div>
+
+        <div className="ruleItem">
+          <b>3.</b>
+          <span>
+            Al termine del quiz si passa
+            alla prova dei{" "}
+            <strong>rigori</strong>.
+          </span>
+        </div>
+
+        <div className="ruleItem">
+          <b>4.</b>
+          <span>
+            La porta ha{" "}
+            <strong>
+              {Number(
+                week?.rigoriCells || 12
+              )}
+              /12
+            </strong>{" "}
+            caselle. La possibilità di
+            segnare diminuisce ogni due
+            rigori, fino a un minimo di
+            2/12.
+          </span>
+        </div>
+
+        <div className="ruleItem">
+          <b>5.</b>
+          <span>
+            Ogni gol aumenta il
+            moltiplicatore di{" "}
+            <strong>
+              +
+              {Number(
+                week?.multiplierStep ||
+                  0.15
+              ).toFixed(2)}
+            </strong>
+            , partendo da{" "}
+            <strong>
+              x
+              {Number(
+                week?.multiplierBase || 1
+              ).toFixed(2)}
+            </strong>
+            .
+          </span>
+        </div>
+
+        <div className="ruleItem">
+          <b>6.</b>
+          <span>
+            Un rigore parato{" "}
+            <strong>
+              termina la serie
+            </strong>
+            .
+          </span>
+        </div>
+
+        <div className="ruleItem">
+          <b>7.</b>
+          <span>
+            Il punteggio finale è dato dal
+            punteggio del quiz
+            moltiplicato per il
+            moltiplicatore finale dei
+            rigori.
+          </span>
+        </div>
+
+        <div className="ruleItem">
+          <b>8.</b>
+          <span>
+            Se una domanda ha più
+            alternative corrette, è
+            sufficiente scegliere{" "}
+            <strong>
+              una delle risposte indicate
+            </strong>{" "}
+            dall'organizzatore.
+          </span>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -428,29 +903,37 @@ function Home({
         </h1>
 
         <p>
-          Conosci il calcio. Indovina. Segna.
+          Conosci il calcio. Indovina.
+          Segna.
         </p>
 
-        {state === "open" && !attempt && (
-          <button
-            onClick={() => setPage("quiz")}
-          >
-            GIOCA ORA →
-          </button>
-        )}
+        {state === "open" &&
+          !attempt && (
+            <button
+              onClick={() =>
+                setPage("quiz")
+              }
+            >
+              GIOCA ORA →
+            </button>
+          )}
 
-        {attempt && !week?.results_published && (
-          <div className="notice">
-            Hai già partecipato.
-            <br />
-            Il risultato sarà disponibile
-            dopo la pubblicazione.
-          </div>
-        )}
+        {attempt &&
+          !week?.results_published && (
+            <div className="notice">
+              Hai già partecipato.
+              <br />
+              Il risultato sarà
+              disponibile dopo la
+              pubblicazione.
+            </div>
+          )}
 
         {week?.results_published && (
           <button
-            onClick={() => setPage("rank")}
+            onClick={() =>
+              setPage("rank")
+            }
           >
             VEDI RISULTATI →
           </button>
@@ -461,27 +944,56 @@ function Home({
 
         <div className="card">
           <small>SETTIMANA</small>
+
           <strong>
             #{week?.number ?? "-"}
           </strong>
 
           <span>
-            {state === "open" && "APERTA"}
-            {state === "waiting" && "IN ARRIVO"}
-            {state === "closed" && "CHIUSA"}
-            {state === "published" && "RISULTATI PUBBLICATI"}
-            {state === "draft" && "IN PREPARAZIONE"}
-            {state === "none" && "NESSUNA"}
+            {state === "open" &&
+              "APERTA"}
+
+            {state === "waiting" &&
+              "IN ARRIVO"}
+
+            {state === "closed" &&
+              "CHIUSA"}
+
+            {state === "published" &&
+              "RISULTATI PUBBLICATI"}
+
+            {state === "draft" &&
+              "IN PREPARAZIONE"}
+
+            {state === "none" &&
+              "NESSUNA"}
           </span>
         </div>
 
         <div className="card">
-          <small>IL TUO PROFILO</small>
-          <strong>{user.name}</strong>
-          <span>@{user.username}</span>
+          <small>
+            IL TUO PROFILO
+          </small>
+
+          <strong>
+            {user.name}
+          </strong>
+
+          <span>
+            @{user.username}
+          </span>
         </div>
 
       </div>
+
+      {/* COUNTDOWN */}
+
+      <Countdown week={week} />
+
+      {/* REGOLAMENTO */}
+
+      <RulesCard week={week} />
+
     </div>
   );
 }
@@ -502,9 +1014,14 @@ function Quiz({
     [week]
   );
 
-  const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [error, setError] = useState("");
+  const [index, setIndex] =
+    useState(0);
+
+  const [answers, setAnswers] =
+    useState({});
+
+  const [error, setError] =
+    useState("");
 
   if (!week) {
     return (
@@ -514,17 +1031,20 @@ function Quiz({
     );
   }
 
-  const state = getWeekState(week);
+  const state =
+    getWeekState(week);
 
   if (state !== "open") {
     return (
       <div className="empty">
-        Questa settimana non è disponibile.
+        Questa settimana non è
+        disponibile.
       </div>
     );
   }
 
-  const question = questions[index];
+  const question =
+    questions[index];
 
   const choose = (answer) => {
     setAnswers({
@@ -535,20 +1055,43 @@ function Quiz({
     setError("");
   };
 
-  const next = () => {
-    if (!answers[index]) {
-      setError("Scegli una risposta.");
+  const previous = () => {
+    if (index === 0) {
       return;
     }
 
-    if (index === questions.length - 1) {
-      const matchAnswers = questions
-        .slice(0, 10)
-        .map((_, i) => answers[i] || "");
+    setIndex(index - 1);
+    setError("");
+  };
 
-      const playerAnswers = questions
-        .slice(10, 20)
-        .map((_, i) => answers[i + 10] || "");
+  const next = () => {
+    if (!answers[index]) {
+      setError(
+        "Scegli una risposta."
+      );
+
+      return;
+    }
+
+    if (
+      index ===
+      questions.length - 1
+    ) {
+      const matchAnswers =
+        questions
+          .slice(0, 10)
+          .map(
+            (_, i) =>
+              answers[i] || ""
+          );
+
+      const playerAnswers =
+        questions
+          .slice(10, 20)
+          .map(
+            (_, i) =>
+              answers[i + 10] || ""
+          );
 
       onDone({
         matchAnswers,
@@ -559,13 +1102,15 @@ function Quiz({
     }
 
     setIndex(index + 1);
+    setError("");
   };
 
   return (
     <div className="wrap">
 
       <div className="progress">
-        DOMANDA {index + 1} / {questions.length}
+        DOMANDA {index + 1} /{" "}
+        {questions.length}
 
         <div>
           <i
@@ -594,30 +1139,40 @@ function Quiz({
         </h2>
 
         <div className="answers">
-          {(question?.options || [
-            "A",
-            "B",
-            "C",
-            "D",
-          ]).map((option, i) => (
-            <button
-              key={i}
-              className={
-                answers[index] === option
-                  ? "selected"
-                  : ""
-              }
-              onClick={() =>
-                choose(option)
-              }
-            >
-              {String.fromCharCode(65 + i)}
+          {(
+            question?.options || [
+              "A",
+              "B",
+              "C",
+              "D",
+            ]
+          ).map(
+            (option, i) => (
+              <button
+                key={i}
+                className={
+                  answers[index] ===
+                  option
+                    ? "selected"
+                    : ""
+                }
+                onClick={() =>
+                  choose(option)
+                }
+              >
+                {String.fromCharCode(
+                  65 + i
+                )}
 
-              <span>
-                {option || `Risposta ${i + 1}`}
-              </span>
-            </button>
-          ))}
+                <span>
+                  {option ||
+                    `Risposta ${
+                      i + 1
+                    }`}
+                </span>
+              </button>
+            )
+          )}
         </div>
 
         {error && (
@@ -626,14 +1181,27 @@ function Quiz({
           </div>
         )}
 
-        <button
-          className="next"
-          onClick={next}
-        >
-          {index === questions.length - 1
-            ? "VAI AI RIGORI"
-            : "AVANTI →"}
-        </button>
+        <div className="quizNavigation">
+
+          <button
+            className="previousButton"
+            onClick={previous}
+            disabled={index === 0}
+          >
+            ← INDIETRO
+          </button>
+
+          <button
+            className="next"
+            onClick={next}
+          >
+            {index ===
+            questions.length - 1
+              ? "VAI AI RIGORI"
+              : "AVANTI →"}
+          </button>
+
+        </div>
 
       </div>
     </div>
@@ -648,11 +1216,17 @@ function Rigori({
   week,
   onDone,
 }) {
-  const [shot, setShot] = useState(0);
-  const [goals, setGoals] = useState(0);
+  const [shot, setShot] =
+    useState(0);
+
+  const [goals, setGoals] =
+    useState(0);
+
   const [multiplier, setMultiplier] =
     useState(
-      Number(week?.multiplierBase || 1)
+      Number(
+        week?.multiplierBase || 1
+      )
     );
 
   const [saveCells, setSaveCells] =
@@ -672,38 +1246,49 @@ function Rigori({
     useState(false);
 
   const shoot = (cell) => {
-    if (result || finished) return;
+    if (result || finished) {
+      return;
+    }
 
-    const isGoal = !saveCells.has(cell);
+    const isGoal =
+      !saveCells.has(cell);
 
     const newGoals =
-      goals + (isGoal ? 1 : 0);
+      goals +
+      (isGoal ? 1 : 0);
 
-    const newMultiplier = Number(
-      (
-        multiplier +
-        (isGoal
-          ? Number(
-              week?.multiplierStep || 0.15
-            )
-          : 0)
-      ).toFixed(2)
-    );
+    const newMultiplier =
+      Number(
+        (
+          multiplier +
+          (isGoal
+            ? Number(
+                week?.multiplierStep ||
+                  0.15
+              )
+            : 0)
+        ).toFixed(2)
+      );
 
     setSelected(cell);
 
     setResult({
       goal: isGoal,
       cell,
-      multiplier: newMultiplier,
+      multiplier:
+        newMultiplier,
     });
 
     setGoals(newGoals);
-    setMultiplier(newMultiplier);
+    setMultiplier(
+      newMultiplier
+    );
   };
 
   const continueShot = () => {
-    if (!result) return;
+    if (!result) {
+      return;
+    }
 
     if (!result.goal) {
       setFinished(true);
@@ -714,24 +1299,30 @@ function Rigori({
         history: {
           goals,
           shots: shot + 1,
-          finalMultiplier: multiplier,
+          finalMultiplier:
+            multiplier,
         },
       });
 
       return;
     }
 
-    const nextShot = shot + 1;
+    const nextShot =
+      shot + 1;
 
     setShot(nextShot);
     setSelected(null);
     setResult(null);
 
     const nextGoalCount =
-      goalsAvailableForShot(nextShot);
+      goalsAvailableForShot(
+        nextShot
+      );
 
     setSaveCells(
-      createRandomSaves(nextGoalCount)
+      createRandomSaves(
+        nextGoalCount
+      )
     );
   };
 
@@ -745,6 +1336,7 @@ function Rigori({
 
         <div className="penaltyTop">
           <span>RIGORI</span>
+
           <strong>
             {shot + 1}° RIGORE
           </strong>
@@ -760,12 +1352,18 @@ function Rigori({
         <p>
           Scegli una casella.
           <br />
-          Non sai dove si trova la parata.
+          Non sai dove si trova la
+          parata.
         </p>
 
         <div className="difficulty">
-          <b>{goalCount}/12</b>
-          <span>possibilità di segnare</span>
+          <b>
+            {goalCount}/12
+          </b>
+
+          <span>
+            possibilità di segnare
+          </span>
         </div>
 
         <div className="goalGrid">
@@ -817,7 +1415,9 @@ function Rigori({
             }
           >
             <div className="resultIcon">
-              {result.goal ? "⚽" : "🧤"}
+              {result.goal
+                ? "⚽"
+                : "🧤"}
             </div>
 
             <h2>
@@ -836,7 +1436,9 @@ function Rigori({
             </p>
 
             <button
-              onClick={continueShot}
+              onClick={
+                continueShot
+              }
             >
               {result.goal
                 ? "PROSSIMO RIGORE →"
@@ -851,7 +1453,7 @@ function Rigori({
 }
 
 /* =========================================================
-   PARTICIPATION COMPLETE
+   PARTECIPAZIONE COMPLETA
    ========================================================= */
 
 function Completed({
@@ -878,11 +1480,14 @@ function Completed({
         <p>
           Il punteggio sarà calcolato e
           pubblicato dall'organizzatore
-          dopo la chiusura della settimana.
+          dopo la chiusura della
+          settimana.
         </p>
 
         <button
-          onClick={() => setPage("home")}
+          onClick={() =>
+            setPage("home")
+          }
         >
           TORNA ALLA HOME
         </button>
@@ -893,7 +1498,197 @@ function Completed({
 }
 
 /* =========================================================
-   RANKING
+   REVISIONE RISPOSTE
+   ========================================================= */
+
+function AnswerReview({
+  week,
+  attempt,
+  onClose,
+}) {
+  const matchQuestions =
+    week?.matchQuestions || [];
+
+  const playerQuestions =
+    week?.playerQuestions || [];
+
+  const matchAnswers =
+    attempt?.match_answers || [];
+
+  const playerAnswers =
+    attempt?.player_answers || [];
+
+  const renderQuestion = (
+    question,
+    userAnswer,
+    index
+  ) => {
+    const correctAnswers =
+      getCorrectAnswers(
+        question
+      );
+
+    const isCorrect =
+      Boolean(
+        userAnswer &&
+          correctAnswers.includes(
+            userAnswer
+          )
+      );
+
+    return (
+      <div
+        className={
+          isCorrect
+            ? "reviewQuestion reviewCorrect"
+            : "reviewQuestion reviewWrong"
+        }
+        key={
+          question.id ||
+          index
+        }
+      >
+        <div className="reviewQuestionTop">
+          <span>
+            DOMANDA {index + 1}
+          </span>
+
+          <strong>
+            {isCorrect
+              ? "✓ CORRETTA"
+              : "✗ ERRATA"}
+          </strong>
+        </div>
+
+        <h3>
+          {question.text ||
+            "Domanda senza testo"}
+        </h3>
+
+        <div className="reviewAnswer">
+          <small>
+            LA TUA RISPOSTA
+          </small>
+
+          <strong>
+            {userAnswer ||
+              "Nessuna risposta"}
+          </strong>
+        </div>
+
+        <div className="reviewCorrectAnswer">
+          <small>
+            RISPOSTA CORRETTA
+            {correctAnswers.length >
+            1
+              ? " / RISPOSTE CORRETTE"
+              : ""}
+          </small>
+
+          <strong>
+            {correctAnswers.length
+              ? correctAnswers.join(
+                  " / "
+                )
+              : "Non ancora inserita"}
+          </strong>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="reviewOverlay">
+      <div className="reviewModal">
+
+        <div className="reviewHeader">
+          <div>
+            <small>
+              SETTIMANA #
+              {week?.number}
+            </small>
+
+            <h2>
+              Le tue risposte
+            </h2>
+          </div>
+
+          <button
+            className="reviewClose"
+            onClick={onClose}
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="reviewSummary">
+          <strong>
+            {attempt?.correct_answers ||
+              0}
+            /20 corrette
+          </strong>
+
+          <span>
+            Punteggio quiz:{" "}
+            {attempt?.base_score ||
+              0}{" "}
+            punti
+          </span>
+
+          <span>
+            Rigori:{" "}
+            {attempt?.goals || 0} gol
+            · Moltiplicatore x
+            {Number(
+              attempt?.multiplier || 1
+            ).toFixed(2)}
+          </span>
+        </div>
+
+        <div className="reviewSection">
+          <h3>
+            ⚽ Domande partita
+          </h3>
+
+          {matchQuestions.map(
+            (question, index) =>
+              renderQuestion(
+                question,
+                matchAnswers[index],
+                index
+              )
+          )}
+        </div>
+
+        <div className="reviewSection">
+          <h3>
+            👤 Domande giocatore
+          </h3>
+
+          {playerQuestions.map(
+            (question, index) =>
+              renderQuestion(
+                question,
+                playerAnswers[index],
+                index + 10
+              )
+          )}
+        </div>
+
+        <button
+          className="reviewBottomClose"
+          onClick={onClose}
+        >
+          CHIUDI
+        </button>
+
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   CLASSIFICA
    ========================================================= */
 
 function Rank({
@@ -901,12 +1696,18 @@ function Rank({
   attempts,
   user,
 }) {
+  const [reviewOpen, setReviewOpen] =
+    useState(false);
+
   if (!week?.results_published) {
     return (
       <div className="wrap">
 
         <div className="title">
-          <small>FANTALUCK</small>
+          <small>
+            FANTALUCK
+          </small>
+
           <h1>Classifica</h1>
         </div>
 
@@ -916,7 +1717,8 @@ function Rank({
           </div>
 
           <h2>
-            Risultati non ancora pubblicati
+            Risultati non ancora
+            pubblicati
           </h2>
 
           <p>
@@ -933,13 +1735,26 @@ function Rank({
   const rows = [...attempts]
     .filter(
       (a) =>
-        a.results_published === true ||
-        week.results_published === true
+        a.results_published ===
+          true ||
+        week.results_published ===
+          true
     )
     .sort(
       (a, b) =>
-        Number(b.final_score || 0) -
-        Number(a.final_score || 0)
+        Number(
+          b.final_score || 0
+        ) -
+        Number(
+          a.final_score || 0
+        )
+    );
+
+  const myPublishedAttempt =
+    rows.find(
+      (attempt) =>
+        attempt.username ===
+        user.username
     );
 
   return (
@@ -955,45 +1770,118 @@ function Rank({
 
       <div className="table">
 
-        {rows.map((attempt, index) => (
-          <div
-            className={
-              attempt.username === user.username
-                ? "row currentPlayer"
-                : "row"
-            }
-            key={attempt.username}
-          >
-            <b>
-              {index + 1}
-            </b>
+        {rows.map(
+          (attempt, index) => {
+            const isCurrentPlayer =
+              attempt.username ===
+              user.username;
 
-            <span>
-              <strong>
-                {attempt.name ||
-                  attempt.username}
-              </strong>
+            return (
+              <div
+                className={
+                  isCurrentPlayer
+                    ? "row currentPlayer clickableRow"
+                    : "row"
+                }
+                key={
+                  attempt.username
+                }
+                onClick={() => {
+                  if (
+                    isCurrentPlayer
+                  ) {
+                    setReviewOpen(
+                      true
+                    );
+                  }
+                }}
+                role={
+                  isCurrentPlayer
+                    ? "button"
+                    : undefined
+                }
+                tabIndex={
+                  isCurrentPlayer
+                    ? 0
+                    : undefined
+                }
+                onKeyDown={(event) => {
+                  if (
+                    isCurrentPlayer &&
+                    (event.key ===
+                      "Enter" ||
+                      event.key ===
+                        " ")
+                  ) {
+                    event.preventDefault();
 
-              <small>
-                {attempt.correct_answers}/20
-                corrette ·{" "}
-                {attempt.goals || 0} gol
-              </small>
-            </span>
+                    setReviewOpen(
+                      true
+                    );
+                  }
+                }}
+              >
+                <b>
+                  {index + 1}
+                </b>
 
-            <strong>
-              {attempt.final_score || 0}
-            </strong>
-          </div>
-        ))}
+                <span>
+                  <strong>
+                    {attempt.name ||
+                      attempt.username}
+                  </strong>
+
+                  <small>
+                    {attempt.correct_answers ||
+                      0}
+                    /20 corrette ·{" "}
+                    {attempt.goals ||
+                      0}{" "}
+                    gol
+
+                    {isCurrentPlayer && (
+                      <>
+                        <br />
+                        <em>
+                          Clicca per rivedere
+                          le tue risposte
+                        </em>
+                      </>
+                    )}
+                  </small>
+                </span>
+
+                <strong>
+                  {attempt.final_score ||
+                    0}
+                </strong>
+              </div>
+            );
+          }
+        )}
 
         {!rows.length && (
           <div className="empty">
-            Nessun risultato disponibile.
+            Nessun risultato
+            disponibile.
           </div>
         )}
 
       </div>
+
+      {reviewOpen &&
+        myPublishedAttempt && (
+          <AnswerReview
+            week={week}
+            attempt={
+              myPublishedAttempt
+            }
+            onClose={() =>
+              setReviewOpen(false)
+            }
+          />
+        )}
+
     </div>
   );
 }
@@ -1034,11 +1922,68 @@ function QuestionEditor({
         .options || []),
     ];
 
+    const oldValue =
+      options[optionIndex];
+
     options[optionIndex] = value;
+
+    /*
+       Se modifichiamo il testo di una
+       risposta, eliminiamo il vecchio
+       valore dalle risposte corrette.
+    */
+
+    let correct =
+      getCorrectAnswers(
+        next[questionIndex]
+      );
+
+    if (
+      oldValue &&
+      oldValue !== value
+    ) {
+      correct = correct.filter(
+        (answer) =>
+          answer !== oldValue
+      );
+    }
 
     next[questionIndex] = {
       ...next[questionIndex],
       options,
+      correct,
+    };
+
+    onChange(next);
+  };
+
+  const toggleCorrect = (
+    questionIndex,
+    option
+  ) => {
+    if (!option) return;
+
+    const next = [...questions];
+
+    const current =
+      getCorrectAnswers(
+        next[questionIndex]
+      );
+
+    const isAlreadyCorrect =
+      current.includes(option);
+
+    const correct =
+      isAlreadyCorrect
+        ? current.filter(
+            (answer) =>
+              answer !== option
+          )
+        : [...current, option];
+
+    next[questionIndex] = {
+      ...next[questionIndex],
+      correct,
     };
 
     onChange(next);
@@ -1050,87 +1995,147 @@ function QuestionEditor({
       <h2>{title}</h2>
 
       {questions.map(
-        (question, index) => (
-          <div
-            className="questionEditor"
-            key={question.id}
-          >
+        (question, index) => {
+          const correctAnswers =
+            getCorrectAnswers(
+              question
+            );
 
-            <div className="questionNumber">
-              DOMANDA {index + 1}
-            </div>
-
-            <textarea
-              placeholder="Scrivi la domanda..."
-              value={question.text || ""}
-              onChange={(e) =>
-                updateQuestion(
-                  index,
-                  "text",
-                  e.target.value
-                )
-              }
-            />
-
-            <div className="optionGrid">
-
-              {Array.from(
-                { length: 4 },
-                (_, optionIndex) => (
-                  <input
-                    key={optionIndex}
-                    placeholder={`Risposta ${String.fromCharCode(
-                      65 + optionIndex
-                    )}`}
-                    value={
-                      question.options?.[
-                        optionIndex
-                      ] || ""
-                    }
-                    onChange={(e) =>
-                      updateOption(
-                        index,
-                        optionIndex,
-                        e.target.value
-                      )
-                    }
-                  />
-                )
-              )}
-
-            </div>
-
-            <select
-              value={question.correct || ""}
-              onChange={(e) =>
-                updateQuestion(
-                  index,
-                  "correct",
-                  e.target.value
-                )
-              }
+          return (
+            <div
+              className="questionEditor"
+              key={question.id}
             >
-              <option value="">
-                Risposta corretta — da inserire dopo
-              </option>
 
-              {question.options
-                ?.filter(Boolean)
-                .map((option, i) => (
-                  <option
-                    value={option}
-                    key={i}
-                  >
-                    {String.fromCharCode(
-                      65 + i
-                    )}{" "}
-                    — {option}
-                  </option>
-                ))}
-            </select>
+              <div className="questionNumber">
+                DOMANDA {index + 1}
+              </div>
 
-          </div>
-        )
+              <textarea
+                placeholder="Scrivi la domanda..."
+                value={
+                  question.text || ""
+                }
+                onChange={(e) =>
+                  updateQuestion(
+                    index,
+                    "text",
+                    e.target.value
+                  )
+                }
+              />
+
+              <div className="optionGrid">
+
+                {Array.from(
+                  { length: 4 },
+                  (_, optionIndex) => (
+                    <input
+                      key={
+                        optionIndex
+                      }
+                      placeholder={`Risposta ${String.fromCharCode(
+                        65 +
+                          optionIndex
+                      )}`}
+                      value={
+                        question
+                          .options?.[
+                          optionIndex
+                        ] || ""
+                      }
+                      onChange={(e) =>
+                        updateOption(
+                          index,
+                          optionIndex,
+                          e.target.value
+                        )
+                      }
+                    />
+                  )
+                )}
+
+              </div>
+
+              <div className="correctAnswersEditor">
+
+                <div className="correctAnswersTitle">
+                  ✓ RISPOSTE CORRETTE
+                </div>
+
+                <p>
+                  Puoi selezionare una o
+                  più alternative corrette.
+                </p>
+
+                <div className="correctCheckboxes">
+
+                  {question.options
+                    ?.filter(Boolean)
+                    .map(
+                      (
+                        option,
+                        i
+                      ) => (
+                        <label
+                          key={i}
+                          className={
+                            correctAnswers.includes(
+                              option
+                            )
+                              ? "correctCheckbox checked"
+                              : "correctCheckbox"
+                          }
+                        >
+                          <input
+                            type="checkbox"
+                            checked={correctAnswers.includes(
+                              option
+                            )}
+                            onChange={() =>
+                              toggleCorrect(
+                                index,
+                                option
+                              )
+                            }
+                          />
+
+                          <span>
+                            {String.fromCharCode(
+                              65 + i
+                            )}{" "}
+                            — {option}
+                          </span>
+                        </label>
+                      )
+                    )}
+
+                </div>
+
+                {!correctAnswers.length && (
+                  <div className="noCorrectAnswer">
+                    Nessuna risposta corretta
+                    selezionata.
+                  </div>
+                )}
+
+                {correctAnswers.length >
+                  0 && (
+                  <div className="selectedCorrectInfo">
+                    Selezionate:{" "}
+                    <strong>
+                      {correctAnswers.join(
+                        " / "
+                      )}
+                    </strong>
+                  </div>
+                )}
+
+              </div>
+
+            </div>
+          );
+        }
       )}
 
     </div>
@@ -1150,8 +2155,10 @@ function Admin({
   const [tab, setTab] =
     useState("weeks");
 
-  const [selectedWeekId, setSelectedWeekId] =
-    useState(null);
+  const [
+    selectedWeekId,
+    setSelectedWeekId,
+  ] = useState(null);
 
   const [saving, setSaving] =
     useState(false);
@@ -1166,21 +2173,26 @@ function Admin({
       name: "",
     });
 
-  const [editingWeek, setEditingWeek] =
-    useState(null);
+  const [
+    editingWeek,
+    setEditingWeek,
+  ] = useState(null);
 
   const [attempts, setAttempts] =
     useState([]);
 
   const selectedWeek = weeks.find(
-    (w) => w.id === selectedWeekId
+    (w) =>
+      w.id === selectedWeekId
   );
 
   /* -------------------------------------
      USERS
      ------------------------------------- */
 
-  const addUser = async (event) => {
+  const addUser = async (
+    event
+  ) => {
     event.preventDefault();
 
     if (
@@ -1198,19 +2210,30 @@ function Admin({
           userForm.username.trim()
       )
     ) {
-      setMessage("Username già esistente.");
+      setMessage(
+        "Username già esistente."
+      );
+
       return;
     }
 
     const user = {
       username:
         userForm.username.trim(),
-      password: userForm.password,
+
+      password:
+        userForm.password,
+
       role: "participant",
-      name: userForm.name.trim(),
+
+      name:
+        userForm.name.trim(),
     };
 
-    const next = [...users, user];
+    const next = [
+      ...users,
+      user,
+    ];
 
     await saveUsers(next);
 
@@ -1222,7 +2245,9 @@ function Admin({
       name: "",
     });
 
-    setMessage("Giocatore aggiunto.");
+    setMessage(
+      "Giocatore aggiunto."
+    );
   };
 
   const removeUser = async (
@@ -1237,10 +2262,12 @@ function Admin({
     }
 
     const next = users.filter(
-      (u) => u.username !== username
+      (u) =>
+        u.username !== username
     );
 
     await saveUsers(next);
+
     setUsers(next);
   };
 
@@ -1252,8 +2279,11 @@ function Admin({
     const highest =
       weeks.length > 0
         ? Math.max(
-            ...weeks.map((w) =>
-              Number(w.number) || 0
+            ...weeks.map(
+              (w) =>
+                Number(
+                  w.number
+                ) || 0
             )
           )
         : 0;
@@ -1263,65 +2293,110 @@ function Admin({
     );
 
     setEditingWeek(week);
-    setSelectedWeekId(week.id);
+    setSelectedWeekId(
+      week.id
+    );
     setTab("editWeek");
   };
 
-  const saveCurrentWeek = async () => {
-    if (!editingWeek) return;
+  const saveCurrentWeek =
+    async () => {
+      if (!editingWeek) {
+        return;
+      }
 
-    setSaving(true);
-    setMessage("");
+      setSaving(true);
+      setMessage("");
 
-    try {
-      await saveWeek(editingWeek);
+      try {
+        const normalizedWeek =
+          {
+            ...editingWeek,
 
-      const exists = weeks.some(
-        (w) => w.id === editingWeek.id
-      );
+            matchQuestions:
+              normalizeQuestions(
+                editingWeek.matchQuestions,
+                "match"
+              ),
 
-      const next = exists
-        ? weeks.map((w) =>
-            w.id === editingWeek.id
-              ? editingWeek
-              : w
-          )
-        : [...weeks, editingWeek];
+            playerQuestions:
+              normalizeQuestions(
+                editingWeek.playerQuestions,
+                "player"
+              ),
+          };
 
-      setWeeks(next);
+        await saveWeek(
+          normalizedWeek
+        );
 
-      setMessage(
-        "Settimana salvata correttamente."
-      );
-    } catch (error) {
-      console.error(error);
-      setMessage(
-        "Errore durante il salvataggio."
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
+        const exists =
+          weeks.some(
+            (w) =>
+              w.id ===
+              normalizedWeek.id
+          );
 
-  const editWeek = (week) => {
+        const next = exists
+          ? weeks.map((w) =>
+              w.id ===
+              normalizedWeek.id
+                ? normalizedWeek
+                : w
+            )
+          : [
+              ...weeks,
+              normalizedWeek,
+            ];
+
+        setWeeks(next);
+        setEditingWeek(
+          normalizedWeek
+        );
+
+        setMessage(
+          "Settimana salvata correttamente."
+        );
+      } catch (error) {
+        console.error(error);
+
+        setMessage(
+          "Errore durante il salvataggio."
+        );
+      } finally {
+        setSaving(false);
+      }
+    };
+
+  const editWeek = (
+    week
+  ) => {
     setEditingWeek({
       ...week,
+
       matchQuestions:
-        week.matchQuestions?.length === 10
-          ? week.matchQuestions
-          : makeQuestions("match"),
+        normalizeQuestions(
+          week.matchQuestions,
+          "match"
+        ),
 
       playerQuestions:
-        week.playerQuestions?.length === 10
-          ? week.playerQuestions
-          : makeQuestions("player"),
+        normalizeQuestions(
+          week.playerQuestions,
+          "player"
+        ),
     });
 
-    setSelectedWeekId(week.id);
+    setSelectedWeekId(
+      week.id
+    );
+
     setTab("editWeek");
   };
 
-  const removeWeek = async (week) => {
+  const removeWeek = async (
+    week
+  ) => {
     if (
       !window.confirm(
         `Eliminare la Settimana #${week.number}?`
@@ -1330,22 +2405,31 @@ function Admin({
       return;
     }
 
-    await deleteWeek(week.id);
+    await deleteWeek(
+      week.id
+    );
 
     setWeeks(
       weeks.filter(
-        (w) => w.id !== week.id
+        (w) =>
+          w.id !== week.id
       )
     );
 
-    if (selectedWeekId === week.id) {
+    if (
+      selectedWeekId ===
+      week.id
+    ) {
       setSelectedWeekId(null);
       setEditingWeek(null);
     }
   };
 
-  const toggleWeek = async (week) => {
-    const current = getWeekState(week);
+  const toggleWeek = async (
+    week
+  ) => {
+    const current =
+      getWeekState(week);
 
     const nextStatus =
       current === "open"
@@ -1357,7 +2441,9 @@ function Admin({
       status: nextStatus,
     };
 
-    await saveWeek(updated);
+    await saveWeek(
+      updated
+    );
 
     setWeeks(
       weeks.map((w) =>
@@ -1372,125 +2458,157 @@ function Admin({
      RESULTS
      ------------------------------------- */
 
-  const openResults = async (week) => {
-    setSelectedWeekId(week.id);
-
-    const data = await dbAttempts(
+  const openResults = async (
+    week
+  ) => {
+    setSelectedWeekId(
       week.id
     );
 
+    const data =
+      await dbAttempts(
+        week.id
+      );
+
     setAttempts(data);
+
     setTab("results");
   };
 
-  const allAnswersInserted = (week) => {
-    const questions = [
-      ...(week.matchQuestions || []),
-      ...(week.playerQuestions || []),
-    ];
+  const allAnswersInserted =
+    (week) => {
+      const questions = [
+        ...(week.matchQuestions ||
+          []),
+        ...(week.playerQuestions ||
+          []),
+      ];
 
-    return (
-      questions.length === 20 &&
-      questions.every(
-        (q) => q.correct
-      )
-    );
-  };
-
-  const calculateAndPublish = async (
-    week
-  ) => {
-    if (!allAnswersInserted(week)) {
-      alert(
-        "Inserisci tutte le 20 risposte corrette prima di pubblicare."
+      return (
+        questions.length ===
+          20 &&
+        questions.every(
+          (q) =>
+            getCorrectAnswers(
+              q
+            ).length > 0
+        )
       );
-      return;
-    }
-
-    const currentAttempts =
-      await dbAttempts(week.id);
-
-    if (!currentAttempts.length) {
-      alert(
-        "Nessun giocatore ha ancora partecipato."
-      );
-      return;
-    }
-
-    for (const attempt of currentAttempts) {
-      const score =
-        calculateQuizScore(
-          week,
-          attempt.match_answers || [],
-          attempt.player_answers || []
-        );
-
-      const rigori =
-        attempt.rigori_result || {};
-
-      const multiplier =
-        Number(
-          rigori.multiplier ||
-            attempt.multiplier ||
-            1
-        );
-
-      const finalScore = Math.round(
-        score.baseScore *
-          multiplier
-      );
-
-      await updateAttempt(
-        attempt.id,
-        {
-          base_score:
-            score.baseScore,
-
-          correct_answers:
-            score.correct,
-
-          goals:
-            Number(
-              rigori.goals ||
-                attempt.goals ||
-                0
-            ),
-
-          multiplier,
-
-          final_score:
-            finalScore,
-
-          results_published:
-            true,
-        }
-      );
-    }
-
-    const updatedWeek = {
-      ...week,
-      status: "published",
-      results_published: true,
     };
 
-    await saveWeek(updatedWeek);
+  const calculateAndPublish =
+    async (week) => {
+      if (
+        !allAnswersInserted(
+          week
+        )
+      ) {
+        alert(
+          "Inserisci tutte le 20 risposte corrette prima di pubblicare."
+        );
 
-    setWeeks(
-      weeks.map((w) =>
-        w.id === week.id
-          ? updatedWeek
-          : w
-      )
-    );
+        return;
+      }
 
-    setAttempts(
-      await dbAttempts(week.id)
-    );
+      const currentAttempts =
+        await dbAttempts(
+          week.id
+        );
 
-    setMessage(
-      "Risultati calcolati e pubblicati!"
-    );
-  };
+      if (
+        !currentAttempts.length
+      ) {
+        alert(
+          "Nessun giocatore ha ancora partecipato."
+        );
+
+        return;
+      }
+
+      for (
+        const attempt of currentAttempts
+      ) {
+        const score =
+          calculateQuizScore(
+            week,
+            attempt.match_answers ||
+              [],
+            attempt.player_answers ||
+              []
+          );
+
+        const rigori =
+          attempt.rigori_result ||
+          {};
+
+        const multiplier =
+          Number(
+            rigori.multiplier ||
+              attempt.multiplier ||
+              1
+          );
+
+        const finalScore =
+          Math.round(
+            score.baseScore *
+              multiplier
+          );
+
+        await updateAttempt(
+          attempt.id,
+          {
+            base_score:
+              score.baseScore,
+
+            correct_answers:
+              score.correct,
+
+            goals:
+              Number(
+                rigori.goals ||
+                  attempt.goals ||
+                  0
+              ),
+
+            multiplier,
+
+            final_score:
+              finalScore,
+
+            results_published:
+              true,
+          }
+        );
+      }
+
+      const updatedWeek = {
+        ...week,
+        status: "published",
+        results_published: true,
+      };
+
+      await saveWeek(
+        updatedWeek
+      );
+
+      setWeeks(
+        weeks.map((w) =>
+          w.id === week.id
+            ? updatedWeek
+            : w
+        )
+      );
+
+      setAttempts(
+        await dbAttempts(
+          week.id
+        )
+      );
+
+      setMessage(
+        "Risultati calcolati e pubblicati!"
+      );
+    };
 
   /* -------------------------------------
      RENDER
@@ -1552,93 +2670,114 @@ function Admin({
 
           <button
             className="primaryAdminButton"
-            onClick={createNewWeek}
+            onClick={
+              createNewWeek
+            }
           >
             + CREA NUOVA SETTIMANA
           </button>
 
           <div className="table">
 
-            {weeks.map((week) => {
-              const state =
-                getWeekState(week);
+            {weeks.map(
+              (week) => {
+                const state =
+                  getWeekState(
+                    week
+                  );
 
-              return (
-                <div
-                  className="adminWeek"
-                  key={week.id}
-                >
+                return (
+                  <div
+                    className="adminWeek"
+                    key={week.id}
+                  >
 
-                  <div>
-                    <b>
-                      SETTIMANA #
-                      {week.number}
-                    </b>
+                    <div>
+                      <b>
+                        SETTIMANA #
+                        {week.number}
+                      </b>
 
-                    <small>
-                      {state === "open" &&
-                        "APERTA"}
+                      <small>
+                        {state ===
+                          "open" &&
+                          "APERTA"}
 
-                      {state === "waiting" &&
-                        "IN ATTESA"}
+                        {state ===
+                          "waiting" &&
+                          "IN ATTESA"}
 
-                      {state === "closed" &&
-                        "CHIUSA"}
+                        {state ===
+                          "closed" &&
+                          "CHIUSA"}
 
-                      {state === "published" &&
-                        "RISULTATI PUBBLICATI"}
+                        {state ===
+                          "published" &&
+                          "RISULTATI PUBBLICATI"}
 
-                      {state === "draft" &&
-                        "BOZZA"}
-                    </small>
+                        {state ===
+                          "draft" &&
+                          "BOZZA"}
+                      </small>
+                    </div>
+
+                    <div className="adminActions">
+
+                      <button
+                        onClick={() =>
+                          editWeek(
+                            week
+                          )
+                        }
+                      >
+                        MODIFICA
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          openResults(
+                            week
+                          )
+                        }
+                      >
+                        RISULTATI
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          toggleWeek(
+                            week
+                          )
+                        }
+                      >
+                        {state ===
+                        "open"
+                          ? "CHIUDI"
+                          : "APRI"}
+                      </button>
+
+                      <button
+                        className="danger"
+                        onClick={() =>
+                          removeWeek(
+                            week
+                          )
+                        }
+                      >
+                        ELIMINA
+                      </button>
+
+                    </div>
+
                   </div>
-
-                  <div className="adminActions">
-
-                    <button
-                      onClick={() =>
-                        editWeek(week)
-                      }
-                    >
-                      MODIFICA
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        openResults(week)
-                      }
-                    >
-                      RISULTATI
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        toggleWeek(week)
-                      }
-                    >
-                      {state === "open"
-                        ? "CHIUDI"
-                        : "APRI"}
-                    </button>
-
-                    <button
-                      className="danger"
-                      onClick={() =>
-                        removeWeek(week)
-                      }
-                    >
-                      ELIMINA
-                    </button>
-
-                  </div>
-
-                </div>
-              );
-            })}
+                );
+              }
+            )}
 
             {!weeks.length && (
               <div className="empty">
-                Nessuna settimana creata.
+                Nessuna settimana
+                creata.
                 <br />
                 Crea la Settimana #1.
               </div>
@@ -1662,18 +2801,23 @@ function Admin({
 
             <input
               placeholder="Nome"
-              value={userForm.name}
+              value={
+                userForm.name
+              }
               onChange={(e) =>
                 setUserForm({
                   ...userForm,
-                  name: e.target.value,
+                  name:
+                    e.target.value,
                 })
               }
             />
 
             <input
               placeholder="Username"
-              value={userForm.username}
+              value={
+                userForm.username
+              }
               onChange={(e) =>
                 setUserForm({
                   ...userForm,
@@ -1685,7 +2829,9 @@ function Admin({
 
             <input
               placeholder="Password"
-              value={userForm.password}
+              value={
+                userForm.password
+              }
               onChange={(e) =>
                 setUserForm({
                   ...userForm,
@@ -1703,36 +2849,49 @@ function Admin({
 
           <div className="table">
 
-            {users.map((user) => (
-              <div
-                className="row"
-                key={user.username}
-              >
+            {users.map(
+              (user) => (
+                <div
+                  className="row"
+                  key={
+                    user.username
+                  }
+                >
 
-                <span>
-                  <b>{user.name}</b>
+                  <span>
+                    <b>
+                      {user.name}
+                    </b>
 
-                  <small>
-                    @{user.username} ·{" "}
-                    {user.role}
-                  </small>
-                </span>
-
-                {user.role !== "admin" && (
-                  <button
-                    className="danger"
-                    onClick={() =>
-                      removeUser(
+                    <small>
+                      @
+                      {
                         user.username
-                      )
-                    }
-                  >
-                    ELIMINA
-                  </button>
-                )}
+                      }{" "}
+                      ·{" "}
+                      {
+                        user.role
+                      }
+                    </small>
+                  </span>
 
-              </div>
-            ))}
+                  {user.role !==
+                    "admin" && (
+                    <button
+                      className="danger"
+                      onClick={() =>
+                        removeUser(
+                          user.username
+                        )
+                      }
+                    >
+                      ELIMINA
+                    </button>
+                  )}
+
+                </div>
+              )
+            )}
 
           </div>
         </>
@@ -1759,11 +2918,14 @@ function Admin({
 
               <h2>
                 Settimana #
-                {editingWeek.number}
+                {
+                  editingWeek.number
+                }
               </h2>
 
               <label>
                 Numero settimana
+
                 <input
                   type="number"
                   value={
@@ -1772,9 +2934,11 @@ function Admin({
                   onChange={(e) =>
                     setEditingWeek({
                       ...editingWeek,
-                      number: Number(
-                        e.target.value
-                      ),
+                      number:
+                        Number(
+                          e.target
+                            .value
+                        ),
                     })
                   }
                 />
@@ -1782,22 +2946,18 @@ function Admin({
 
               <label>
                 Apertura
+
                 <input
                   type="datetime-local"
-                  value={
+                  value={toDateTimeLocalValue(
                     editingWeek.starts_at
-                      ? new Date(
-                          editingWeek.starts_at
-                        )
-                          .toISOString()
-                          .slice(0, 16)
-                      : ""
-                  }
+                  )}
                   onChange={(e) =>
                     setEditingWeek({
                       ...editingWeek,
-                      starts_at: e.target
-                        .value,
+                      starts_at:
+                        e.target
+                          .value,
                     })
                   }
                 />
@@ -1805,22 +2965,18 @@ function Admin({
 
               <label>
                 Chiusura
+
                 <input
                   type="datetime-local"
-                  value={
+                  value={toDateTimeLocalValue(
                     editingWeek.deadline
-                      ? new Date(
-                          editingWeek.deadline
-                        )
-                          .toISOString()
-                          .slice(0, 16)
-                      : ""
-                  }
+                  )}
                   onChange={(e) =>
                     setEditingWeek({
                       ...editingWeek,
                       deadline:
-                        e.target.value,
+                        e.target
+                          .value,
                     })
                   }
                 />
@@ -1831,7 +2987,9 @@ function Admin({
                 questions={
                   editingWeek.matchQuestions
                 }
-                onChange={(questions) =>
+                onChange={(
+                  questions
+                ) =>
                   setEditingWeek({
                     ...editingWeek,
                     matchQuestions:
@@ -1845,7 +3003,9 @@ function Admin({
                 questions={
                   editingWeek.playerQuestions
                 }
-                onChange={(questions) =>
+                onChange={(
+                  questions
+                ) =>
                   setEditingWeek({
                     ...editingWeek,
                     playerQuestions:
@@ -1855,15 +3015,20 @@ function Admin({
               />
 
               <div className="correctInfo">
-                💡 Le risposte corrette possono
-                rimanere vuote. Inseriscile dopo
-                che le partite e gli eventi sono
-                terminati.
+                💡 Puoi selezionare anche
+                più risposte corrette per
+                ogni domanda. Al momento
+                della correzione, il
+                partecipante riceverà i 10
+                punti se avrà scelto una
+                delle alternative corrette.
               </div>
 
               <button
                 className="saveBig"
-                onClick={saveCurrentWeek}
+                onClick={
+                  saveCurrentWeek
+                }
                 disabled={saving}
               >
                 {saving
@@ -1896,7 +3061,9 @@ function Admin({
 
               <h2>
                 Risultati — Settimana #
-                {selectedWeek.number}
+                {
+                  selectedWeek.number
+                }
               </h2>
 
               <div className="publishBox">
@@ -1906,16 +3073,20 @@ function Admin({
                 </h3>
 
                 <p>
-                  Inserisci le risposte corrette
-                  modificando la settimana.
+                  Inserisci le risposte
+                  corrette modificando
+                  la settimana.
                 </p>
 
                 <button
                   onClick={() =>
-                    editWeek(selectedWeek)
+                    editWeek(
+                      selectedWeek
+                    )
                   }
                 >
-                  MODIFICA RISPOSTE CORRETTE
+                  MODIFICA RISPOSTE
+                  CORRETTE
                 </button>
 
                 <button
@@ -1926,7 +3097,8 @@ function Admin({
                     )
                   }
                 >
-                  CALCOLA E PUBBLICA RISULTATI
+                  CALCOLA E PUBBLICA
+                  RISULTATI
                 </button>
 
               </div>
@@ -2023,8 +3195,37 @@ function App() {
           dbWeeks(),
         ]);
 
-        setUsers(loadedUsers);
-        setWeeks(loadedWeeks);
+        /*
+           Normalizziamo anche le settimane
+           già presenti nel database.
+        */
+
+        const normalizedWeeks =
+          loadedWeeks.map(
+            (week) => ({
+              ...week,
+
+              matchQuestions:
+                normalizeQuestions(
+                  week.matchQuestions,
+                  "match"
+                ),
+
+              playerQuestions:
+                normalizeQuestions(
+                  week.playerQuestions,
+                  "player"
+                ),
+            })
+          );
+
+        setUsers(
+          loadedUsers
+        );
+
+        setWeeks(
+          normalizedWeeks
+        );
       } catch (error) {
         console.error(error);
       } finally {
@@ -2045,7 +3246,9 @@ function App() {
     weeks
       .filter(
         (week) =>
-          getWeekState(week) === "open"
+          getWeekState(
+            week
+          ) === "open"
       )
       .sort(
         (a, b) =>
@@ -2059,9 +3262,16 @@ function App() {
     )[0];
 
   useEffect(() => {
-    if (!activeWeek || !user) return;
+    if (
+      !activeWeek ||
+      !user
+    ) {
+      return;
+    }
 
-    dbAttempts(activeWeek.id)
+    dbAttempts(
+      activeWeek.id
+    )
       .then(setAttempts)
       .catch(console.error);
   }, [
@@ -2088,82 +3298,90 @@ function App() {
     setPage("rigori");
   };
 
-  const finishRigori = async (
-    rigoriResult
-  ) => {
-    if (!activeWeek || !user) return;
+  const finishRigori =
+    async (
+      rigoriResult
+    ) => {
+      if (
+        !activeWeek ||
+        !user
+      ) {
+        return;
+      }
 
-    const attempt = {
-      id: uid(),
+      const attempt = {
+        id: uid(),
 
-      week_id:
-        activeWeek.id,
+        week_id:
+          activeWeek.id,
 
-      username:
-        user.username,
+        username:
+          user.username,
 
-      name:
-        user.name,
+        name:
+          user.name,
 
-      /*
-         LE RISPOSTE VENGONO SALVATE.
-         NON vengono ancora corrette.
-      */
+        /*
+           LE RISPOSTE VENGONO SALVATE.
+           NON vengono ancora corrette.
+        */
 
-      match_answers:
-        quizAnswers?.matchAnswers ||
-        [],
+        match_answers:
+          quizAnswers?.matchAnswers ||
+          [],
 
-      player_answers:
-        quizAnswers?.playerAnswers ||
-        [],
+        player_answers:
+          quizAnswers?.playerAnswers ||
+          [],
 
-      /*
-         Il risultato dei rigori
-         viene salvato immediatamente.
-      */
+        /*
+           RISULTATO RIGORI
+        */
 
-      rigori_result:
-        rigoriResult,
+        rigori_result:
+          rigoriResult,
 
-      base_score: 0,
+        base_score: 0,
 
-      correct_answers: 0,
+        correct_answers: 0,
 
-      goals:
-        Number(
-          rigoriResult.goals || 0
-        ),
+        goals:
+          Number(
+            rigoriResult.goals ||
+              0
+          ),
 
-      multiplier:
-        Number(
-          rigoriResult.multiplier || 1
-        ),
+        multiplier:
+          Number(
+            rigoriResult.multiplier ||
+              1
+          ),
 
-      final_score: 0,
+        final_score: 0,
 
-      results_published: false,
+        results_published:
+          false,
 
-      created_at:
-        new Date().toISOString(),
+        created_at:
+          new Date().toISOString(),
+      };
+
+      await saveAttempt(
+        attempt
+      );
+
+      setAttempts(
+        await dbAttempts(
+          activeWeek.id
+        )
+      );
+
+      setFinished(true);
+
+      setPage(
+        "completed"
+      );
     };
-
-    await saveAttempt(attempt);
-
-    setAttempts(
-      await dbAttempts(
-        activeWeek.id
-      )
-    );
-
-    /*
-       IMPORTANTE:
-       nessun punteggio viene mostrato.
-    */
-
-    setFinished(true);
-    setPage("completed");
-  };
 
   const logout = () => {
     localStorage.removeItem(
@@ -2173,6 +3391,8 @@ function App() {
     setUser(null);
     setPage("home");
     setAttempts([]);
+    setQuizAnswers(null);
+    setFinished(false);
   };
 
   if (loading) {
@@ -2187,8 +3407,12 @@ function App() {
     return (
       <Login
         users={users}
-        onLogin={(loggedUser) => {
-          setUser(loggedUser);
+        onLogin={(
+          loggedUser
+        ) => {
+          setUser(
+            loggedUser
+          );
 
           localSet(
             "fl_session",
@@ -2225,14 +3449,18 @@ function App() {
       {page === "quiz" && (
         <Quiz
           week={activeWeek}
-          onDone={finishQuiz}
+          onDone={
+            finishQuiz
+          }
         />
       )}
 
       {page === "rigori" && (
         <Rigori
           week={activeWeek}
-          onDone={finishRigori}
+          onDone={
+            finishRigori
+          }
         />
       )}
 
@@ -2251,12 +3479,17 @@ function App() {
       )}
 
       {page === "admin" &&
-        user.role === "admin" && (
+        user.role ===
+          "admin" && (
           <Admin
             users={users}
             weeks={weeks}
-            setUsers={setUsers}
-            setWeeks={setWeeks}
+            setUsers={
+              setUsers
+            }
+            setWeeks={
+              setWeeks
+            }
           />
         )}
 
@@ -2271,5 +3504,7 @@ function App() {
 }
 
 createRoot(
-  document.getElementById("root")
+  document.getElementById(
+    "root"
+  )
 ).render(<App />);
