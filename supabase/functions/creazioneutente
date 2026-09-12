@@ -1,0 +1,87 @@
+// supabase/functions/admin-create-user/index.ts
+//
+// Crea un nuovo giocatore. Solo un admin autenticato può chiamarla:
+// verifica il ruolo leggendo "profiles" con la service_role (che
+// bypassa la RLS), quindi crea l'utente in Supabase Auth.
+// Il trigger "handle_new_user" popola automaticamente "profiles".
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+const EMAIL_DOMAIN = "fantaluck.local";
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+Deno.serve(async (req) => {
+  if (req.method !== "POST") return json({ error: "Metodo non valido." }, 405);
+
+  try {
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const jwt = authHeader.replace("Bearer ", "");
+
+    const userClient = createClient(SUPABASE_URL, ANON_KEY, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: userData, error: userError } = await userClient.auth.getUser(jwt);
+    if (userError || !userData?.user) return json({ error: "Non autenticato." }, 401);
+
+    const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+
+    const { data: callerProfile } = await admin
+      .from("profiles")
+      .select("role")
+      .eq("id", userData.user.id)
+      .single();
+
+    if (!callerProfile || callerProfile.role !== "admin") {
+      return json({ error: "Non autorizzato." }, 403);
+    }
+
+    const body = await req.json();
+    const { username, name, password } = body;
+
+    if (!username || !name || !password) {
+      return json({ error: "Dati mancanti." }, 400);
+    }
+    if (password.length < 6) {
+      return json({ error: "La password deve avere almeno 6 caratteri." }, 400);
+    }
+
+    const cleanUsername = String(username).trim().toLowerCase();
+    if (!/^[a-z0-9_.]+$/.test(cleanUsername)) {
+      return json({ error: "Username non valido (solo lettere, numeri, punto o underscore)." }, 400);
+    }
+
+    const { data: existing } = await admin
+      .from("profiles")
+      .select("username")
+      .eq("username", cleanUsername)
+      .maybeSingle();
+
+    if (existing) return json({ error: "Username già esistente." }, 409);
+
+    const { data: created, error: createError } = await admin.auth.admin.createUser({
+      email: `${cleanUsername}@${EMAIL_DOMAIN}`,
+      password,
+      email_confirm: true,
+      user_metadata: { username: cleanUsername, name: String(name).trim(), role: "participant" },
+    });
+
+    if (createError) {
+      console.error(createError);
+      return json({ error: "Impossibile creare l'utente." }, 500);
+    }
+
+    return json({ ok: true, id: created.user.id });
+  } catch (err) {
+    console.error(err);
+    return json({ error: "Errore interno." }, 500);
+  }
+});
