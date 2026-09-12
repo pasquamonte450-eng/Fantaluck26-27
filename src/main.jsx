@@ -9,18 +9,9 @@ import "./styles.css";
 
 const EMAIL_DOMAIN = "fantaluck.local";
 
-/*
-  LOGIN:
-  - se inserisci un'email, viene usata direttamente
-  - se inserisci uno username, viene trasformato in
-    username@fantaluck.local
-*/
 const toAuthEmail = (username) => {
   const value = username.trim().toLowerCase();
-
-  return value.includes("@")
-    ? value
-    : `${value}@${EMAIL_DOMAIN}`;
+  return value.includes("@") ? value : `${value}@${EMAIL_DOMAIN}`;
 };
 
 const EMPTY_OPTIONS = ["", "", "", ""];
@@ -52,13 +43,6 @@ const newWeek = (number) => ({
 /* =========================================================
    HELPERS
    ========================================================= */
-
-function uid() {
-  return (
-    globalThis.crypto?.randomUUID?.() ||
-    `${Date.now()}-${Math.random().toString(36).slice(2)}`
-  );
-}
 
 function getCorrectAnswers(question) {
   if (Array.isArray(question?.correct)) {
@@ -102,9 +86,7 @@ function toDateTimeLocalValue(value) {
 
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
+  if (Number.isNaN(date.getTime())) return "";
 
   const offset = date.getTimezoneOffset();
 
@@ -141,7 +123,6 @@ function getWeekState(week) {
 
 function goalsAvailableForShot(shotNumber) {
   const pair = Math.floor(shotNumber / 2);
-
   return Math.max(2, 11 - pair);
 }
 
@@ -164,7 +145,7 @@ async function callFunction(name, body) {
         message = parsed.error;
       }
     } catch {
-      // Usiamo il messaggio di default.
+      // usa il messaggio predefinito
     }
 
     throw new Error(message);
@@ -270,12 +251,15 @@ function Countdown({ week }) {
     state === "waiting"
       ? week?.starts_at
       : state === "open"
-        ? week?.deadline
-        : null;
+      ? week?.deadline
+      : null;
 
   const [remaining, setRemaining] = useState(() =>
     target
-      ? Math.max(0, new Date(target).getTime() - Date.now())
+      ? Math.max(
+          0,
+          new Date(target).getTime() - Date.now()
+        )
       : 0
   );
 
@@ -301,7 +285,10 @@ function Countdown({ week }) {
     return () => clearInterval(timer);
   }, [target]);
 
-  if (!target || (state !== "waiting" && state !== "open")) {
+  if (
+    !target ||
+    (state !== "waiting" && state !== "open")
+  ) {
     return null;
   }
 
@@ -331,28 +318,36 @@ function Countdown({ week }) {
 
       <div className="countdownNumbers">
         <div>
-          <strong>{String(days).padStart(2, "0")}</strong>
+          <strong>
+            {String(days).padStart(2, "0")}
+          </strong>
           <small>GIORNI</small>
         </div>
 
         <b>:</b>
 
         <div>
-          <strong>{String(hours).padStart(2, "0")}</strong>
+          <strong>
+            {String(hours).padStart(2, "0")}
+          </strong>
           <small>ORE</small>
         </div>
 
         <b>:</b>
 
         <div>
-          <strong>{String(minutes).padStart(2, "0")}</strong>
+          <strong>
+            {String(minutes).padStart(2, "0")}
+          </strong>
           <small>MIN</small>
         </div>
 
         <b>:</b>
 
         <div>
-          <strong>{String(seconds).padStart(2, "0")}</strong>
+          <strong>
+            {String(seconds).padStart(2, "0")}
+          </strong>
           <small>SEC</small>
         </div>
       </div>
@@ -367,6 +362,7 @@ function Countdown({ week }) {
 function Login({ onLoggedIn }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -401,7 +397,9 @@ function Login({ onLoggedIn }) {
   return (
     <main className="login">
       <div className="loginCard">
-        <div className="logo">🍀 FANTALUCK</div>
+        <div className="logo">
+          🍀 FANTALUCK
+        </div>
 
         <p className="tag">
           LA SFIDA SETTIMANALE
@@ -409,12 +407,11 @@ function Login({ onLoggedIn }) {
 
         <form onSubmit={submit}>
           <input
-            placeholder="Username o email"
+            placeholder="Username"
             value={username}
             onChange={(e) =>
               setUsername(e.target.value)
             }
-            autoComplete="username"
           />
 
           <input
@@ -424,7 +421,6 @@ function Login({ onLoggedIn }) {
             onChange={(e) =>
               setPassword(e.target.value)
             }
-            autoComplete="current-password"
           />
 
           <button
@@ -458,7 +454,9 @@ function Nav({
   return (
     <nav>
       <button
-        className={page === "home" ? "active" : ""}
+        className={
+          page === "home" ? "active" : ""
+        }
         onClick={() => setPage("home")}
       >
         🏠
@@ -466,7 +464,9 @@ function Nav({
       </button>
 
       <button
-        className={page === "quiz" ? "active" : ""}
+        className={
+          page === "quiz" ? "active" : ""
+        }
         onClick={() => setPage("quiz")}
       >
         ⚽
@@ -474,7 +474,9 @@ function Nav({
       </button>
 
       <button
-        className={page === "rank" ? "active" : ""}
+        className={
+          page === "rank" ? "active" : ""
+        }
         onClick={() => setPage("rank")}
       >
         🏆
@@ -543,8 +545,7 @@ function Home({
 
         {state === "waiting" && (
           <div className="notice">
-            La nuova sfida non è ancora
-            iniziata.
+            La nuova sfida non è ancora iniziata.
           </div>
         )}
 
@@ -587,8 +588,7 @@ function Home({
 
           <span>
             {state === "open" && "APERTA"}
-            {state === "waiting" &&
-              "IN ARRIVO"}
+            {state === "waiting" && "IN ARRIVO"}
             {state === "closed" && "CHIUSA"}
             {state === "published" &&
               "RISULTATI PUBBLICATI"}
@@ -601,9 +601,7 @@ function Home({
         <div className="card">
           <small>IL TUO PROFILO</small>
 
-          <strong>
-            {profile.name}
-          </strong>
+          <strong>{profile.name}</strong>
 
           <span>
             @{profile.username}
@@ -726,7 +724,10 @@ function Home({
    QUIZ
    ========================================================= */
 
-function Quiz({ week, onDone }) {
+function Quiz({
+  week,
+  onDone,
+}) {
   const questions = useMemo(
     () => [
       ...(week?.matchQuestions || []),
@@ -736,8 +737,7 @@ function Quiz({ week, onDone }) {
   );
 
   const [index, setIndex] = useState(0);
-  const [answers, setAnswers] =
-    useState({});
+  const [answers, setAnswers] = useState({});
   const [error, setError] = useState("");
   const [submitting, setSubmitting] =
     useState(false);
@@ -855,14 +855,12 @@ function Quiz({ week, onDone }) {
         </h2>
 
         <div className="answers">
-          {(
-            question?.options || [
-              "A",
-              "B",
-              "C",
-              "D",
-            ]
-          ).map((option, i) => (
+          {(question?.options || [
+            "A",
+            "B",
+            "C",
+            "D",
+          ]).map((option, i) => (
             <button
               key={i}
               className={
@@ -897,7 +895,8 @@ function Quiz({ week, onDone }) {
             className="previousButton"
             onClick={previous}
             disabled={
-              index === 0 || submitting
+              index === 0 ||
+              submitting
             }
           >
             ← INDIETRO
@@ -911,9 +910,9 @@ function Quiz({ week, onDone }) {
             {submitting
               ? "SALVATAGGIO..."
               : index ===
-                  questions.length - 1
-                ? "VAI AI RIGORI"
-                : "AVANTI →"}
+                questions.length - 1
+              ? "VAI AI RIGORI"
+              : "AVANTI →"}
           </button>
         </div>
       </div>
@@ -923,33 +922,44 @@ function Quiz({ week, onDone }) {
 
 /* =========================================================
    RIGORI
-   La Edge Function deployata si chiama "rigori"
    ========================================================= */
 
-function Rigori({ week, onDone }) {
+function Rigori({
+  week,
+  onDone,
+}) {
   const [shot, setShot] = useState(0);
   const [goals, setGoals] = useState(0);
   const [multiplier, setMultiplier] =
     useState(1);
+
   const [selected, setSelected] =
     useState(null);
+
   const [result, setResult] =
     useState(null);
+
   const [loading, setLoading] =
     useState(true);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
+
+  const [busy, setBusy] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
 
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
       try {
-        const status =
-          await callFunction("rigori", {
+        const status = await callFunction(
+          "rigori",
+          {
             week_id: week.id,
             action: "status",
-          });
+          }
+        );
 
         if (cancelled) return;
 
@@ -988,8 +998,6 @@ function Rigori({ week, onDone }) {
     return () => {
       cancelled = true;
     };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [week.id]);
 
   const shoot = async (cell) => {
@@ -1001,10 +1009,13 @@ function Rigori({ week, onDone }) {
 
     try {
       const response =
-        await callFunction("rigori", {
-          week_id: week.id,
-          cell,
-        });
+        await callFunction(
+          "rigori",
+          {
+            week_id: week.id,
+            cell,
+          }
+        );
 
       setResult({
         goal: response.goal,
@@ -1012,7 +1023,9 @@ function Rigori({ week, onDone }) {
           response.multiplier,
       });
 
-      setGoals(response.goals);
+      setGoals(
+        response.goals
+      );
 
       setMultiplier(
         response.multiplier
@@ -1073,11 +1086,15 @@ function Rigori({ week, onDone }) {
         <p>
           Scegli una casella.
           <br />
-          Non sai dove si trova la parata.
+          Non sai dove si trova
+          la parata.
         </p>
 
         <div className="difficulty">
-          <b>{goalCount}/12</b>
+          <b>
+            {goalCount}/12
+          </b>
+
           <span>
             possibilità di segnare
           </span>
@@ -1090,7 +1107,8 @@ function Rigori({ week, onDone }) {
               <button
                 key={cell}
                 disabled={
-                  Boolean(result) || busy
+                  Boolean(result) ||
+                  busy
                 }
                 className={
                   selected === cell
@@ -1154,7 +1172,9 @@ function Rigori({ week, onDone }) {
             </p>
 
             <button
-              onClick={continueShot}
+              onClick={
+                continueShot
+              }
             >
               {result.goal
                 ? "PROSSIMO RIGORE →"
@@ -1171,7 +1191,9 @@ function Rigori({ week, onDone }) {
    PARTICIPATION COMPLETE
    ========================================================= */
 
-function Completed({ setPage }) {
+function Completed({
+  setPage,
+}) {
   return (
     <div className="wrap">
       <div className="completedCard">
@@ -1235,10 +1257,13 @@ function AnswerReview({
     const correctAnswers =
       getCorrectAnswers(question);
 
-    const isCorrect = Boolean(
-      answer &&
-        correctAnswers.includes(answer)
-    );
+    const isCorrect =
+      Boolean(
+        answer &&
+          correctAnswers.includes(
+            answer
+          )
+      );
 
     return (
       <div
@@ -1248,7 +1273,8 @@ function AnswerReview({
             : "reviewQuestion reviewWrong"
         }
         key={
-          question?.id || index
+          question?.id ||
+          index
         }
       >
         <div className="reviewQuestionTop">
@@ -1301,7 +1327,8 @@ function AnswerReview({
       className="reviewOverlay"
       onMouseDown={(e) => {
         if (
-          e.target === e.currentTarget
+          e.target ===
+          e.currentTarget
         ) {
           onClose();
         }
@@ -1349,7 +1376,8 @@ function AnswerReview({
             <strong>
               x
               {Number(
-                attempt?.multiplier || 1
+                attempt?.multiplier ||
+                  1
               ).toFixed(2)}
             </strong>
           </div>
@@ -1433,7 +1461,8 @@ function Rank({
           </div>
 
           <h2>
-            Risultati non ancora pubblicati
+            Risultati non ancora
+            pubblicati
           </h2>
 
           <p>
@@ -1452,10 +1481,12 @@ function Rank({
       Number(a.final_score || 0)
   );
 
-  const myAttempt = attempts.find(
-    (a) =>
-      a.username === profile.username
-  );
+  const myAttempt =
+    attempts.find(
+      (a) =>
+        a.username ===
+        profile.username
+    );
 
   return (
     <div className="wrap">
@@ -1484,11 +1515,15 @@ function Rank({
                 key={attempt.username}
                 onClick={() => {
                   if (isMine) {
-                    setReviewOpen(true);
+                    setReviewOpen(
+                      true
+                    );
                   }
                 }}
               >
-                <b>{index + 1}</b>
+                <b>
+                  {index + 1}
+                </b>
 
                 <span>
                   <strong>
@@ -1500,7 +1535,9 @@ function Rank({
                     {attempt.correct_answers ||
                       0}
                     /20 corrette ·{" "}
-                    {attempt.goals || 0} gol
+                    {attempt.goals ||
+                      0}
+                    gol
                   </small>
 
                   {isMine && (
@@ -1522,20 +1559,22 @@ function Rank({
 
         {!rows.length && (
           <div className="empty">
-            Nessun risultato disponibile.
+            Nessun risultato
+            disponibile.
           </div>
         )}
       </div>
 
-      {reviewOpen && myAttempt && (
-        <AnswerReview
-          week={week}
-          attempt={myAttempt}
-          onClose={() =>
-            setReviewOpen(false)
-          }
-        />
-      )}
+      {reviewOpen &&
+        myAttempt && (
+          <AnswerReview
+            week={week}
+            attempt={myAttempt}
+            onClose={() =>
+              setReviewOpen(false)
+            }
+          />
+        )}
     </div>
   );
 }
@@ -1575,7 +1614,8 @@ function QuestionEditor({
       next[questionIndex];
 
     const options = [
-      ...(currentQuestion.options || []),
+      ...(currentQuestion.options ||
+        []),
     ];
 
     const oldValue =
@@ -1593,10 +1633,11 @@ function QuestionEditor({
       correct.includes(oldValue)
     ) {
       correct = value
-        ? correct.map((item) =>
-            item === oldValue
-              ? value
-              : item
+        ? correct.map(
+            (item) =>
+              item === oldValue
+                ? value
+                : item
           )
         : correct.filter(
             (item) =>
@@ -1629,14 +1670,17 @@ function QuestionEditor({
       next[questionIndex];
 
     const current =
-      getCorrectAnswers(question);
+      getCorrectAnswers(
+        question
+      );
 
     const exists =
       current.includes(option);
 
     const correct = exists
       ? current.filter(
-          (item) => item !== option
+          (item) =>
+            item !== option
         )
       : [...current, option];
 
@@ -1689,11 +1733,11 @@ function QuestionEditor({
                     <input
                       key={optionIndex}
                       placeholder={`Risposta ${String.fromCharCode(
-                        65 + optionIndex
+                        65 +
+                          optionIndex
                       )}`}
                       value={
-                        question
-                          .options?.[
+                        question.options?.[
                           optionIndex
                         ] || ""
                       }
@@ -1743,7 +1787,9 @@ function QuestionEditor({
                           >
                             <input
                               type="checkbox"
-                              checked={checked}
+                              checked={
+                                checked
+                              }
                               onChange={() =>
                                 toggleCorrect(
                                   index,
@@ -1804,8 +1850,10 @@ function Admin({
   const [tab, setTab] =
     useState("weeks");
 
-  const [selectedWeekId, setSelectedWeekId] =
-    useState(null);
+  const [
+    selectedWeekId,
+    setSelectedWeekId,
+  ] = useState(null);
 
   const [saving, setSaving] =
     useState(false);
@@ -1813,14 +1861,18 @@ function Admin({
   const [message, setMessage] =
     useState("");
 
-  const [editingWeek, setEditingWeek] =
-    useState(null);
+  const [
+    editingWeek,
+    setEditingWeek,
+  ] = useState(null);
 
   const [attempts, setAttempts] =
     useState([]);
 
-  const [participants, setParticipants] =
-    useState([]);
+  const [
+    participants,
+    setParticipants,
+  ] = useState([]);
 
   const [userForm, setUserForm] =
     useState({
@@ -1835,16 +1887,21 @@ function Admin({
   const [userError, setUserError] =
     useState("");
 
-  const reloadParticipants = () =>
-    dbAllProfiles()
-      .then(setParticipants)
-      .catch(console.error);
+  const reloadParticipants =
+    () =>
+      dbAllProfiles()
+        .then(setParticipants)
+        .catch(console.error);
 
   useEffect(() => {
     if (tab === "users") {
       reloadParticipants();
     }
   }, [tab]);
+
+  /* -------------------------------------------------------
+     CREA UTENTE
+     ------------------------------------------------------- */
 
   const addUser = async (event) => {
     event.preventDefault();
@@ -1871,8 +1928,10 @@ function Admin({
         {
           username:
             userForm.username.trim(),
+
           name:
             userForm.name.trim(),
+
           password:
             userForm.password,
         }
@@ -1895,6 +1954,10 @@ function Admin({
     }
   };
 
+  /* -------------------------------------------------------
+     ELIMINA UTENTE
+     ------------------------------------------------------- */
+
   const removeUser = async (
     username
   ) => {
@@ -1909,7 +1972,9 @@ function Admin({
     try {
       await callFunction(
         "togliutente",
-        { username }
+        {
+          username,
+        }
       );
 
       await reloadParticipants();
@@ -1921,9 +1986,15 @@ function Admin({
     }
   };
 
-  const selectedWeek = weeks.find(
-    (w) => w.id === selectedWeekId
-  );
+  const selectedWeek =
+    weeks.find(
+      (w) =>
+        w.id === selectedWeekId
+    );
+
+  /* -------------------------------------------------------
+     CREA SETTIMANA
+     ------------------------------------------------------- */
 
   const createNewWeek = () => {
     const highest =
@@ -1944,127 +2015,166 @@ function Admin({
     setTab("editWeek");
   };
 
-  const saveCurrentWeek = async () => {
-    if (!editingWeek) return;
+  /* -------------------------------------------------------
+     SALVA SETTIMANA
+     ------------------------------------------------------- */
 
-    setSaving(true);
-    setMessage("");
+  const saveCurrentWeek =
+    async () => {
+      if (!editingWeek) return;
 
-    try {
-      const normalizedWeek =
-        normalizeWeek(editingWeek);
+      setSaving(true);
+      setMessage("");
 
-      await saveWeek(
-        normalizedWeek
-      );
+      try {
+        const normalizedWeek =
+          normalizeWeek(
+            editingWeek
+          );
 
-      await reloadWeeks();
+        await saveWeek(
+          normalizedWeek
+        );
 
-      setEditingWeek(
-        normalizedWeek
-      );
+        await reloadWeeks();
 
-      setMessage(
-        "Settimana salvata correttamente."
-      );
-    } catch (err) {
-      console.error(err);
+        setEditingWeek(
+          normalizedWeek
+        );
 
-      setMessage(
-        "Errore durante il salvataggio."
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
+        setMessage(
+          "Settimana salvata correttamente."
+        );
+      } catch (err) {
+        console.error(err);
+
+        setMessage(
+          "Errore durante il salvataggio."
+        );
+      } finally {
+        setSaving(false);
+      }
+    };
+
+  /* -------------------------------------------------------
+     MODIFICA SETTIMANA
+     ------------------------------------------------------- */
 
   const editWeek = (week) => {
     setEditingWeek(
       normalizeWeek(week)
     );
 
-    setSelectedWeekId(week.id);
+    setSelectedWeekId(
+      week.id
+    );
 
     setTab("editWeek");
   };
 
-  const removeWeek = async (
-    week
-  ) => {
-    if (
-      !window.confirm(
-        `Eliminare la Settimana #${week.number}?`
-      )
-    ) {
-      return;
-    }
+  /* -------------------------------------------------------
+     ELIMINA SETTIMANA
+     ------------------------------------------------------- */
 
-    await deleteWeek(week.id);
+  const removeWeek =
+    async (week) => {
+      if (
+        !window.confirm(
+          `Eliminare la Settimana #${week.number}?`
+        )
+      ) {
+        return;
+      }
 
-    await reloadWeeks();
+      await deleteWeek(
+        week.id
+      );
 
-    if (
-      selectedWeekId === week.id
-    ) {
-      setSelectedWeekId(null);
-      setEditingWeek(null);
-    }
-  };
+      await reloadWeeks();
 
-  const toggleWeek = async (
-    week
-  ) => {
-    const current =
-      getWeekState(week);
+      if (
+        selectedWeekId ===
+        week.id
+      ) {
+        setSelectedWeekId(null);
+        setEditingWeek(null);
+      }
+    };
 
-    const nextStatus =
-      current === "open"
-        ? "closed"
-        : "open";
+  /* -------------------------------------------------------
+     APRI / CHIUDI SETTIMANA
+     ------------------------------------------------------- */
 
-    await saveWeek({
-      ...week,
-      status: nextStatus,
-    });
+  const toggleWeek =
+    async (week) => {
+      const current =
+        getWeekState(week);
 
-    await reloadWeeks();
-  };
+      const nextStatus =
+        current === "open"
+          ? "closed"
+          : "open";
 
-  const openResults = async (
-    week
-  ) => {
-    setSelectedWeekId(week.id);
+      await saveWeek({
+        ...week,
+        status: nextStatus,
+      });
 
-    const data =
-      await dbAttempts(week.id);
+      await reloadWeeks();
+    };
 
-    setAttempts(data);
+  /* -------------------------------------------------------
+     RISULTATI
+     ------------------------------------------------------- */
 
-    setTab("results");
-  };
+  const openResults =
+    async (week) => {
+      setSelectedWeekId(
+        week.id
+      );
 
-  const allAnswersInserted = (
-    week
-  ) => {
-    const questions = [
-      ...(week.matchQuestions || []),
-      ...(week.playerQuestions || []),
-    ];
+      const data =
+        await dbAttempts(
+          week.id
+        );
 
-    return (
-      questions.length === 20 &&
-      questions.every(
-        (q) =>
-          getCorrectAnswers(q)
-            .length > 0
-      )
-    );
-  };
+      setAttempts(data);
+      setTab("results");
+    };
+
+  /* -------------------------------------------------------
+     CONTROLLO RISPOSTE
+     ------------------------------------------------------- */
+
+  const allAnswersInserted =
+    (week) => {
+      const questions = [
+        ...(week.matchQuestions ||
+          []),
+        ...(week.playerQuestions ||
+          []),
+      ];
+
+      return (
+        questions.length === 20 &&
+        questions.every(
+          (q) =>
+            getCorrectAnswers(q)
+              .length > 0
+        )
+      );
+    };
+
+  /* -------------------------------------------------------
+     CALCOLA E PUBBLICA
+     ------------------------------------------------------- */
 
   const calculateAndPublish =
     async (week) => {
       if (
-        !allAnswersInserted(week)
+        !allAnswersInserted(
+          week
+        )
       ) {
         alert(
           "Inserisci almeno una risposta corretta per tutte le 20 domande prima di pubblicare."
@@ -2074,9 +2184,13 @@ function Admin({
       }
 
       const currentAttempts =
-        await dbAttempts(week.id);
+        await dbAttempts(
+          week.id
+        );
 
-      if (!currentAttempts.length) {
+      if (
+        !currentAttempts.length
+      ) {
         alert(
           "Nessun giocatore ha ancora partecipato."
         );
@@ -2086,7 +2200,8 @@ function Admin({
 
       const notFinished =
         currentAttempts.filter(
-          (a) => !a.rigori_finished
+          (a) =>
+            !a.rigori_finished
         );
 
       if (notFinished.length) {
@@ -2099,20 +2214,24 @@ function Admin({
       }
 
       const allQuestions = [
-        ...(week.matchQuestions || []),
-        ...(week.playerQuestions || []),
+        ...(week.matchQuestions ||
+          []),
+        ...(week.playerQuestions ||
+          []),
       ];
 
-      for (
-        const attempt of currentAttempts
-      ) {
-        if (!attempt.rigori_finished) {
+      for (const attempt of currentAttempts) {
+        if (
+          !attempt.rigori_finished
+        ) {
           continue;
         }
 
         const answers = [
-          ...(attempt.match_answers || []),
-          ...(attempt.player_answers || []),
+          ...(attempt.match_answers ||
+            []),
+          ...(attempt.player_answers ||
+            []),
         ];
 
         let correct = 0;
@@ -2141,7 +2260,8 @@ function Admin({
 
         const multiplier =
           Number(
-            attempt.multiplier || 1
+            attempt.multiplier ||
+              1
           );
 
         const finalScore =
@@ -2155,10 +2275,13 @@ function Admin({
           {
             base_score:
               baseScore,
+
             correct_answers:
               correct,
+
             final_score:
               finalScore,
+
             results_published:
               true,
           }
@@ -2228,6 +2351,10 @@ function Admin({
         </div>
       )}
 
+      {/* ---------------------------------------------------
+          SETTIMANE
+      --------------------------------------------------- */}
+
       {tab === "weeks" && (
         <>
           <button
@@ -2240,94 +2367,96 @@ function Admin({
           </button>
 
           <div className="table">
-            {weeks.map((week) => {
-              const state =
-                getWeekState(
-                  week
+            {weeks.map(
+              (week) => {
+                const state =
+                  getWeekState(
+                    week
+                  );
+
+                return (
+                  <div
+                    className="adminWeek"
+                    key={week.id}
+                  >
+                    <div>
+                      <b>
+                        SETTIMANA #
+                        {week.number}
+                      </b>
+
+                      <small>
+                        {state ===
+                          "open" &&
+                          "APERTA"}
+
+                        {state ===
+                          "waiting" &&
+                          "IN ATTESA"}
+
+                        {state ===
+                          "closed" &&
+                          "CHIUSA"}
+
+                        {state ===
+                          "published" &&
+                          "RISULTATI PUBBLICATI"}
+
+                        {state ===
+                          "draft" &&
+                          "BOZZA"}
+                      </small>
+                    </div>
+
+                    <div className="adminActions">
+                      <button
+                        onClick={() =>
+                          editWeek(
+                            week
+                          )
+                        }
+                      >
+                        MODIFICA
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          openResults(
+                            week
+                          )
+                        }
+                      >
+                        RISULTATI
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          toggleWeek(
+                            week
+                          )
+                        }
+                      >
+                        {state ===
+                        "open"
+                          ? "CHIUDI"
+                          : "APRI"}
+                      </button>
+
+                      <button
+                        className="danger"
+                        onClick={() =>
+                          removeWeek(
+                            week
+                          )
+                        }
+                      >
+                        ELIMINA
+                      </button>
+                    </div>
+                  </div>
                 );
-
-              return (
-                <div
-                  className="adminWeek"
-                  key={week.id}
-                >
-                  <div>
-                    <b>
-                      SETTIMANA #
-                      {week.number}
-                    </b>
-
-                    <small>
-                      {state ===
-                        "open" &&
-                        "APERTA"}
-
-                      {state ===
-                        "waiting" &&
-                        "IN ATTESA"}
-
-                      {state ===
-                        "closed" &&
-                        "CHIUSA"}
-
-                      {state ===
-                        "published" &&
-                        "RISULTATI PUBBLICATI"}
-
-                      {state ===
-                        "draft" &&
-                        "BOZZA"}
-                    </small>
-                  </div>
-
-                  <div className="adminActions">
-                    <button
-                      onClick={() =>
-                        editWeek(
-                          week
-                        )
-                      }
-                    >
-                      MODIFICA
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        openResults(
-                          week
-                        )
-                      }
-                    >
-                      RISULTATI
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        toggleWeek(
-                          week
-                        )
-                      }
-                    >
-                      {state ===
-                      "open"
-                        ? "CHIUDI"
-                        : "APRI"}
-                    </button>
-
-                    <button
-                      className="danger"
-                      onClick={() =>
-                        removeWeek(
-                          week
-                        )
-                      }
-                    >
-                      ELIMINA
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+              }
+            )}
 
             {!weeks.length && (
               <div className="empty">
@@ -2340,6 +2469,10 @@ function Admin({
           </div>
         </>
       )}
+
+      {/* ---------------------------------------------------
+          UTENTI
+      --------------------------------------------------- */}
 
       {tab === "users" && (
         <>
@@ -2355,7 +2488,8 @@ function Admin({
               onChange={(e) =>
                 setUserForm({
                   ...userForm,
-                  name: e.target.value,
+                  name:
+                    e.target.value,
                 })
               }
             />
@@ -2412,9 +2546,7 @@ function Admin({
                   key={p.username}
                 >
                   <span>
-                    <b>
-                      {p.name}
-                    </b>
+                    <b>{p.name}</b>
 
                     <small>
                       @{p.username} ·{" "}
@@ -2449,6 +2581,10 @@ function Admin({
         </>
       )}
 
+      {/* ---------------------------------------------------
+          EDIT SETTIMANA
+      --------------------------------------------------- */}
+
       {tab === "editWeek" &&
         editingWeek && (
           <div>
@@ -2478,9 +2614,10 @@ function Admin({
                   onChange={(e) =>
                     setEditingWeek({
                       ...editingWeek,
-                      number: Number(
-                        e.target.value
-                      ),
+                      number:
+                        Number(
+                          e.target.value
+                        ),
                     })
                   }
                 />
@@ -2555,9 +2692,10 @@ function Admin({
               />
 
               <div className="correctInfo">
-                💡 Puoi selezionare una
-                o più risposte corrette
-                per ogni domanda.
+                💡 Puoi selezionare
+                una o più risposte
+                corrette per ogni
+                domanda.
               </div>
 
               <button
@@ -2574,6 +2712,10 @@ function Admin({
             </div>
           </div>
         )}
+
+      {/* ---------------------------------------------------
+          RISULTATI
+      --------------------------------------------------- */}
 
       {tab === "results" &&
         selectedWeek && (
@@ -2694,11 +2836,6 @@ function App() {
   const [attempts, setAttempts] =
     useState([]);
 
-  const [
-    pendingQuizAnswers,
-    setPendingQuizAnswers,
-  ] = useState(null);
-
   const isAdmin =
     profile?.role === "admin";
 
@@ -2710,9 +2847,9 @@ function App() {
     setWeeks(data);
   };
 
-  /* =======================================================
+  /* -------------------------------------------------------
      SESSIONE SUPABASE
-     ======================================================= */
+  ------------------------------------------------------- */
 
   useEffect(() => {
     if (!supabase) {
@@ -2723,7 +2860,9 @@ function App() {
     supabase.auth
       .getSession()
       .then(({ data }) =>
-        setSession(data.session)
+        setSession(
+          data.session
+        )
       );
 
     const {
@@ -2731,7 +2870,9 @@ function App() {
     } =
       supabase.auth.onAuthStateChange(
         (_event, newSession) => {
-          setSession(newSession);
+          setSession(
+            newSession
+          );
         }
       );
 
@@ -2739,9 +2880,9 @@ function App() {
       listener.subscription.unsubscribe();
   }, []);
 
-  /* =======================================================
+  /* -------------------------------------------------------
      PROFILO + SETTIMANE
-     ======================================================= */
+  ------------------------------------------------------- */
 
   useEffect(() => {
     if (!session?.user) {
@@ -2778,10 +2919,7 @@ function App() {
           setWeeks(data);
         }
       } catch (err) {
-        console.error(
-          "Errore caricamento profilo:",
-          err
-        );
+        console.error(err);
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -2793,6 +2931,10 @@ function App() {
       cancelled = true;
     };
   }, [session?.user?.id]);
+
+  /* -------------------------------------------------------
+     SETTIMANA ATTIVA
+  ------------------------------------------------------- */
 
   const activeWeek =
     weeks
@@ -2812,12 +2954,21 @@ function App() {
         Number(a.number)
     )[0];
 
+  /* -------------------------------------------------------
+     TENTATIVI
+  ------------------------------------------------------- */
+
   useEffect(() => {
-    if (!activeWeek || !profile) {
+    if (
+      !activeWeek ||
+      !profile
+    ) {
       return;
     }
 
-    dbAttempts(activeWeek.id)
+    dbAttempts(
+      activeWeek.id
+    )
       .then(setAttempts)
       .catch(console.error);
   }, [
@@ -2832,47 +2983,44 @@ function App() {
         profile?.username
     );
 
-  /* =======================================================
+  /* -------------------------------------------------------
      FINE QUIZ
-     ======================================================= */
+  ------------------------------------------------------- */
 
-  const finishQuiz = async ({
-    matchAnswers,
-    playerAnswers,
-  }) => {
-    await callFunction(
-      "start-attempt",
-      {
-        week_id: activeWeek.id,
-        match_answers:
-          matchAnswers,
-        player_answers:
-          playerAnswers,
-      }
-    );
-
-    setPendingQuizAnswers({
+  const finishQuiz =
+    async ({
       matchAnswers,
       playerAnswers,
-    });
+    }) => {
+      await callFunction(
+        "start-attempt",
+        {
+          week_id:
+            activeWeek.id,
 
-    setAttempts(
-      await dbAttempts(
-        activeWeek.id
-      )
-    );
+          match_answers:
+            matchAnswers,
 
-    setPage("rigori");
-  };
+          player_answers:
+            playerAnswers,
+        }
+      );
 
-  /* =======================================================
+      setAttempts(
+        await dbAttempts(
+          activeWeek.id
+        )
+      );
+
+      setPage("rigori");
+    };
+
+  /* -------------------------------------------------------
      FINE RIGORI
-     ======================================================= */
+  ------------------------------------------------------- */
 
   const finishRigori =
     async () => {
-      setPendingQuizAnswers(null);
-
       setAttempts(
         await dbAttempts(
           activeWeek.id
@@ -2882,22 +3030,21 @@ function App() {
       setPage("completed");
     };
 
-  /* =======================================================
+  /* -------------------------------------------------------
      LOGOUT
-     ======================================================= */
+  ------------------------------------------------------- */
 
-  const logout = async () => {
-    await supabase.auth.signOut();
+  const logout =
+    async () => {
+      await supabase.auth.signOut();
 
-    setPage("home");
-    setAttempts([]);
-    setProfile(null);
-    setWeeks([]);
-  };
+      setPage("home");
+      setAttempts([]);
+    };
 
-  /* =======================================================
-     CONFIGURAZIONE MANCANTE
-     ======================================================= */
+  /* -------------------------------------------------------
+     CONFIGURAZIONE
+  ------------------------------------------------------- */
 
   if (!supabase) {
     return (
@@ -2907,17 +3054,14 @@ function App() {
         </h2>
 
         <p>
-          Imposta VITE_SUPABASE_URL e
-          VITE_SUPABASE_ANON_KEY per
-          usare Fantaluck.
+          Imposta
+          VITE_SUPABASE_URL e
+          VITE_SUPABASE_ANON_KEY
+          per usare Fantaluck.
         </p>
       </div>
     );
   }
-
-  /* =======================================================
-     LOADING
-     ======================================================= */
 
   if (loading) {
     return (
@@ -2926,10 +3070,6 @@ function App() {
       </div>
     );
   }
-
-  /* =======================================================
-     LOGIN
-     ======================================================= */
 
   if (
     !session?.user ||
@@ -2941,10 +3081,6 @@ function App() {
       />
     );
   }
-
-  /* =======================================================
-     APP AUTENTICATA
-     ======================================================= */
 
   return (
     <>
@@ -2967,8 +3103,8 @@ function App() {
         />
       )}
 
-      {page === "quiz" && (
-        myAttempt ? (
+      {page === "quiz" &&
+        (myAttempt ? (
           <div className="empty">
             Hai già partecipato a
             questa settimana.
@@ -2976,15 +3112,18 @@ function App() {
         ) : (
           <Quiz
             week={activeWeek}
-            onDone={finishQuiz}
+            onDone={
+              finishQuiz
+            }
           />
-        )
-      )}
+        ))}
 
       {page === "rigori" && (
         <Rigori
           week={activeWeek}
-          onDone={finishRigori}
+          onDone={
+            finishRigori
+          }
         />
       )}
 
