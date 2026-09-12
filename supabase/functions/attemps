@@ -1,0 +1,132 @@
+// supabase/functions/start-attempt/index.ts
+//
+// Riceve le risposte del quiz e crea la riga "attempts".
+// Il punteggio del quiz (base_score/correct_answers) resta a 0 qui:
+// viene calcolato dall'admin in "calcola e pubblica", perché le
+// risposte corrette spesso vengono inserite DOPO che i giocatori
+// hanno già giocato (dipende dal risultato reale della partita).
+//
+// Quello che QUESTA funzione garantisce è che nessuno possa:
+// - giocare due volte la stessa settimana
+// - giocare a settimana chiusa/non ancora aperta
+// - scrivere un final_score direttamente
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+Deno.serve(async (req) => {
+  if (req.method !== "POST") return json({ error: "Metodo non valido." }, 405);
+
+  try {
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const jwt = authHeader.replace("Bearer ", "");
+
+    const userClient = createClient(SUPABASE_URL, ANON_KEY, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: userData, error: userError } = await userClient.auth.getUser(jwt);
+    if (userError || !userData?.user) {
+      return json({ error: "Non autenticato." }, 401);
+    }
+
+    const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("username, name")
+      .eq("id", userData.user.id)
+      .single();
+
+    if (!profile) return json({ error: "Profilo non trovato." }, 400);
+
+    const body = await req.json();
+    const { week_id, match_answers, player_answers } = body;
+
+    if (
+      !week_id ||
+      !Array.isArray(match_answers) ||
+      !Array.isArray(player_answers) ||
+      match_answers.length !== 10 ||
+      player_answers.length !== 10
+    ) {
+      return json({ error: "Dati mancanti o non validi." }, 400);
+    }
+
+    const { data: week } = await admin
+      .from("weeks")
+      .select("id, status, starts_at, deadline")
+      .eq("id", week_id)
+      .single();
+
+    if (!week) return json({ error: "Settimana non trovata." }, 404);
+
+    const now = Date.now();
+    const start = week.starts_at ? new Date(week.starts_at).getTime() : null;
+    const end = week.deadline ? new Date(week.deadline).getTime() : null;
+
+    const isOpen =
+      week.status === "open" &&
+      (!start || now >= start) &&
+      (!end || now <= end);
+
+    if (!isOpen) {
+      return json({ error: "Questa settimana non è aperta." }, 400);
+    }
+
+    const { data: existing } = await admin
+      .from("attempts")
+      .select("id")
+      .eq("week_id", week_id)
+      .eq("username", profile.username)
+      .maybeSingle();
+
+    if (existing) {
+      return json({ error: "Hai già partecipato a questa settimana." }, 409);
+    }
+
+    const attemptId = crypto.randomUUID();
+
+    const { error: insertError } = await admin.from("attempts").insert({
+      id: attemptId,
+      week_id,
+      username: profile.username,
+      name: profile.name,
+      match_answers,
+      player_answers,
+      rigori_result: {},
+      base_score: 0,
+      correct_answers: 0,
+      goals: 0,
+      multiplier: 1,
+      final_score: 0,
+      rigori_finished: false,
+      results_published: false,
+    });
+
+    if (insertError) {
+      // 23505 = violazione unique(week_id, username): due richieste quasi
+      // simultanee, il DB blocca comunque il doppio invio.
+      if (insertError.code === "23505") {
+        return json({ error: "Hai già partecipato a questa settimana." }, 409);
+      }
+      console.error(insertError);
+      return json({ error: "Impossibile salvare le risposte." }, 500);
+    }
+
+    return json({ ok: true, attempt_id: attemptId });
+  } catch (err) {
+    console.error(err);
+    return json({ error: "Errore interno." }, 500);
+  }
+});
