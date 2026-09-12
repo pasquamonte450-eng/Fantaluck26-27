@@ -1,1 +1,69 @@
+// supabase/functions/admin-delete-user/index.ts
+//
+// Elimina un giocatore. Solo un admin può chiamarla, e non è
+// possibile eliminare un altro admin da qui (protezione minima
+// contro errori/click sbagliati).
 
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+Deno.serve(async (req) => {
+  if (req.method !== "POST") return json({ error: "Metodo non valido." }, 405);
+
+  try {
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const jwt = authHeader.replace("Bearer ", "");
+
+    const userClient = createClient(SUPABASE_URL, ANON_KEY, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: userData, error: userError } = await userClient.auth.getUser(jwt);
+    if (userError || !userData?.user) return json({ error: "Non autenticato." }, 401);
+
+    const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+
+    const { data: callerProfile } = await admin
+      .from("profiles")
+      .select("role")
+      .eq("id", userData.user.id)
+      .single();
+
+    if (!callerProfile || callerProfile.role !== "admin") {
+      return json({ error: "Non autorizzato." }, 403);
+    }
+
+    const body = await req.json();
+    const { username } = body;
+    if (!username) return json({ error: "Username mancante." }, 400);
+
+    const { data: target } = await admin
+      .from("profiles")
+      .select("id, role")
+      .eq("username", username)
+      .maybeSingle();
+
+    if (!target) return json({ error: "Utente non trovato." }, 404);
+    if (target.role === "admin") return json({ error: "Non puoi eliminare un admin da qui." }, 400);
+
+    const { error: deleteError } = await admin.auth.admin.deleteUser(target.id);
+    if (deleteError) {
+      console.error(deleteError);
+      return json({ error: "Impossibile eliminare l'utente." }, 500);
+    }
+
+    return json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    return json({ error: "Errore interno." }, 500);
+  }
+});
