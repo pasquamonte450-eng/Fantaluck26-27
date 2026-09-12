@@ -1,0 +1,205 @@
+// supabase/functions/rigori-shoot/index.ts
+//
+// Ogni tiro passa da qui. Il client manda solo la casella scelta;
+// il server decide se è gol o parata leggendo "current_save_cells",
+// che non viene MAI restituito al client.
+//
+// action: "status" -> non tira, restituisce solo lo stato attuale
+//         (serve per riprendere dopo un refresh/disconnessione).
+// action assente / "shoot" -> tira nella casella indicata da "cell".
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+function goalsAvailableForShot(shotNumber: number) {
+  const pair = Math.floor(shotNumber / 2);
+  return Math.max(2, 11 - pair);
+}
+
+function createRandomSaves(goalCount: number): number[] {
+  const cells = Array.from({ length: 12 }, (_, i) => i);
+  for (let i = cells.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cells[i], cells[j]] = [cells[j], cells[i]];
+  }
+  const saveCount = 12 - goalCount;
+  return cells.slice(0, saveCount);
+}
+
+Deno.serve(async (req) => {
+  if (req.method !== "POST") return json({ error: "Metodo non valido." }, 405);
+
+  try {
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const jwt = authHeader.replace("Bearer ", "");
+
+    const userClient = createClient(SUPABASE_URL, ANON_KEY, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: userData, error: userError } = await userClient.auth.getUser(jwt);
+    if (userError || !userData?.user) return json({ error: "Non autenticato." }, 401);
+
+    const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("username")
+      .eq("id", userData.user.id)
+      .single();
+    if (!profile) return json({ error: "Profilo non trovato." }, 400);
+
+    const body = await req.json();
+    const { week_id, cell, action } = body;
+
+    if (!week_id) return json({ error: "Settimana mancante." }, 400);
+
+    const { data: week } = await admin
+      .from("weeks")
+      .select('id, "multiplierBase", "multiplierStep"')
+      .eq("id", week_id)
+      .single();
+    if (!week) return json({ error: "Settimana non trovata." }, 404);
+
+    const { data: attempt } = await admin
+      .from("attempts")
+      .select("id, rigori_finished")
+      .eq("week_id", week_id)
+      .eq("username", profile.username)
+      .maybeSingle();
+
+    if (!attempt) return json({ error: "Devi prima completare il quiz." }, 400);
+
+    if (attempt.rigori_finished) {
+      return json({ finished: true, alreadyFinished: true });
+    }
+
+    let { data: progress } = await admin
+      .from("rigori_progress")
+      .select("*")
+      .eq("week_id", week_id)
+      .eq("username", profile.username)
+      .maybeSingle();
+
+    if (!progress) {
+      const saves = createRandomSaves(goalsAvailableForShot(0));
+      const { data: created, error: createError } = await admin
+        .from("rigori_progress")
+        .insert({
+          week_id,
+          username: profile.username,
+          shot_number: 0,
+          goals: 0,
+          multiplier: Number(week.multiplierBase || 1),
+          current_save_cells: saves,
+          status: "in_progress",
+        })
+        .select()
+        .single();
+
+      if (createError) {
+        console.error(createError);
+        return json({ error: "Impossibile avviare i rigori." }, 500);
+      }
+      progress = created;
+    }
+
+    // Richiesta di solo stato (per riprendere dopo un refresh).
+    if (action === "status") {
+      return json({
+        finished: progress.status === "finished",
+        goals: progress.goals,
+        multiplier: progress.multiplier,
+        shotNumber: progress.shot_number,
+        goalCount: goalsAvailableForShot(progress.shot_number),
+      });
+    }
+
+    if (progress.status === "finished") {
+      return json({ finished: true, alreadyFinished: true });
+    }
+
+    if (typeof cell !== "number" || cell < 0 || cell > 11) {
+      return json({ error: "Casella non valida." }, 400);
+    }
+
+    const saveCells: number[] = progress.current_save_cells || [];
+    const isGoal = !saveCells.includes(cell);
+
+    const newGoals = progress.goals + (isGoal ? 1 : 0);
+    const newMultiplier = Number(
+      (
+        Number(progress.multiplier) +
+        (isGoal ? Number(week.multiplierStep || 0.15) : 0)
+      ).toFixed(2)
+    );
+
+    if (!isGoal) {
+      await admin
+        .from("rigori_progress")
+        .update({ status: "finished", goals: newGoals, multiplier: newMultiplier })
+        .eq("week_id", week_id)
+        .eq("username", profile.username);
+
+      await admin
+        .from("attempts")
+        .update({
+          goals: newGoals,
+          multiplier: newMultiplier,
+          rigori_result: {
+            goals: newGoals,
+            multiplier: newMultiplier,
+            shots: progress.shot_number + 1,
+          },
+          rigori_finished: true,
+        })
+        .eq("id", attempt.id);
+
+      return json({ goal: false, finished: true, goals: newGoals, multiplier: newMultiplier });
+    }
+
+    const nextShot = progress.shot_number + 1;
+    const nextSaves = createRandomSaves(goalsAvailableForShot(nextShot));
+
+    await admin
+      .from("rigori_progress")
+      .update({
+        shot_number: nextShot,
+        goals: newGoals,
+        multiplier: newMultiplier,
+        current_save_cells: nextSaves,
+      })
+      .eq("week_id", week_id)
+      .eq("username", profile.username);
+
+    await admin
+      .from("attempts")
+      .update({
+        goals: newGoals,
+        multiplier: newMultiplier,
+        rigori_result: { goals: newGoals, multiplier: newMultiplier, shots: nextShot },
+      })
+      .eq("id", attempt.id);
+
+    return json({
+      goal: true,
+      finished: false,
+      goals: newGoals,
+      multiplier: newMultiplier,
+      shotNumber: nextShot,
+    });
+  } catch (err) {
+    console.error(err);
+    return json({ error: "Errore interno." }, 500);
+  }
+});
