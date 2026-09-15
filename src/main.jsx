@@ -155,6 +155,17 @@ async function callFunction(name, body) {
 }
 
 /* =========================================================
+   AGGIORNA PRONOSTICI INDOVINATI
+   ========================================================= */
+
+async function updatePronostici(userId, delta) {
+  return callFunction("update-pronostici", {
+    user_id: userId,
+    delta,
+  });
+}
+
+/* =========================================================
    DATABASE
    ========================================================= */
 
@@ -606,6 +617,18 @@ function Home({
           <span>
             @{profile.username}
           </span>
+        </div>
+
+        <div className="card pronosticiCard">
+          <small>PRONOSTICI INDOVINATI</small>
+
+          <strong>
+            {Number(
+              profile.pronostici_indovinati || 0
+            )}
+          </strong>
+
+          <span>pronostici corretti</span>
         </div>
       </div>
 
@@ -1444,8 +1467,8 @@ function Rank({
   attempts,
   profile,
 }) {
-  const [reviewOpen, setReviewOpen] =
-    useState(false);
+  const [reviewAttempt, setReviewAttempt] =
+    useState(null);
 
   if (!week?.results_published) {
     return (
@@ -1456,125 +1479,93 @@ function Rank({
         </div>
 
         <div className="empty">
-          <div className="bigEmoji">
-            🏆
-          </div>
+          <div className="bigEmoji">🏆</div>
 
-          <h2>
-            Risultati non ancora
-            pubblicati
-          </h2>
+          <h2>Risultati non ancora pubblicati</h2>
 
           <p>
-            L'organizzatore deve prima
-            correggere le risposte e
-            pubblicare i risultati.
+            L'organizzatore deve prima correggere le
+            risposte e pubblicare i risultati.
           </p>
         </div>
       </div>
     );
   }
 
-  const rows = [...attempts].sort(
-    (a, b) =>
-      Number(b.final_score || 0) -
-      Number(a.final_score || 0)
-  );
-
-  const myAttempt =
-    attempts.find(
-      (a) =>
-        a.username ===
-        profile.username
+  const rows = [...attempts]
+    .filter(
+      (attempt) =>
+        attempt.results_published === true ||
+        week.results_published === true
+    )
+    .sort(
+      (a, b) =>
+        Number(b.final_score || 0) -
+        Number(a.final_score || 0)
     );
 
   return (
     <div className="wrap">
       <div className="title">
-        <small>
-          SETTIMANA #{week.number}
-        </small>
-
+        <small>SETTIMANA #{week.number}</small>
         <h1>Classifica</h1>
+        <p className="rankingHint">
+          Clicca su un giocatore per vedere le sue risposte.
+        </p>
       </div>
 
       <div className="table">
-        {rows.map(
-          (attempt, index) => {
-            const isMine =
-              attempt.username ===
-              profile.username;
+        {rows.map((attempt, index) => {
+          const isMine =
+            attempt.username === profile.username;
 
-            return (
-              <div
-                className={
-                  isMine
-                    ? "row currentPlayer clickableRow"
-                    : "row"
-                }
-                key={attempt.username}
-                onClick={() => {
-                  if (isMine) {
-                    setReviewOpen(
-                      true
-                    );
-                  }
-                }}
-              >
-                <b>
-                  {index + 1}
-                </b>
+          return (
+            <div
+              className={
+                isMine
+                  ? "row currentPlayer clickableRow"
+                  : "row clickableRow"
+              }
+              key={attempt.id || attempt.username}
+              onClick={() => setReviewAttempt(attempt)}
+            >
+              <b>{index + 1}</b>
 
-                <span>
-                  <strong>
-                    {attempt.name ||
-                      attempt.username}
-                  </strong>
-
-                  <small>
-                    {attempt.correct_answers ||
-                      0}
-                    /20 corrette ·{" "}
-                    {attempt.goals ||
-                      0}
-                    gol
-                  </small>
-
-                  {isMine && (
-                    <em>
-                      CLICCA PER RIVEDERE
-                      LE RISPOSTE
-                    </em>
-                  )}
-                </span>
-
+              <span>
                 <strong>
-                  {attempt.final_score ||
-                    0}
+                  {attempt.name || attempt.username}
                 </strong>
-              </div>
-            );
-          }
-        )}
+
+                <small>
+                  {attempt.correct_answers || 0}/20 corrette · {attempt.goals || 0} gol
+                </small>
+
+                <em>
+                  {isMine
+                    ? "CLICCA PER RIVEDERE LE RISPOSTE"
+                    : "CLICCA PER VEDERE LE RISPOSTE"}
+                </em>
+              </span>
+
+              <strong>{attempt.final_score || 0}</strong>
+            </div>
+          );
+        })}
 
         {!rows.length && (
           <div className="empty">
-            Nessun risultato
-            disponibile.
+            Nessun risultato disponibile.
           </div>
         )}
       </div>
 
-      {reviewOpen &&
-        myAttempt && (
-          <AnswerReview
-            week={week}
-            attempt={myAttempt}
-            onClose={() =>
-              setReviewOpen(false)
-            }
-          />
-        )}
+      {reviewAttempt && (
+        <AnswerReview
+          week={week}
+          attempt={reviewAttempt}
+          onClose={() => setReviewAttempt(null)}
+        />
+      )}
     </div>
   );
 }
@@ -1887,6 +1878,9 @@ function Admin({
   const [userError, setUserError] =
     useState("");
 
+  const [pronosticiBusyId, setPronosticiBusyId] =
+    useState(null);
+
   const reloadParticipants =
     () =>
       dbAllProfiles()
@@ -1898,6 +1892,41 @@ function Admin({
       reloadParticipants();
     }
   }, [tab]);
+
+  /* -------------------------------------------------------
+     PRONOSTICI INDOVINATI
+     ------------------------------------------------------- */
+
+  const changePronostici = async (userId, delta) => {
+    if (pronosticiBusyId) return;
+
+    setPronosticiBusyId(userId);
+
+    try {
+      const data = await updatePronostici(userId, delta);
+
+      if (data?.profile) {
+        setParticipants((current) =>
+          current.map((p) =>
+            p.id === data.profile.id
+              ? {
+                  ...p,
+                  pronostici_indovinati:
+                    data.profile.pronostici_indovinati,
+                }
+              : p
+          )
+        );
+      }
+    } catch (err) {
+      alert(
+        err.message ||
+          "Impossibile aggiornare i pronostici indovinati."
+      );
+    } finally {
+      setPronosticiBusyId(null);
+    }
+  };
 
   /* -------------------------------------------------------
      CREA UTENTE
@@ -2542,30 +2571,71 @@ function Admin({
             {participants.map(
               (p) => (
                 <div
-                  className="row"
+                  className="row adminUserRow"
                   key={p.username}
                 >
                   <span>
                     <b>{p.name}</b>
 
                     <small>
-                      @{p.username} ·{" "}
-                      {p.role}
+                      @{p.username} · {p.role}
                     </small>
+
+                    <small className="adminPronosticiLabel">
+                      PRONOSTICI INDOVINATI
+                    </small>
+
+                    <strong className="adminPronosticiValue">
+                      {Number(
+                        p.pronostici_indovinati || 0
+                      )}
+                    </strong>
                   </span>
 
-                  {p.role !==
-                    "admin" && (
-                    <button
-                      className="danger"
-                      onClick={() =>
-                        removeUser(
-                          p.username
-                        )
-                      }
-                    >
-                      ELIMINA
-                    </button>
+                  {p.role !== "admin" && (
+                    <div className="adminUserActions">
+                      <div className="pronosticiControls">
+                        <button
+                          type="button"
+                          className="pronosticiButton"
+                          onClick={() =>
+                            changePronostici(p.id, 1)
+                          }
+                          disabled={
+                            pronosticiBusyId === p.id
+                          }
+                          title="Aumenta"
+                        >
+                          ▲
+                        </button>
+
+                        <button
+                          type="button"
+                          className="pronosticiButton"
+                          onClick={() =>
+                            changePronostici(p.id, -1)
+                          }
+                          disabled={
+                            pronosticiBusyId === p.id ||
+                            Number(
+                              p.pronostici_indovinati || 0
+                            ) <= 0
+                          }
+                          title="Diminuisci"
+                        >
+                          ▼
+                        </button>
+                      </div>
+
+                      <button
+                        className="danger"
+                        onClick={() =>
+                          removeUser(p.username)
+                        }
+                      >
+                        ELIMINA
+                      </button>
+                    </div>
                   )}
                 </div>
               )
@@ -2573,8 +2643,7 @@ function Admin({
 
             {!participants.length && (
               <div className="empty">
-                Nessun giocatore
-                trovato.
+                Nessun giocatore trovato.
               </div>
             )}
           </div>
