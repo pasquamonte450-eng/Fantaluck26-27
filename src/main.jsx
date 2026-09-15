@@ -159,7 +159,7 @@ async function callFunction(name, body) {
    ========================================================= */
 
 async function updatePronostici(userId, delta) {
-  return callFunction("update-pronostici", {
+  return callFunction("pronostici", {
     user_id: userId,
     delta,
   });
