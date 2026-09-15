@@ -3104,4 +3104,439 @@ nav button.active::before {
   .penalty h1 {
     font-size: 43px;
   }
+/* =========================================================
+   FANTALUCK — NUOVE FUNZIONI
+   PRONOSTICI / CLASSIFICA / ADMIN
+   ========================================================= */
+
+/* =========================================================
+   HOME — 3 CARD
+   ========================================================= */
+
+.grid2 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* =========================================================
+   PRONOSTICI INDOVINATI
+   ========================================================= */
+
+.pronosticiCard {
+  position: relative;
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 90% 15%,
+      rgba(244, 200, 78, .08),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(15, 35, 22, .94),
+      rgba(7, 18, 12, .96)
+    );
+}
+
+.pronosticiCard::after {
+  content: "";
+
+  position: absolute;
+
+  width: 100px;
+  height: 100px;
+
+  right: -35px;
+  bottom: -45px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid rgba(244, 200, 78, .12);
+
+  box-shadow:
+    0 0 0 18px rgba(244, 200, 78, .025),
+    0 0 0 36px rgba(244, 200, 78, .015);
+
+  pointer-events: none;
+}
+
+.pronosticiCard small {
+  position: relative;
+  z-index: 1;
+}
+
+.pronosticiCard strong {
+  position: relative;
+  z-index: 1;
+
+  display: block;
+
+  margin: 5px 0 3px;
+
+  color: var(--gold);
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 38px;
+
+  line-height: 1;
+
+  text-shadow:
+    0 0 22px rgba(244, 200, 78, .12);
+}
+
+.pronosticiCard span {
+  position: relative;
+  z-index: 1;
+
+  color: #789083;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   CLASSIFICA — RIGHE CLICCABILI
+   ========================================================= */
+
+.clickableRow {
+  cursor: pointer;
+
+  transition:
+    background .15s ease,
+    transform .15s ease,
+    border-color .15s ease;
+}
+
+.clickableRow:hover {
+  background:
+    rgba(53, 212, 122, .07);
+
+  transform:
+    translateX(3px);
+}
+
+.clickableRow:active {
+  transform:
+    translateX(1px)
+    scale(.997);
+}
+
+.clickableRow::after {
+  content: "›";
+
+  color: #496655;
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 23px;
+
+  transition:
+    color .15s ease,
+    transform .15s ease;
+}
+
+.clickableRow:hover::after {
+  color: var(--gold);
+
+  transform:
+    translateX(2px);
+}
+
+.rankingHint {
+  margin-top: 7px;
+
+  color: #718679;
+
+  font-size: 11px;
+}
+
+/* La riga del giocatore stesso rimane evidenziata */
+
+.currentPlayer {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(244, 200, 78, .09),
+      rgba(244, 200, 78, .025)
+    );
+}
+
+.currentPlayer:hover {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(244, 200, 78, .14),
+      rgba(53, 212, 122, .055)
+    );
+}
+
+/* =========================================================
+   ADMIN — UTENTI
+   ========================================================= */
+
+.adminUserRow {
+  align-items: center;
+
+  min-height: 82px;
+}
+
+.adminUserRow > span {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+
+  min-width: 0;
+}
+
+.adminUserRow > span > b {
+  color: #e5eee7;
+
+  font-size: 14px;
+}
+
+.adminUserRow > span > small {
+  color: #718679;
+
+  font-size: 10px;
+}
+
+.adminPronosticiLabel {
+  margin-top: 7px;
+
+  color: #6d8576 !important;
+
+  font-size: 8px !important;
+  font-weight: 800;
+
+  letter-spacing: 1.3px;
+
+  text-transform: uppercase;
+}
+
+.adminPronosticiValue {
+  color: var(--gold);
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 22px;
+
+  line-height: 1;
+}
+
+/* =========================================================
+   ADMIN — CONTROLLI PRONOSTICI
+   ========================================================= */
+
+.adminUserActions {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 9px;
+
+  flex-shrink: 0;
+}
+
+.pronosticiControls {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+}
+
+.pronosticiButton {
+  width: 36px;
+  height: 36px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  color: #dce9df;
+
+  background:
+    linear-gradient(
+      145deg,
+      #153a24,
+      #0d2617
+    );
+
+  border:
+    1px solid rgba(76, 155, 101, .28);
+
+  border-radius: 9px;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  transition:
+    transform .14s ease,
+    background .14s ease,
+    border-color .14s ease,
+    color .14s ease;
+}
+
+.pronosticiButton:hover:not(:disabled) {
+  color: #061009;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f4c84e,
+      #d79d24
+    );
+
+  border-color:
+    #f4c84e;
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 5px 15px rgba(244, 200, 78, .13);
+}
+
+.pronosticiButton:active:not(:disabled) {
+  transform:
+    translateY(0)
+    scale(.96);
+}
+
+.pronosticiButton:disabled {
+  opacity: .25;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   ADMIN — PULSANTE ELIMINA
+   ========================================================= */
+
+.adminUserActions .danger {
+  min-height: 36px;
+
+  padding:
+    8px 11px;
+
+  border-radius: 9px;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: .3px;
+}
+
+/* =========================================================
+   MOBILE — NUOVE CARD
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .pronosticiCard strong {
+    font-size: 35px;
+  }
+
+  /* -------------------------
+     ADMIN UTENTI
+     ------------------------- */
+
+  .adminUserRow {
+    align-items: flex-start;
+
+    gap: 10px;
+
+    padding:
+      14px 12px;
+  }
+
+  .adminUserRow > span {
+    min-width: 0;
+  }
+
+  .adminUserRow > span > b {
+    font-size: 13px;
+  }
+
+  .adminUserActions {
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    gap: 7px;
+  }
+
+  .pronosticiControls {
+    gap: 4px;
+  }
+
+  .pronosticiButton {
+    width: 34px;
+    height: 34px;
+
+    font-size: 12px;
+  }
+
+  .adminUserActions .danger {
+    min-height: 32px;
+
+    padding:
+      7px 9px;
+
+    font-size: 9px;
+  }
+
+  /* -------------------------
+     CLASSIFICA
+     ------------------------- */
+
+  .clickableRow::after {
+    font-size: 20px;
+  }
+
+  .rankingHint {
+    font-size: 10px;
+  }
+}
+
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+  .pronosticiCard strong {
+    font-size: 32px;
+  }
+
+  .adminUserRow {
+    gap: 7px;
+  }
+
+  .adminUserActions {
+    gap: 5px;
+  }
+
+  .pronosticiButton {
+    width: 32px;
+    height: 32px;
+  }
+
+  .adminUserActions .danger {
+    padding:
+      6px 8px;
+  }
+}
 }
