@@ -3105,3 +3105,201 @@ nav button.active::before {
     font-size: 43px;
   }
 }
+
+/* =========================================================
+   FANTALUCK — NUOVE FUNZIONI
+   ========================================================= */
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.pronosticiCard {
+  position: relative;
+  overflow: hidden;
+}
+
+.pronosticiCard::after {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  right: -35px;
+  bottom: -45px;
+  border-radius: 50%;
+  border: 1px solid rgba(244,200,78,.14);
+  box-shadow: 0 0 0 18px rgba(244,200,78,.025);
+  pointer-events: none;
+}
+
+.pronosticiHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.statIcon {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  color: var(--gold);
+  border: 1px solid rgba(244,200,78,.25);
+  background: rgba(244,200,78,.06);
+  font-weight: 900;
+}
+
+.pronosticiValue {
+  display: block;
+  margin-top: 6px;
+  color: var(--gold);
+  font-family: Oswald, sans-serif;
+  font-size: 42px;
+  line-height: 1;
+}
+
+.pronosticiCard > span:last-child {
+  display: block;
+  margin-top: 7px;
+  color: #718679;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.adminUserRow {
+  gap: 20px;
+}
+
+.pronosticiAdmin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 90px;
+}
+
+.pronosticiAdmin > small {
+  margin-bottom: 5px;
+  color: #6f8477;
+  font-size: 8px;
+  letter-spacing: 1px;
+}
+
+.pronosticiControls {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.pronosticiControls strong {
+  min-width: 32px;
+  text-align: center;
+  color: var(--gold);
+  font-family: Oswald, sans-serif;
+  font-size: 22px;
+}
+
+.pronosticiArrow {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 8px;
+  color: var(--gold);
+  background: rgba(244,200,78,.07);
+  border: 1px solid rgba(244,200,78,.20);
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease, opacity .15s ease;
+}
+
+.pronosticiArrow:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(244,200,78,.14);
+}
+
+.pronosticiArrow:disabled {
+  opacity: .25;
+  cursor: not-allowed;
+}
+
+.rankingHint {
+  margin-bottom: 15px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  color: #83988b;
+  background: rgba(53,212,122,.035);
+  border: 1px solid rgba(53,212,122,.08);
+  font-size: 11px;
+}
+
+.clickableRow {
+  cursor: pointer;
+}
+
+.clickableRow::after {
+  content: "›";
+  color: #60766a;
+  font-size: 22px;
+  transition: transform .15s ease, color .15s ease;
+}
+
+.clickableRow:hover::after {
+  color: var(--gold);
+  transform: translateX(3px);
+}
+
+.clickableRow:focus-visible {
+  outline: 1px solid rgba(244,200,78,.45);
+  outline-offset: 2px;
+}
+
+.reviewPlayerUsername {
+  margin: 4px 0 0;
+  color: #64796b;
+  font-size: 10px;
+}
+
+.sectionIcon {
+  display: inline-grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  margin-right: 7px;
+  border-radius: 7px;
+  color: var(--gold);
+  background: rgba(244,200,78,.07);
+  border: 1px solid rgba(244,200,78,.14);
+  font-size: 11px;
+}
+
+.reviewSummary {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 760px) {
+  .grid3 {
+    grid-template-columns: 1fr;
+  }
+
+  .adminUserRow {
+    flex-wrap: wrap;
+  }
+
+  .pronosticiAdmin {
+    margin-left: auto;
+  }
+
+  .adminUserRow .danger {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .reviewSummary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
