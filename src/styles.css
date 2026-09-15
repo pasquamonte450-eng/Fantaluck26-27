@@ -3104,6 +3104,8 @@ nav button.active::before {
   .penalty h1 {
     font-size: 43px;
   }
+}
+
 /* =========================================================
    FANTALUCK — NUOVE FUNZIONI
    PRONOSTICI / CLASSIFICA / ADMIN
@@ -3244,15 +3246,26 @@ nav button.active::before {
     translateX(2px);
 }
 
+/* =========================================================
+   CLASSIFICA — INDICAZIONE CLICCABILE
+   ========================================================= */
+
 .rankingHint {
   margin-top: 7px;
 
-  color: #718679;
+  color: var(--gold);
 
-  font-size: 11px;
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  text-transform: uppercase;
 }
 
-/* La riga del giocatore stesso rimane evidenziata */
+/* =========================================================
+   GIOCATORE CORRENTE
+   ========================================================= */
 
 .currentPlayer {
   background:
@@ -3507,12 +3520,12 @@ nav button.active::before {
   }
 
   .rankingHint {
-    font-size: 10px;
+    font-size: 8px;
   }
 }
 
 /* =========================================================
-   SMALL PHONES
+   SMALL PHONES — NUOVE FUNZIONI
    ========================================================= */
 
 @media (max-width: 380px) {
@@ -3538,5 +3551,4 @@ nav button.active::before {
     padding:
       6px 8px;
   }
-}
 }
