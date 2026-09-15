@@ -154,6 +154,14 @@ async function callFunction(name, body) {
   return data;
 }
 
+
+async function updatePronostici(userId, delta) {
+  return callFunction("update-pronostici", {
+    user_id: userId,
+    delta,
+  });
+}
+
 /* =========================================================
    DATABASE
    ========================================================= */
@@ -229,6 +237,18 @@ async function dbAttempts(weekId) {
   if (error) throw error;
 
   return data || [];
+}
+
+async function dbMyAttempt(weekId, username) {
+  const { data, error } = await supabase
+    .from("attempts")
+    .select("*")
+    .eq("week_id", weekId)
+    .eq("username", username)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data || null;
 }
 
 async function updateAttempt(id, values) {
@@ -578,34 +598,35 @@ function Home({
         )}
       </section>
 
-      <div className="grid2">
+      <div className="grid3">
         <div className="card">
           <small>SETTIMANA</small>
-
-          <strong>
-            #{week?.number ?? "-"}
-          </strong>
-
+          <strong>#{week?.number ?? "-"}</strong>
           <span>
             {state === "open" && "APERTA"}
             {state === "waiting" && "IN ARRIVO"}
             {state === "closed" && "CHIUSA"}
-            {state === "published" &&
-              "RISULTATI PUBBLICATI"}
-            {state === "draft" &&
-              "IN PREPARAZIONE"}
+            {state === "published" && "RISULTATI PUBBLICATI"}
+            {state === "draft" && "IN PREPARAZIONE"}
             {state === "none" && "NESSUNA"}
           </span>
         </div>
 
         <div className="card">
           <small>IL TUO PROFILO</small>
-
           <strong>{profile.name}</strong>
+          <span>@{profile.username}</span>
+        </div>
 
-          <span>
-            @{profile.username}
-          </span>
+        <div className="card pronosticiCard">
+          <div className="pronosticiHeader">
+            <small>PRONOSTICI INDOVINATI</small>
+            <span className="statIcon">✓</span>
+          </div>
+          <strong className="pronosticiValue">
+            {Number(profile?.pronostici_indovinati || 0)}
+          </strong>
+          <span>Pronostici corretti</span>
         </div>
       </div>
 
@@ -1232,204 +1253,68 @@ function Completed({
    ANSWER REVIEW
    ========================================================= */
 
-function AnswerReview({
-  week,
-  attempt,
-  onClose,
-}) {
-  const matchQuestions =
-    week?.matchQuestions || [];
+function AnswerReview({ week, attempt, onClose }) {
+  const matchQuestions = week?.matchQuestions || [];
+  const playerQuestions = week?.playerQuestions || [];
+  const matchAnswers = attempt?.match_answers || [];
+  const playerAnswers = attempt?.player_answers || [];
 
-  const playerQuestions =
-    week?.playerQuestions || [];
-
-  const matchAnswers =
-    attempt?.match_answers || [];
-
-  const playerAnswers =
-    attempt?.player_answers || [];
-
-  const renderQuestion = (
-    question,
-    answer,
-    index
-  ) => {
-    const correctAnswers =
-      getCorrectAnswers(question);
-
-    const isCorrect =
-      Boolean(
-        answer &&
-          correctAnswers.includes(
-            answer
-          )
-      );
+  const renderQuestion = (question, answer, index) => {
+    const correctAnswers = getCorrectAnswers(question);
+    const isCorrect = Boolean(answer && correctAnswers.includes(answer));
 
     return (
       <div
-        className={
-          isCorrect
-            ? "reviewQuestion reviewCorrect"
-            : "reviewQuestion reviewWrong"
-        }
-        key={
-          question?.id ||
-          index
-        }
+        className={isCorrect ? "reviewQuestion reviewCorrect" : "reviewQuestion reviewWrong"}
+        key={question?.id || index}
       >
         <div className="reviewQuestionTop">
-          <span>
-            DOMANDA {index + 1}
-          </span>
-
-          <strong>
-            {isCorrect
-              ? "✓ CORRETTA"
-              : "✕ ERRATA"}
-          </strong>
+          <span>DOMANDA {index + 1}</span>
+          <strong>{isCorrect ? "✓ CORRETTA" : "✕ ERRATA"}</strong>
         </div>
-
-        <h3>
-          {question?.text ||
-            "Domanda"}
-        </h3>
-
+        <h3>{question?.text || "Domanda"}</h3>
         <div className="reviewAnswer">
-          <small>
-            LA TUA RISPOSTA
-          </small>
-
-          <strong>
-            {answer ||
-              "Nessuna risposta"}
-          </strong>
+          <small>RISPOSTA DEL GIOCATORE</small>
+          <strong>{answer || "Nessuna risposta"}</strong>
         </div>
-
         <div className="reviewCorrectAnswer">
-          <small>
-            RISPOSTA CORRETTA
-          </small>
-
-          <strong>
-            {correctAnswers.length
-              ? correctAnswers.join(
-                  " / "
-                )
-              : "Non disponibile"}
-          </strong>
+          <small>RISPOSTA CORRETTA</small>
+          <strong>{correctAnswers.length ? correctAnswers.join(" / ") : "Non disponibile"}</strong>
         </div>
       </div>
     );
   };
 
   return (
-    <div
-      className="reviewOverlay"
-      onMouseDown={(e) => {
-        if (
-          e.target ===
-          e.currentTarget
-        ) {
-          onClose();
-        }
-      }}
-    >
+    <div className="reviewOverlay" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="reviewModal">
         <div className="reviewHeader">
           <div>
-            <small>
-              FANTALUCK · SETTIMANA #
-              {week?.number}
-            </small>
-
-            <h2>
-              La tua partecipazione
-            </h2>
+            <small>FANTALUCK · SETTIMANA #{week?.number}</small>
+            <h2>{attempt?.name || attempt?.username || "Giocatore"}</h2>
+            <p className="reviewPlayerUsername">@{attempt?.username}</p>
           </div>
-
-          <button
-            className="reviewClose"
-            onClick={onClose}
-          >
-            ×
-          </button>
+          <button className="reviewClose" onClick={onClose} aria-label="Chiudi">×</button>
         </div>
 
         <div className="reviewSummary">
-          <div>
-            <small>
-              RISPOSTE CORRETTE
-            </small>
-
-            <strong>
-              {attempt?.correct_answers ??
-                0}
-              /20
-            </strong>
-          </div>
-
-          <div>
-            <small>
-              MOLTIPLICATORE
-            </small>
-
-            <strong>
-              x
-              {Number(
-                attempt?.multiplier ||
-                  1
-              ).toFixed(2)}
-            </strong>
-          </div>
-
-          <div>
-            <small>
-              PUNTEGGIO FINALE
-            </small>
-
-            <strong>
-              {attempt?.final_score ||
-                0}
-            </strong>
-          </div>
+          <div><small>RISPOSTE CORRETTE</small><strong>{attempt?.correct_answers ?? 0}/20</strong></div>
+          <div><small>RIGORI SEGNATI</small><strong>{attempt?.goals ?? 0}</strong></div>
+          <div><small>MOLTIPLICATORE</small><strong>x{Number(attempt?.multiplier || 1).toFixed(2)}</strong></div>
+          <div><small>PUNTEGGIO FINALE</small><strong>{attempt?.final_score || 0}</strong></div>
         </div>
 
         <section className="reviewSection">
-          <h3>
-            ⚽ DOMANDE PARTITA
-          </h3>
-
-          {matchQuestions.map(
-            (q, i) =>
-              renderQuestion(
-                q,
-                matchAnswers[i],
-                i
-              )
-          )}
+          <h3><span className="sectionIcon">⚽</span> DOMANDE PARTITA</h3>
+          {matchQuestions.map((q, i) => renderQuestion(q, matchAnswers[i], i))}
         </section>
 
         <section className="reviewSection">
-          <h3>
-            👤 DOMANDE GIOCATORE
-          </h3>
-
-          {playerQuestions.map(
-            (q, i) =>
-              renderQuestion(
-                q,
-                playerAnswers[i],
-                i
-              )
-          )}
+          <h3><span className="sectionIcon">#</span> DOMANDE GIOCATORE</h3>
+          {playerQuestions.map((q, i) => renderQuestion(q, playerAnswers[i], i))}
         </section>
 
-        <button
-          className="reviewBottomClose"
-          onClick={onClose}
-        >
-          CHIUDI REVISIONE
-        </button>
+        <button className="reviewBottomClose" onClick={onClose}>CHIUDI REVISIONE</button>
       </div>
     </div>
   );
@@ -1439,142 +1324,62 @@ function AnswerReview({
    RANKING
    ========================================================= */
 
-function Rank({
-  week,
-  attempts,
-  profile,
-}) {
-  const [reviewOpen, setReviewOpen] =
-    useState(false);
+function Rank({ week, attempts, profile }) {
+  const [selectedAttempt, setSelectedAttempt] = useState(null);
 
   if (!week?.results_published) {
     return (
       <div className="wrap">
-        <div className="title">
-          <small>FANTALUCK</small>
-          <h1>Classifica</h1>
-        </div>
-
+        <div className="title"><small>FANTALUCK</small><h1>Classifica</h1></div>
         <div className="empty">
-          <div className="bigEmoji">
-            🏆
-          </div>
-
-          <h2>
-            Risultati non ancora
-            pubblicati
-          </h2>
-
-          <p>
-            L'organizzatore deve prima
-            correggere le risposte e
-            pubblicare i risultati.
-          </p>
+          <div className="bigEmoji"><span className="trophyIcon">#</span></div>
+          <h2>Risultati non ancora pubblicati</h2>
+          <p>L'organizzatore deve prima correggere le risposte e pubblicare i risultati.</p>
         </div>
       </div>
     );
   }
 
-  const rows = [...attempts].sort(
-    (a, b) =>
-      Number(b.final_score || 0) -
-      Number(a.final_score || 0)
-  );
-
-  const myAttempt =
-    attempts.find(
-      (a) =>
-        a.username ===
-        profile.username
-    );
+  const rows = [...attempts].sort((a, b) => Number(b.final_score || 0) - Number(a.final_score || 0));
 
   return (
     <div className="wrap">
-      <div className="title">
-        <small>
-          SETTIMANA #{week.number}
-        </small>
-
-        <h1>Classifica</h1>
-      </div>
+      <div className="title"><small>SETTIMANA #{week.number}</small><h1>Classifica</h1></div>
+      <div className="rankingHint">Seleziona un giocatore per vedere le sue risposte.</div>
 
       <div className="table">
-        {rows.map(
-          (attempt, index) => {
-            const isMine =
-              attempt.username ===
-              profile.username;
-
-            return (
-              <div
-                className={
-                  isMine
-                    ? "row currentPlayer clickableRow"
-                    : "row"
+        {rows.map((attempt, index) => {
+          const isMine = attempt.username === profile.username;
+          return (
+            <div
+              className={isMine ? "row currentPlayer clickableRow" : "row clickableRow"}
+              key={attempt.username}
+              onClick={() => setSelectedAttempt(attempt)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedAttempt(attempt);
                 }
-                key={attempt.username}
-                onClick={() => {
-                  if (isMine) {
-                    setReviewOpen(
-                      true
-                    );
-                  }
-                }}
-              >
-                <b>
-                  {index + 1}
-                </b>
-
-                <span>
-                  <strong>
-                    {attempt.name ||
-                      attempt.username}
-                  </strong>
-
-                  <small>
-                    {attempt.correct_answers ||
-                      0}
-                    /20 corrette ·{" "}
-                    {attempt.goals ||
-                      0}
-                    gol
-                  </small>
-
-                  {isMine && (
-                    <em>
-                      CLICCA PER RIVEDERE
-                      LE RISPOSTE
-                    </em>
-                  )}
-                </span>
-
-                <strong>
-                  {attempt.final_score ||
-                    0}
-                </strong>
-              </div>
-            );
-          }
-        )}
-
-        {!rows.length && (
-          <div className="empty">
-            Nessun risultato
-            disponibile.
-          </div>
-        )}
+              }}
+            >
+              <b>{String(index + 1).padStart(2, "0")}</b>
+              <span>
+                <strong>{attempt.name || attempt.username}</strong>
+                <small>{attempt.correct_answers || 0}/20 corrette · {attempt.goals || 0} rigori segnati</small>
+                {isMine && <em>TU</em>}
+              </span>
+              <strong>{attempt.final_score || 0}</strong>
+            </div>
+          );
+        })}
+        {!rows.length && <div className="empty">Nessun risultato disponibile.</div>}
       </div>
 
-      {reviewOpen &&
-        myAttempt && (
-          <AnswerReview
-            week={week}
-            attempt={myAttempt}
-            onClose={() =>
-              setReviewOpen(false)
-            }
-          />
-        )}
+      {selectedAttempt && (
+        <AnswerReview week={week} attempt={selectedAttempt} onClose={() => setSelectedAttempt(null)} />
+      )}
     </div>
   );
 }
@@ -1887,6 +1692,9 @@ function Admin({
   const [userError, setUserError] =
     useState("");
 
+  const [pronosticiBusy, setPronosticiBusy] =
+    useState({});
+
   const reloadParticipants =
     () =>
       dbAllProfiles()
@@ -1983,6 +1791,28 @@ function Admin({
         err.message ||
           "Impossibile eliminare il giocatore."
       );
+    }
+  };
+
+  const changePronostici = async (userId, delta) => {
+    const key = `${userId}_${delta}`;
+    if (pronosticiBusy[key]) return;
+    setPronosticiBusy((prev) => ({ ...prev, [key]: true }));
+    try {
+      const response = await updatePronostici(userId, delta);
+      const updatedProfile = response?.profile;
+      if (updatedProfile) {
+        setParticipants((prev) => prev.map((p) =>
+          p.id === updatedProfile.id
+            ? { ...p, pronostici_indovinati: updatedProfile.pronostici_indovinati }
+            : p
+        ));
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Impossibile aggiornare i pronostici.");
+    } finally {
+      setPronosticiBusy((prev) => ({ ...prev, [key]: false }));
     }
   };
 
@@ -2538,36 +2368,36 @@ function Admin({
             </div>
           )}
 
-          <div className="table">
-            {participants.map(
-              (p) => (
-                <div
-                  className="row"
-                  key={p.username}
-                >
+          <div className="table adminUsersTable">
+            {participants.map((p) => {
+              const value = Number(p.pronostici_indovinati || 0);
+              const upBusy = pronosticiBusy[`${p.id}_1`];
+              const downBusy = pronosticiBusy[`${p.id}_-1`];
+
+              return (
+                <div className="row adminUserRow" key={p.id}>
                   <span>
                     <b>{p.name}</b>
-
-                    <small>
-                      @{p.username} ·{" "}
-                      {p.role}
-                    </small>
+                    <small>@{p.username} · {p.role}</small>
                   </span>
 
-                  {p.role !==
-                    "admin" && (
-                    <button
-                      className="danger"
-                      onClick={() =>
-                        removeUser(
-                          p.username
-                        )
-                      }
-                    >
-                      ELIMINA
-                    </button>
+                  <div className="pronosticiAdmin">
+                    <small>PRONOSTICI</small>
+                    <div className="pronosticiControls">
+                      <button type="button" className="pronosticiArrow" disabled={upBusy || p.role === "admin"} onClick={() => changePronostici(p.id, 1)} aria-label={`Aumenta pronostici di ${p.name}`}>▲</button>
+                      <strong>{value}</strong>
+                      <button type="button" className="pronosticiArrow" disabled={downBusy || p.role === "admin" || value <= 0} onClick={() => changePronostici(p.id, -1)} aria-label={`Diminuisci pronostici di ${p.name}`}>▼</button>
+                    </div>
+                  </div>
+
+                  {p.role !== "admin" && (
+                    <button type="button" className="danger" onClick={() => removeUser(p.username)}>ELIMINA</button>
                   )}
                 </div>
+              );
+            })}
+            {!participants.length && <div className="empty">Nessun giocatore trovato.</div>}
+          </div>
               )
             )}
 
@@ -2959,22 +2789,25 @@ function App() {
   ------------------------------------------------------- */
 
   useEffect(() => {
-    if (
-      !activeWeek ||
-      !profile
-    ) {
-      return;
-    }
+    if (!activeWeek || !profile) return;
 
-    dbAttempts(
-      activeWeek.id
-    )
-      .then(setAttempts)
-      .catch(console.error);
-  }, [
-    activeWeek?.id,
-    profile?.username,
-  ]);
+    const loadAttempts = async () => {
+      try {
+        if (activeWeek.results_published) {
+          const data = await dbAttempts(activeWeek.id);
+          setAttempts(data);
+          return;
+        }
+
+        const mine = await dbMyAttempt(activeWeek.id, profile.username);
+        setAttempts(mine ? [mine] : []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadAttempts();
+  }, [activeWeek?.id, activeWeek?.results_published, profile?.username]);
 
   const myAttempt =
     attempts.find(
@@ -3006,12 +2839,8 @@ function App() {
         }
       );
 
-      setAttempts(
-        await dbAttempts(
-          activeWeek.id
-        )
-      );
-
+      const mine = await dbMyAttempt(activeWeek.id, profile.username);
+      setAttempts(mine ? [mine] : []);
       setPage("rigori");
     };
 
@@ -3019,16 +2848,11 @@ function App() {
      FINE RIGORI
   ------------------------------------------------------- */
 
-  const finishRigori =
-    async () => {
-      setAttempts(
-        await dbAttempts(
-          activeWeek.id
-        )
-      );
-
-      setPage("completed");
-    };
+  const finishRigori = async () => {
+    const mine = await dbMyAttempt(activeWeek.id, profile.username);
+    setAttempts(mine ? [mine] : []);
+    setPage("completed");
+  };
 
   /* -------------------------------------------------------
      LOGOUT
