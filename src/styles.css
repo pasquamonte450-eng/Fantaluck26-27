@@ -2111,9 +2111,24 @@ header > span {
   margin: 0;
 }
 
-/* SPAZIO TRA "PRONOSTICI INDOVINATI" E "TUTTI I GIOCATORI" */
-.pronosticiRankingTitle p {
-  margin: 9px 0 0;
+/* =========================================================
+   PRONOSTICI RANKING — TESTO HEADER
+   ========================================================= */
+
+.pronosticiRankingText {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.pronosticiRankingText strong {
+  display: block;
+}
+
+.pronosticiRankingText span {
+  display: block;
 
   color: #73887a;
 
