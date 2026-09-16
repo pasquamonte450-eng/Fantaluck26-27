@@ -1996,7 +1996,7 @@ function PronosticiRank({
           />
         </div>
 
-        <div>
+        <div className="pronosticiRankingText">
           <strong>
             PRONOSTICI INDOVINATI
           </strong>
