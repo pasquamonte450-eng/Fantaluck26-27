@@ -816,7 +816,8 @@ header > span {
    DASHBOARD — ICONA CLASSIFICA PRONOSTICI
    ========================================================= */
 
-.dashboardIconButton {
+.dashboardIconButton,
+.pronosticiDashboardButton {
   position: absolute;
 
   top: 14px;
@@ -853,7 +854,8 @@ header > span {
     box-shadow .16s ease;
 }
 
-.dashboardIconButton:hover {
+.dashboardIconButton:hover,
+.pronosticiDashboardButton:hover {
   color: #061009;
 
   background:
@@ -874,10 +876,16 @@ header > span {
     0 8px 22px rgba(244, 200, 78, .16);
 }
 
-.dashboardIconButton:active {
+.dashboardIconButton:active,
+.pronosticiDashboardButton:active {
   transform:
     translateY(0)
     scale(.96);
+}
+
+.pronosticiDashboardButton .icon {
+  width: 20px;
+  height: 20px;
 }
 
 /* =========================================================
@@ -3342,12 +3350,18 @@ nav button.active::before {
 
   /* DASHBOARD */
 
-  .dashboardIconButton {
+  .dashboardIconButton,
+  .pronosticiDashboardButton {
     width: 34px;
     height: 34px;
 
     top: 12px;
     right: 12px;
+  }
+
+  .pronosticiDashboardButton .icon {
+    width: 19px;
+    height: 19px;
   }
 
   .pronosticiCard strong {
