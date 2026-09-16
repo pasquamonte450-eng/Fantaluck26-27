@@ -1,3 +1,4 @@
+```css
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700;800&display=swap');
 
 /* =========================================================
@@ -2070,6 +2071,15 @@ header > span {
   gap: 20px;
 }
 
+/* SPAZIO VERTICALE TRA TITOLO E "TUTTI I GIOCATORI" */
+.pronosticiRankingHeader > div:last-child {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
 .pronosticiRankingTitle {
   display: flex;
 
@@ -2113,7 +2123,7 @@ header > span {
 
 /* SPAZIO TRA "PRONOSTICI INDOVINATI" E "TUTTI I GIOCATORI" */
 .pronosticiRankingTitle p {
-  margin: 9px 0 0;
+  margin: 0;
 
   color: #73887a;
 
@@ -2965,12 +2975,6 @@ header > span {
   font-size: 14px;
 }
 
-.adminUserRow > span > small {
-  color: #718679;
-
-  font-size: 10px;
-}
-
 /* =========================================================
    ADMIN — STATO ACCOUNT
    ========================================================= */
@@ -3585,12 +3589,16 @@ nav button.active::before {
     gap: 12px;
   }
 
+  .pronosticiRankingHeader > div:last-child {
+    gap: 7px;
+  }
+
   .pronosticiRankingTitle {
     gap: 11px;
   }
 
   .pronosticiRankingTitle p {
-    margin-top: 8px;
+    margin-top: 0;
 
     line-height: 1.35;
   }
@@ -3887,3 +3895,4 @@ nav button.active::before {
       6px 8px;
   }
 }
+```
