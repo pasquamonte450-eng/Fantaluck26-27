@@ -1997,7 +1997,7 @@ function PronosticiRank({
         </div>
 
         <div>
-          <strong> style={{ marginBottom: "8px" }}>
+          <strong> style={{ display: "block", marginBottom: "8px" }}>
             PRONOSTICI INDOVINATI
           </strong>
 
