@@ -41,6 +41,154 @@ const newWeek = (number) => ({
 });
 
 /* =========================================================
+   ICONS — FANTALUCK SVG
+   ========================================================= */
+
+function Icon({ name, size = 22, strokeWidth = 2 }) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true,
+  };
+
+  switch (name) {
+    case "home":
+      return (
+        <svg {...common}>
+          <path d="M3 10.5 12 3l9 7.5" />
+          <path d="M5.5 9.5V21h13V9.5" />
+          <path d="M9.5 21v-6h5v6" />
+        </svg>
+      );
+
+    case "ball":
+      return (
+        <svg {...common}>
+          <path d="M12 3.2 18.7 8l-2.6 8H7.9L5.3 8 12 3.2Z" />
+          <path d="m12 3.2 2.1 5.3M18.7 8l-4.6.5M16.1 16l2.9 2.2M7.9 16 5 18.2M5.3 8l4.6.5M9.9 16 8.7 21" />
+        </svg>
+      );
+
+    case "trophy":
+      return (
+        <svg {...common}>
+          <path d="M8 4h8v5.5a4 4 0 0 1-8 0V4Z" />
+          <path d="M8 6H4v1a4 4 0 0 0 4 4M16 6h4v1a4 4 0 0 1-4 4" />
+          <path d="M12 13.5V18" />
+          <path d="M8 21h8" />
+          <path d="M9 18h6" />
+        </svg>
+      );
+
+    case "settings":
+      return (
+        <svg {...common}>
+          <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" />
+          <path d="m19.4 15 .1.1a1.7 1.7 0 0 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 0 1-3.4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.7 1.7 0 0 1-2.4-2.4l.1-.1a1.7 1.7 0 0 0-1.2-2.9H4a1.7 1.7 0 0 1 0-3.4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.7 1.7 0 0 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2V2a1.7 1.7 0 0 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 0 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.7 1.7 0 0 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2 2.9Z" />
+        </svg>
+      );
+
+    case "logout":
+      return (
+        <svg {...common}>
+          <path d="M10 4H5v16h5" />
+          <path d="M14 8l4 4-4 4" />
+          <path d="M18 12H8" />
+        </svg>
+      );
+
+    case "target":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="8.5" />
+          <circle cx="12" cy="12" r="4.5" />
+          <circle cx="12" cy="12" r="1.5" />
+        </svg>
+      );
+
+    case "users":
+      return (
+        <svg {...common}>
+          <circle cx="9" cy="8" r="3" />
+          <path d="M3.5 20a5.5 5.5 0 0 1 11 0" />
+          <path d="M16 5.5a3 3 0 0 1 0 5.8" />
+          <path d="M17 14a5 5 0 0 1 4 6" />
+        </svg>
+      );
+
+    case "eye":
+      return (
+        <svg {...common}>
+          <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+          <circle cx="12" cy="12" r="2.5" />
+        </svg>
+      );
+
+    case "close":
+      return (
+        <svg {...common}>
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg>
+      );
+
+    case "check":
+      return (
+        <svg {...common}>
+          <path d="m5 12 4 4L19 6" />
+        </svg>
+      );
+
+    case "x":
+      return (
+        <svg {...common}>
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg>
+      );
+
+    case "user":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="8" r="3.5" />
+          <path d="M4.5 21a7.5 7.5 0 0 1 15 0" />
+        </svg>
+      );
+
+    case "info":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 10v6" />
+          <path d="M12 7h.01" />
+        </svg>
+      );
+
+    case "arrow":
+      return (
+        <svg {...common}>
+          <path d="M5 12h13" />
+          <path d="m13 6 6 6-6 6" />
+        </svg>
+      );
+
+    case "chevron":
+      return (
+        <svg {...common}>
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      );
+
+    default:
+      return null;
+  }
+}
+
+/* =========================================================
    HELPERS
    ========================================================= */
 
@@ -186,6 +334,33 @@ async function dbAllProfiles() {
     .from("profiles")
     .select("*")
     .order("username");
+
+  if (error) throw error;
+
+  return data || [];
+}
+
+/*
+ * PROFILI PUBBLICI
+ *
+ * Usa la view profiles_public per mostrare soltanto:
+ * id, username, name, pronostici_indovinati
+ *
+ * Non viene usata la tabella profiles direttamente
+ * nella classifica pubblica.
+ */
+async function dbPublicProfiles() {
+  const { data, error } = await supabase
+    .from("profiles_public")
+    .select(
+      "id, username, name, pronostici_indovinati"
+    )
+    .order("pronostici_indovinati", {
+      ascending: false,
+    })
+    .order("name", {
+      ascending: true,
+    });
 
   if (error) throw error;
 
@@ -409,7 +584,10 @@ function Login({ onLoggedIn }) {
     <main className="login">
       <div className="loginCard">
         <div className="logo">
-          🍀 FANTALUCK
+          <span className="logoIcon">
+            <Icon name="target" size={25} />
+          </span>
+          FANTALUCK
         </div>
 
         <p className="tag">
@@ -470,7 +648,7 @@ function Nav({
         }
         onClick={() => setPage("home")}
       >
-        🏠
+        <Icon name="home" size={21} />
         <span>Home</span>
       </button>
 
@@ -480,7 +658,7 @@ function Nav({
         }
         onClick={() => setPage("quiz")}
       >
-        ⚽
+        <Icon name="ball" size={21} />
         <span>Gioca</span>
       </button>
 
@@ -490,7 +668,7 @@ function Nav({
         }
         onClick={() => setPage("rank")}
       >
-        🏆
+        <Icon name="trophy" size={21} />
         <span>Classifica</span>
       </button>
 
@@ -501,13 +679,13 @@ function Nav({
           }
           onClick={() => setPage("admin")}
         >
-          ⚙️
+          <Icon name="settings" size={21} />
           <span>Admin</span>
         </button>
       )}
 
       <button onClick={onLogout}>
-        ↪
+        <Icon name="logout" size={21} />
         <span>Esci</span>
       </button>
     </nav>
@@ -533,7 +711,8 @@ function Home({
     <div className="wrap">
       <section className="hero">
         <div className="badge">
-          🍀 FANTALUCK
+          <Icon name="target" size={16} />
+          FANTALUCK
         </div>
 
         <h1>
@@ -550,7 +729,7 @@ function Home({
           <button
             onClick={() => setPage("quiz")}
           >
-            GIOCA ORA →
+            GIOCA ORA <Icon name="arrow" size={18} />
           </button>
         )}
 
@@ -584,7 +763,7 @@ function Home({
           <button
             onClick={() => setPage("rank")}
           >
-            VEDI RISULTATI →
+            VEDI RISULTATI <Icon name="arrow" size={18} />
           </button>
         )}
       </section>
@@ -619,8 +798,29 @@ function Home({
           </span>
         </div>
 
+        {/* -------------------------------------------------
+            PRONOSTICI INDOVINATI
+            Cliccando l'icona si apre la classifica
+        ------------------------------------------------- */}
         <div className="card pronosticiCard">
-          <small>PRONOSTICI INDOVINATI</small>
+          <div className="pronosticiCardTop">
+            <small>PRONOSTICI INDOVINATI</small>
+
+            <button
+              type="button"
+              className="pronosticiDashboardButton"
+              onClick={() =>
+                setPage("pronostici")
+              }
+              aria-label="Apri classifica pronostici"
+              title="Classifica pronostici"
+            >
+              <Icon
+                name="target"
+                size={20}
+              />
+            </button>
+          </div>
 
           <strong>
             {Number(
@@ -652,7 +852,7 @@ function Home({
               : "rulesArrow"
           }
         >
-          ↓
+          <Icon name="chevron" size={18} />
         </span>
       </button>
 
@@ -1100,7 +1300,7 @@ function Rigori({
         </div>
 
         <div className="keeper">
-          🧤
+          <Icon name="target" size={35} />
           <span>PORTA</span>
         </div>
 
@@ -1177,9 +1377,14 @@ function Rigori({
             }
           >
             <div className="resultIcon">
-              {result.goal
-                ? "⚽"
-                : "🧤"}
+              <Icon
+                name={
+                  result.goal
+                    ? "ball"
+                    : "target"
+                }
+                size={42}
+              />
             </div>
 
             <h2>
@@ -1221,7 +1426,7 @@ function Completed({
     <div className="wrap">
       <div className="completedCard">
         <div className="completedIcon">
-          🍀
+          <Icon name="check" size={38} />
         </div>
 
         <h1>
@@ -1259,6 +1464,7 @@ function AnswerReview({
   week,
   attempt,
   onClose,
+  profile,
 }) {
   const matchQuestions =
     week?.matchQuestions || [];
@@ -1271,6 +1477,15 @@ function AnswerReview({
 
   const playerAnswers =
     attempt?.player_answers || [];
+
+  const isMine =
+    attempt?.username ===
+    profile?.username;
+
+  const reviewedName =
+    attempt?.name ||
+    attempt?.username ||
+    "Giocatore";
 
   const renderQuestion = (
     question,
@@ -1306,9 +1521,23 @@ function AnswerReview({
           </span>
 
           <strong>
-            {isCorrect
-              ? "✓ CORRETTA"
-              : "✕ ERRATA"}
+            {isCorrect ? (
+              <>
+                <Icon
+                  name="check"
+                  size={13}
+                />
+                CORRETTA
+              </>
+            ) : (
+              <>
+                <Icon
+                  name="x"
+                  size={13}
+                />
+                ERRATA
+              </>
+            )}
           </strong>
         </div>
 
@@ -1319,7 +1548,9 @@ function AnswerReview({
 
         <div className="reviewAnswer">
           <small>
-            LA TUA RISPOSTA
+            {isMine
+              ? "LA TUA RISPOSTA"
+              : `RISPOSTA DI ${reviewedName.toUpperCase()}`}
           </small>
 
           <strong>
@@ -1366,15 +1597,21 @@ function AnswerReview({
             </small>
 
             <h2>
-              La tua partecipazione
+              {isMine
+                ? "La tua partecipazione"
+                : `Partecipazione di ${reviewedName}`}
             </h2>
           </div>
 
           <button
             className="reviewClose"
             onClick={onClose}
+            aria-label="Chiudi"
           >
-            ×
+            <Icon
+              name="close"
+              size={19}
+            />
           </button>
         </div>
 
@@ -1419,7 +1656,11 @@ function AnswerReview({
 
         <section className="reviewSection">
           <h3>
-            ⚽ DOMANDE PARTITA
+            <Icon
+              name="ball"
+              size={20}
+            />
+            DOMANDE PARTITA
           </h3>
 
           {matchQuestions.map(
@@ -1434,7 +1675,11 @@ function AnswerReview({
 
         <section className="reviewSection">
           <h3>
-            👤 DOMANDE GIOCATORE
+            <Icon
+              name="user"
+              size={20}
+            />
+            DOMANDE GIOCATORE
           </h3>
 
           {playerQuestions.map(
@@ -1459,7 +1704,7 @@ function AnswerReview({
 }
 
 /* =========================================================
-   RANKING
+   RANKING CLASSIFICA GENERALE
    ========================================================= */
 
 function Rank({
@@ -1479,9 +1724,13 @@ function Rank({
         </div>
 
         <div className="empty">
-          <div className="bigEmoji">🏆</div>
+          <div className="bigEmoji">
+            <Icon name="trophy" size={48} />
+          </div>
 
-          <h2>Risultati non ancora pubblicati</h2>
+          <h2>
+            Risultati non ancora pubblicati
+          </h2>
 
           <p>
             L'organizzatore deve prima correggere le
@@ -1509,6 +1758,7 @@ function Rank({
       <div className="title">
         <small>SETTIMANA #{week.number}</small>
         <h1>Classifica</h1>
+
         <p className="rankingHint">
           Clicca su un giocatore per vedere le sue risposte.
         </p>
@@ -1527,7 +1777,9 @@ function Rank({
                   : "row clickableRow"
               }
               key={attempt.id || attempt.username}
-              onClick={() => setReviewAttempt(attempt)}
+              onClick={() =>
+                setReviewAttempt(attempt)
+              }
             >
               <b>{index + 1}</b>
 
@@ -1547,7 +1799,9 @@ function Rank({
                 </em>
               </span>
 
-              <strong>{attempt.final_score || 0}</strong>
+              <strong>
+                {attempt.final_score || 0}
+              </strong>
             </div>
           );
         })}
@@ -1563,9 +1817,206 @@ function Rank({
         <AnswerReview
           week={week}
           attempt={reviewAttempt}
-          onClose={() => setReviewAttempt(null)}
+          profile={profile}
+          onClose={() =>
+            setReviewAttempt(null)
+          }
         />
       )}
+    </div>
+  );
+}
+
+/* =========================================================
+   PRONOSTICI RANKING
+   ========================================================= */
+
+function PronosticiRank({
+  profile,
+  setPage,
+}) {
+  const [profiles, setProfiles] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      setError("");
+
+      try {
+        const data =
+          await dbPublicProfiles();
+
+        if (!cancelled) {
+          setProfiles(data);
+        }
+      } catch (err) {
+        console.error(err);
+
+        if (!cancelled) {
+          setError(
+            "Impossibile caricare la classifica dei pronostici."
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const rows = [...profiles].sort(
+    (a, b) => {
+      const diff =
+        Number(
+          b.pronostici_indovinati || 0
+        ) -
+        Number(
+          a.pronostici_indovinati || 0
+        );
+
+      if (diff !== 0) return diff;
+
+      return String(
+        a.name ||
+          a.username ||
+          ""
+      ).localeCompare(
+        String(
+          b.name ||
+            b.username ||
+            ""
+        )
+      );
+    }
+  );
+
+  return (
+    <div className="wrap">
+      <div className="title">
+        <small>FANTALUCK</small>
+
+        <h1>
+          Pronostici
+        </h1>
+
+        <p className="rankingHint">
+          Classifica dei pronostici indovinati.
+        </p>
+      </div>
+
+      <div className="pronosticiRankingHeader">
+        <div className="pronosticiRankingIcon">
+          <Icon
+            name="target"
+            size={27}
+          />
+        </div>
+
+        <div>
+          <strong>
+            PRONOSTICI INDOVINATI
+          </strong>
+
+          <span>
+            Tutti i giocatori
+          </span>
+        </div>
+      </div>
+
+      {loading && (
+        <div className="empty">
+          Caricamento classifica...
+        </div>
+      )}
+
+      {error && !loading && (
+        <div className="error">
+          {error}
+        </div>
+      )}
+
+      {!loading &&
+        !error &&
+        rows.length > 0 && (
+          <div className="table pronosticiRankingTable">
+            {rows.map(
+              (player, index) => {
+                const isMine =
+                  player.username ===
+                  profile?.username;
+
+                return (
+                  <div
+                    className={
+                      isMine
+                        ? "row currentPlayer pronosticiRankingRow"
+                        : "row pronosticiRankingRow"
+                    }
+                    key={
+                      player.id ||
+                      player.username
+                    }
+                  >
+                    <b>
+                      {index + 1}
+                    </b>
+
+                    <span>
+                      <strong>
+                        {player.name ||
+                          player.username}
+                      </strong>
+
+                      <small>
+                        @{player.username}
+                      </small>
+                    </span>
+
+                    <strong className="pronosticiRankingValue">
+                      {Number(
+                        player.pronostici_indovinati ||
+                          0
+                      )}
+                    </strong>
+                  </div>
+                );
+              }
+            )}
+          </div>
+        )}
+
+      {!loading &&
+        !error &&
+        !rows.length && (
+          <div className="empty">
+            Nessun giocatore trovato.
+          </div>
+        )}
+
+      <button
+        className="backButton"
+        onClick={() =>
+          setPage("home")
+        }
+      >
+        ← TORNA ALLA HOME
+      </button>
     </div>
   );
 }
@@ -1875,11 +2326,15 @@ function Admin({
   const [userBusy, setUserBusy] =
     useState(false);
 
-  const [userError, setUserError] =
-    useState("");
+  const [
+    userError,
+    setUserError,
+  ] = useState("");
 
-  const [pronosticiBusyId, setPronosticiBusyId] =
-    useState(null);
+  const [
+    pronosticiBusyId,
+    setPronosticiBusyId,
+  ] = useState(null);
 
   const reloadParticipants =
     () =>
@@ -1897,25 +2352,35 @@ function Admin({
      PRONOSTICI INDOVINATI
      ------------------------------------------------------- */
 
-  const changePronostici = async (userId, delta) => {
+  const changePronostici = async (
+    userId,
+    delta
+  ) => {
     if (pronosticiBusyId) return;
 
     setPronosticiBusyId(userId);
 
     try {
-      const data = await updatePronostici(userId, delta);
+      const data =
+        await updatePronostici(
+          userId,
+          delta
+        );
 
       if (data?.profile) {
-        setParticipants((current) =>
-          current.map((p) =>
-            p.id === data.profile.id
-              ? {
-                  ...p,
-                  pronostici_indovinati:
-                    data.profile.pronostici_indovinati,
-                }
-              : p
-          )
+        setParticipants(
+          (current) =>
+            current.map((p) =>
+              p.id ===
+              data.profile.id
+                ? {
+                    ...p,
+                    pronostici_indovinati:
+                      data.profile
+                        .pronostici_indovinati,
+                  }
+                : p
+            )
         );
       }
     } catch (err) {
@@ -2729,7 +3194,7 @@ function Admin({
               </label>
 
               <QuestionEditor
-                title="⚽ DOMANDE PARTITA — 10"
+                title="DOMANDE PARTITA — 10"
                 questions={
                   editingWeek.matchQuestions
                 }
@@ -2745,7 +3210,7 @@ function Admin({
               />
 
               <QuestionEditor
-                title="👤 DOMANDE GIOCATORE — 10"
+                title="DOMANDE GIOCATORE — 10"
                 questions={
                   editingWeek.playerQuestions
                 }
@@ -2761,7 +3226,11 @@ function Admin({
               />
 
               <div className="correctInfo">
-                💡 Puoi selezionare
+                <Icon
+                  name="info"
+                  size={18}
+                />
+                Puoi selezionare
                 una o più risposte
                 corrette per ogni
                 domanda.
@@ -3135,7 +3604,10 @@ function App() {
   if (loading) {
     return (
       <div className="loading">
-        🍀
+        <Icon
+          name="target"
+          size={38}
+        />
       </div>
     );
   }
@@ -3155,7 +3627,11 @@ function App() {
     <>
       <header>
         <div className="brand">
-          🍀 FANTALUCK
+          <Icon
+            name="target"
+            size={22}
+          />
+          FANTALUCK
         </div>
 
         <span>
@@ -3207,6 +3683,13 @@ function App() {
           week={activeWeek}
           attempts={attempts}
           profile={profile}
+        />
+      )}
+
+      {page === "pronostici" && (
+        <PronosticiRank
+          profile={profile}
+          setPage={setPage}
         />
       )}
 
