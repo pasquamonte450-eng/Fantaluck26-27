@@ -349,15 +349,6 @@ async function dbAllProfiles() {
   return data || [];
 }
 
-/*
- * PROFILI PUBBLICI
- *
- * Usa la view profiles_public per mostrare soltanto:
- * id, username, name, pronostici_indovinati
- *
- * Non viene usata la tabella profiles direttamente
- * nella classifica pubblica.
- */
 async function dbPublicProfiles() {
   const { data, error } = await supabase
     .from("profiles_public")
@@ -577,14 +568,40 @@ function Login({ onLoggedIn }) {
         password,
       });
 
-    setLoading(false);
-
     if (authError || !data?.user) {
+      setLoading(false);
       setError("Username o password non validi.");
       return;
     }
 
-    onLoggedIn();
+    try {
+      const profile = await dbProfile(data.user.id);
+
+      if (profile.blocked === true) {
+        await supabase.auth.signOut();
+
+        setLoading(false);
+
+        setError(
+          "ACCOUNT BLOCCATO. Contatta l'organizzatore."
+        );
+
+        return;
+      }
+
+      setLoading(false);
+      onLoggedIn();
+    } catch (err) {
+      console.error(err);
+
+      await supabase.auth.signOut();
+
+      setLoading(false);
+
+      setError(
+        "Impossibile verificare lo stato dell'account."
+      );
+    }
   };
 
   return (
@@ -1729,14 +1746,6 @@ function Rank({
   const [rankError, setRankError] =
     useState("");
 
-  /*
-   * Ricarica gli attempt direttamente da Supabase
-   * quando viene aperta/cambiata la settimana.
-   *
-   * Questo permette alla classifica di vedere
-   * anche le partecipazioni degli altri utenti
-   * dopo la pubblicazione.
-   */
   useEffect(() => {
     if (!week?.id) {
       setRankAttempts([]);
@@ -2449,6 +2458,55 @@ function Admin({
     }
   };
 
+  /* =======================================================
+     BLOCCA / SBLOCCA UTENTE
+     ======================================================= */
+
+  const toggleUserBlock = async (
+    username,
+    currentlyBlocked
+  ) => {
+    const action = currentlyBlocked
+      ? "sbloccare"
+      : "bloccare";
+
+    const confirmed = window.confirm(
+      `Vuoi ${action} ${username}?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const data = await callFunction(
+        "bloccautente",
+        {
+          username,
+          blocked: !currentlyBlocked,
+        }
+      );
+
+      if (data?.profile) {
+        setParticipants(
+          (current) =>
+            current.map((p) =>
+              p.id === data.profile.id
+                ? {
+                    ...p,
+                    blocked:
+                      data.profile.blocked,
+                  }
+                : p
+            )
+        );
+      }
+    } catch (err) {
+      alert(
+        err.message ||
+          "Impossibile modificare lo stato dell'account."
+      );
+    }
+  };
+
   const addUser = async (event) => {
     event.preventDefault();
 
@@ -2499,6 +2557,10 @@ function Admin({
       setUserBusy(false);
     }
   };
+
+  /* =======================================================
+     ELIMINAZIONE PERMANENTE — INVARIATA
+     ======================================================= */
 
   const removeUser = async (
     username
@@ -3054,6 +3116,18 @@ function Admin({
                       @{p.username} · {p.role}
                     </small>
 
+                    <small
+                      className={
+                        p.blocked
+                          ? "adminUserStatus blocked"
+                          : "adminUserStatus active"
+                      }
+                    >
+                      {p.blocked
+                        ? "● ACCOUNT BLOCCATO"
+                        : "● ACCOUNT ATTIVO"}
+                    </small>
+
                     <small className="adminPronosticiLabel">
                       PRONOSTICI INDOVINATI
                     </small>
@@ -3099,6 +3173,25 @@ function Admin({
                           ▼
                         </button>
                       </div>
+
+                      <button
+                        type="button"
+                        className={
+                          p.blocked
+                            ? "userBlockButton unblock"
+                            : "userBlockButton"
+                        }
+                        onClick={() =>
+                          toggleUserBlock(
+                            p.username,
+                            Boolean(p.blocked)
+                          )
+                        }
+                      >
+                        {p.blocked
+                          ? "SBLOCCA"
+                          : "BLOCCA"}
+                      </button>
 
                       <button
                         className="danger"
@@ -3445,6 +3538,22 @@ function App() {
 
         if (cancelled) return;
 
+        /* =================================================
+           CONTROLLO ACCOUNT BLOCCATO
+           ================================================= */
+
+        if (loadedProfile.blocked === true) {
+          await supabase.auth.signOut();
+
+          if (!cancelled) {
+            setProfile(null);
+            setWeeks([]);
+            setSession(null);
+          }
+
+          return;
+        }
+
         setProfile(
           loadedProfile
         );
@@ -3580,6 +3689,8 @@ function App() {
 
       setPage("home");
       setAttempts([]);
+      setProfile(null);
+      setSession(null);
     };
 
   /* -------------------------------------------------------
