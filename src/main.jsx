@@ -55,6 +55,7 @@ function Icon({ name, size = 22, strokeWidth = 2 }) {
     strokeLinecap: "round",
     strokeLinejoin: "round",
     "aria-hidden": true,
+    className: "flIcon",
   };
 
   switch (name) {
@@ -173,6 +174,14 @@ function Icon({ name, size = 22, strokeWidth = 2 }) {
         <svg {...common}>
           <path d="M5 12h13" />
           <path d="m13 6 6 6-6 6" />
+        </svg>
+      );
+
+    case "arrow-left":
+      return (
+        <svg {...common}>
+          <path d="M19 12H5" />
+          <path d="m11 6-6 6 6 6" />
         </svg>
       );
 
@@ -352,9 +361,7 @@ async function dbAllProfiles() {
 async function dbPublicProfiles() {
   const { data, error } = await supabase
     .from("profiles_public")
-    .select(
-      "id, username, name, pronostici_indovinati"
-    )
+    .select("id, username, name, pronostici_indovinati")
     .order("pronostici_indovinati", {
       ascending: false,
     })
@@ -798,10 +805,6 @@ function Home({
           </span>
         </div>
 
-        {/* -------------------------------------------------
-            PRONOSTICI INDOVINATI
-            Cliccando l'icona si apre la classifica
-        ------------------------------------------------- */}
         <div className="card pronosticiCard">
           <div className="pronosticiCardTop">
             <small>PRONOSTICI INDOVINATI</small>
@@ -1122,7 +1125,8 @@ function Quiz({
               submitting
             }
           >
-            ← INDIETRO
+            <Icon name="arrow-left" size={16} />
+            INDIETRO
           </button>
 
           <button
@@ -1135,7 +1139,10 @@ function Quiz({
               : index ===
                 questions.length - 1
               ? "VAI AI RIGORI"
-              : "AVANTI →"}
+              : "AVANTI"}
+            {!submitting && (
+              <Icon name="arrow" size={16} />
+            )}
           </button>
         </div>
       </div>
@@ -1405,8 +1412,9 @@ function Rigori({
               }
             >
               {result.goal
-                ? "PROSSIMO RIGORE →"
-                : "CONTINUA →"}
+                ? "PROSSIMO RIGORE"
+                : "CONTINUA"}
+              <Icon name="arrow" size={16} />
             </button>
           </div>
         )}
@@ -1715,6 +1723,51 @@ function Rank({
   const [reviewAttempt, setReviewAttempt] =
     useState(null);
 
+  const [rankAttempts, setRankAttempts] =
+    useState(attempts || []);
+
+  const [rankError, setRankError] =
+    useState("");
+
+  /*
+   * Ricarica gli attempt direttamente da Supabase
+   * quando viene aperta/cambiata la settimana.
+   *
+   * Questo permette alla classifica di vedere
+   * anche le partecipazioni degli altri utenti
+   * dopo la pubblicazione.
+   */
+  useEffect(() => {
+    if (!week?.id) {
+      setRankAttempts([]);
+      return;
+    }
+
+    let cancelled = false;
+
+    setRankError("");
+
+    dbAttempts(week.id)
+      .then((data) => {
+        if (!cancelled) {
+          setRankAttempts(data || []);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+
+        if (!cancelled) {
+          setRankError(
+            "Impossibile aggiornare la classifica."
+          );
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [week?.id]);
+
   if (!week?.results_published) {
     return (
       <div className="wrap">
@@ -1741,7 +1794,7 @@ function Rank({
     );
   }
 
-  const rows = [...attempts]
+  const rows = [...rankAttempts]
     .filter(
       (attempt) =>
         attempt.results_published === true ||
@@ -1763,6 +1816,12 @@ function Rank({
           Clicca su un giocatore per vedere le sue risposte.
         </p>
       </div>
+
+      {rankError && (
+        <div className="error">
+          {rankError}
+        </div>
+      )}
 
       <div className="table">
         {rows.map((attempt, index) => {
@@ -1792,11 +1851,11 @@ function Rank({
                   {attempt.correct_answers || 0}/20 corrette · {attempt.goals || 0} gol
                 </small>
 
-                <em>
+                <span className="answerReviewHint">
                   {isMine
                     ? "CLICCA PER RIVEDERE LE RISPOSTE"
                     : "CLICCA PER VEDERE LE RISPOSTE"}
-                </em>
+                </span>
               </span>
 
               <strong>
@@ -2015,7 +2074,8 @@ function PronosticiRank({
           setPage("home")
         }
       >
-        ← TORNA ALLA HOME
+        <Icon name="arrow-left" size={16} />
+        TORNA ALLA HOME
       </button>
     </div>
   );
@@ -2348,10 +2408,6 @@ function Admin({
     }
   }, [tab]);
 
-  /* -------------------------------------------------------
-     PRONOSTICI INDOVINATI
-     ------------------------------------------------------- */
-
   const changePronostici = async (
     userId,
     delta
@@ -2392,10 +2448,6 @@ function Admin({
       setPronosticiBusyId(null);
     }
   };
-
-  /* -------------------------------------------------------
-     CREA UTENTE
-     ------------------------------------------------------- */
 
   const addUser = async (event) => {
     event.preventDefault();
@@ -2448,10 +2500,6 @@ function Admin({
     }
   };
 
-  /* -------------------------------------------------------
-     ELIMINA UTENTE
-     ------------------------------------------------------- */
-
   const removeUser = async (
     username
   ) => {
@@ -2486,10 +2534,6 @@ function Admin({
         w.id === selectedWeekId
     );
 
-  /* -------------------------------------------------------
-     CREA SETTIMANA
-     ------------------------------------------------------- */
-
   const createNewWeek = () => {
     const highest =
       weeks.length > 0
@@ -2508,10 +2552,6 @@ function Admin({
     setSelectedWeekId(week.id);
     setTab("editWeek");
   };
-
-  /* -------------------------------------------------------
-     SALVA SETTIMANA
-     ------------------------------------------------------- */
 
   const saveCurrentWeek =
     async () => {
@@ -2550,10 +2590,6 @@ function Admin({
       }
     };
 
-  /* -------------------------------------------------------
-     MODIFICA SETTIMANA
-     ------------------------------------------------------- */
-
   const editWeek = (week) => {
     setEditingWeek(
       normalizeWeek(week)
@@ -2565,10 +2601,6 @@ function Admin({
 
     setTab("editWeek");
   };
-
-  /* -------------------------------------------------------
-     ELIMINA SETTIMANA
-     ------------------------------------------------------- */
 
   const removeWeek =
     async (week) => {
@@ -2595,10 +2627,6 @@ function Admin({
       }
     };
 
-  /* -------------------------------------------------------
-     APRI / CHIUDI SETTIMANA
-     ------------------------------------------------------- */
-
   const toggleWeek =
     async (week) => {
       const current =
@@ -2617,10 +2645,6 @@ function Admin({
       await reloadWeeks();
     };
 
-  /* -------------------------------------------------------
-     RISULTATI
-     ------------------------------------------------------- */
-
   const openResults =
     async (week) => {
       setSelectedWeekId(
@@ -2635,10 +2659,6 @@ function Admin({
       setAttempts(data);
       setTab("results");
     };
-
-  /* -------------------------------------------------------
-     CONTROLLO RISPOSTE
-     ------------------------------------------------------- */
 
   const allAnswersInserted =
     (week) => {
@@ -2658,10 +2678,6 @@ function Admin({
         )
       );
     };
-
-  /* -------------------------------------------------------
-     CALCOLA E PUBBLICA
-     ------------------------------------------------------- */
 
   const calculateAndPublish =
     async (week) => {
@@ -2845,10 +2861,6 @@ function Admin({
         </div>
       )}
 
-      {/* ---------------------------------------------------
-          SETTIMANE
-      --------------------------------------------------- */}
-
       {tab === "weeks" && (
         <>
           <button
@@ -2963,10 +2975,6 @@ function Admin({
           </div>
         </>
       )}
-
-      {/* ---------------------------------------------------
-          UTENTI
-      --------------------------------------------------- */}
 
       {tab === "users" && (
         <>
@@ -3115,10 +3123,6 @@ function Admin({
         </>
       )}
 
-      {/* ---------------------------------------------------
-          EDIT SETTIMANA
-      --------------------------------------------------- */}
-
       {tab === "editWeek" &&
         editingWeek && (
           <div>
@@ -3128,7 +3132,8 @@ function Admin({
                 setTab("weeks")
               }
             >
-              ← TORNA ALLE SETTIMANE
+              <Icon name="arrow-left" size={16} />
+              TORNA ALLE SETTIMANE
             </button>
 
             <div className="adminEditor">
@@ -3251,10 +3256,6 @@ function Admin({
           </div>
         )}
 
-      {/* ---------------------------------------------------
-          RISULTATI
-      --------------------------------------------------- */}
-
       {tab === "results" &&
         selectedWeek && (
           <div>
@@ -3264,7 +3265,8 @@ function Admin({
                 setTab("weeks")
               }
             >
-              ← TORNA ALLE SETTIMANE
+              <Icon name="arrow-left" size={16} />
+              TORNA ALLE SETTIMANE
             </button>
 
             <div className="resultsAdmin">
