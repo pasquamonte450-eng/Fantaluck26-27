@@ -1,3 +1,4 @@
+```css
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700;800&display=swap');
 
 /* =========================================================
@@ -3050,6 +3051,9 @@ button.sectionAction + button.sectionAction {
   backdrop-filter:
     blur(13px);
 
+  -webkit-backdrop-filter:
+    blur(13px);
+
   animation:
     reviewOverlayIn .18s ease;
 }
@@ -3076,10 +3080,13 @@ button.sectionAction + button.sectionAction {
   background:
     linear-gradient(
       145deg,
-      #123a22 0%,
-      #0a2416 55%,
-      #06130c 100%
+      #10291a 0%,
+      #081a10 55%,
+      #050e09 100%
     ) !important;
+
+  background-color:
+    #081a10 !important;
 
   border:
     1px solid rgba(53,212,122,.30) !important;
@@ -3087,13 +3094,28 @@ button.sectionAction + button.sectionAction {
   border-radius: 23px;
 
   box-shadow:
-    0 40px 120px rgba(0,0,0,.65),
+    0 40px 120px rgba(0,0,0,.75),
     inset 0 1px 0 rgba(255,255,255,.035);
 
-  color: #f5f7f5;
+  color: #f5f7f5 !important;
 
   animation:
     reviewModalIn .22s ease;
+}
+
+.reviewModal * {
+  box-sizing: border-box;
+}
+
+.reviewModal h1,
+.reviewModal h2,
+.reviewModal h3,
+.reviewModal h4,
+.reviewModal p,
+.reviewModal span,
+.reviewModal small,
+.reviewModal strong {
+  background: transparent !important;
 }
 
 @keyframes reviewModalIn {
@@ -3123,12 +3145,14 @@ button.sectionAction + button.sectionAction {
   padding-bottom: 18px;
   margin-bottom: 18px;
 
+  background: transparent !important;
+
   border-bottom:
-    1px solid rgba(53,212,122,.17);
+    1px solid rgba(53,212,122,.17) !important;
 }
 
 .reviewHeader small {
-  color: var(--gold);
+  color: var(--gold) !important;
 
   font-size: 8px;
   font-weight: 800;
@@ -3139,7 +3163,7 @@ button.sectionAction + button.sectionAction {
 .reviewHeader h2 {
   margin: 5px 0 0;
 
-  color: #f5f8f5;
+  color: #f5f8f5 !important;
 
   font-family: Oswald, sans-serif;
 
@@ -3164,12 +3188,17 @@ button.sectionAction + button.sectionAction {
   color: #a8b9ae !important;
 
   background:
-    #0d2a19 !important;
+    #0c2416 !important;
+
+  background-image:
+    none !important;
 
   border:
     1px solid rgba(53,212,122,.25) !important;
 
   border-radius: 50%;
+
+  box-shadow: none !important;
 
   transition: .15s ease;
 }
@@ -3195,27 +3224,32 @@ button.sectionAction + button.sectionAction {
   gap: 9px;
 
   margin-bottom: 25px;
+
+  background: transparent !important;
 }
 
 .reviewSummary > div {
   padding: 15px;
 
   background:
-    #0d2a19 !important;
+    #081a10 !important;
+
+  background-image:
+    none !important;
 
   border:
-    1px solid rgba(53,212,122,.22) !important;
+    1px solid rgba(76,155,101,.18) !important;
 
   border-radius: 12px;
 
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.018);
+    none !important;
 }
 
 .reviewSummary small {
   display: block;
 
-  color: #789083;
+  color: #698073 !important;
 
   font-size: 8px;
 
@@ -3229,7 +3263,7 @@ button.sectionAction + button.sectionAction {
 
   margin-top: 4px;
 
-  color: var(--gold);
+  color: var(--gold) !important;
 
   font-family: Oswald, sans-serif;
 
@@ -3238,6 +3272,8 @@ button.sectionAction + button.sectionAction {
 
 .reviewSection {
   margin-top: 25px;
+
+  background: transparent !important;
 }
 
 .reviewSection > h3 {
@@ -3249,7 +3285,9 @@ button.sectionAction + button.sectionAction {
 
   margin: 0 0 11px;
 
-  color: var(--gold);
+  color: var(--gold) !important;
+
+  background: transparent !important;
 
   font-family: Oswald, sans-serif;
 
@@ -3264,31 +3302,43 @@ button.sectionAction + button.sectionAction {
   padding: 15px;
 
   background:
-    #0d2a19 !important;
+    #081a10 !important;
+
+  background-color:
+    #081a10 !important;
+
+  background-image:
+    none !important;
 
   border:
-    1px solid rgba(53,212,122,.20) !important;
+    1px solid rgba(76,155,101,.15) !important;
 
   border-radius: 13px;
 
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.015);
+    none !important;
 }
 
 .reviewCorrect {
   border-color:
-    rgba(53,212,122,.42) !important;
+    rgba(75,153,94,.45) !important;
 
   background:
-    #10351f !important;
+    rgba(31,88,48,.16) !important;
+
+  background-color:
+    rgba(31,88,48,.16) !important;
 }
 
 .reviewWrong {
   border-color:
-    rgba(255,98,84,.30) !important;
+    rgba(154,75,61,.45) !important;
 
   background:
-    #291815 !important;
+    rgba(85,35,28,.16) !important;
+
+  background-color:
+    rgba(85,35,28,.16) !important;
 }
 
 .reviewQuestionTop {
@@ -3300,6 +3350,8 @@ button.sectionAction + button.sectionAction {
 
   margin-bottom: 8px;
 
+  background: transparent !important;
+
   font-family: Oswald, sans-serif;
 
   font-size: 10px;
@@ -3308,21 +3360,29 @@ button.sectionAction + button.sectionAction {
 }
 
 .reviewQuestionTop span {
-  color: #71877a;
+  color: #64796b !important;
+
+  background: transparent !important;
 }
 
 .reviewCorrect .reviewQuestionTop strong {
-  color: #6ee28c;
+  color: #6ee28c !important;
+
+  background: transparent !important;
 }
 
 .reviewWrong .reviewQuestionTop strong {
-  color: #ff8f82;
+  color: #ff8f82 !important;
+
+  background: transparent !important;
 }
 
 .reviewQuestion h3 {
   margin: 0 0 11px;
 
-  color: #dce6df;
+  color: #dce6df !important;
+
+  background: transparent !important;
 
   font-size: 14px;
 
@@ -3336,10 +3396,16 @@ button.sectionAction + button.sectionAction {
   padding: 9px 11px;
 
   background:
-    #092217 !important;
+    rgba(255,255,255,.025) !important;
+
+  background-color:
+    rgba(255,255,255,.025) !important;
+
+  background-image:
+    none !important;
 
   border:
-    1px solid rgba(53,212,122,.13) !important;
+    1px solid rgba(255,255,255,.045) !important;
 
   border-radius: 8px;
 }
@@ -3350,7 +3416,9 @@ button.sectionAction + button.sectionAction {
 
   margin-bottom: 3px;
 
-  color: #71877a;
+  color: #61766a !important;
+
+  background: transparent !important;
 
   font-size: 8px;
 
@@ -3359,7 +3427,9 @@ button.sectionAction + button.sectionAction {
 
 .reviewAnswer strong,
 .reviewCorrectAnswer strong {
-  color: #cbd8cf;
+  color: #c6d3ca !important;
+
+  background: transparent !important;
 
   font-size: 12px;
 
@@ -3368,10 +3438,10 @@ button.sectionAction + button.sectionAction {
 
 .reviewCorrectAnswer {
   border-color:
-    rgba(53,212,122,.25) !important;
+    rgba(112,201,135,.15) !important;
 }
 
-.reviewBottomClose {
+.reviewModal .reviewBottomClose {
   width: 100%;
 
   margin-top: 20px;
@@ -3385,15 +3455,25 @@ button.sectionAction + button.sectionAction {
   appearance: none !important;
   -webkit-appearance: none !important;
 
-  color: #061009 !important;
+  color: #041008 !important;
 
   background:
     linear-gradient(
       135deg,
-      #65ed99,
-      #35d47a 50%,
-      #20ad5d
+      #35d47a,
+      #1fa85b
     ) !important;
+
+  background-image:
+    linear-gradient(
+      135deg,
+      #35d47a,
+      #1fa85b
+    ) !important;
+
+  border: 0 !important;
+
+  box-shadow: none !important;
 }
 
 /* =========================================================
@@ -4945,9 +5025,12 @@ nav button.active::before {
     background:
       linear-gradient(
         145deg,
-        #123a22,
-        #092316
+        #10291a,
+        #081a10
       ) !important;
+
+    background-color:
+      #081a10 !important;
   }
 
   .reviewHeader h2 {
@@ -4965,7 +5048,7 @@ nav button.active::before {
     padding: 10px 8px;
 
     background:
-      #0d2a19 !important;
+      #081a10 !important;
   }
 
   .reviewSummary strong {
@@ -4976,13 +5059,34 @@ nav button.active::before {
     padding: 12px;
 
     background:
-      #0d2a19 !important;
+      #081a10 !important;
   }
 
   .reviewAnswer,
   .reviewCorrectAnswer {
     background:
-      #092217 !important;
+      rgba(255,255,255,.025) !important;
+  }
+
+  /* =====================================================
+     STORICO — MOBILE
+     ===================================================== */
+
+  .historyCard {
+    width: 100% !important;
+  }
+
+  .historyWeek strong,
+  .historyScore strong {
+    font-size: 20px !important;
+  }
+
+  .historyMain > strong {
+    font-size: 12px !important;
+  }
+
+  .historyMain > span {
+    font-size: 9px !important;
   }
 
   nav {
@@ -5216,44 +5320,525 @@ nav button.active::before {
     padding:
       6px 8px;
   }
+
+  /* =====================================================
+     STORICO — SMALL PHONE
+     ===================================================== */
+
+  .historyCard {
+    gap: 8px !important;
+    padding: 11px !important;
+  }
+
+  .historyWeek small,
+  .historyScore small {
+    font-size: 6px !important;
+  }
+
+  .historyWeek strong,
+  .historyScore strong {
+    font-size: 18px !important;
+  }
+
+  .historyMain > strong {
+    font-size: 11px !important;
+  }
+
+  .historyMain > span {
+    font-size: 8px !important;
+  }
 }
 
 /* =========================================================
    FINAL DARK GREEN OVERRIDE
-   REVIEW + STORICO + COLLEGAMENTI
+   REVIEW + STORICO
    ========================================================= */
 
-/* Review: impedisce definitivamente gli sfondi bianchi */
+/* ---------------------------------------------------------
+   REVIEW — FORZA TUTTO IL MODALE IN DARK MODE
+   --------------------------------------------------------- */
 
-.reviewModal,
-.reviewModal * {
-  -webkit-tap-highlight-color: transparent;
+.reviewOverlay {
+  background:
+    rgba(1,6,4,.94) !important;
+
+  backdrop-filter:
+    blur(14px) !important;
+
+  -webkit-backdrop-filter:
+    blur(14px) !important;
 }
 
-.reviewModal button {
+.reviewModal {
   appearance: none !important;
   -webkit-appearance: none !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      #10291a 0%,
+      #081a10 55%,
+      #050e09 100%
+    ) !important;
+
+  background-color:
+    #081a10 !important;
+
+  background-image:
+    linear-gradient(
+      145deg,
+      #10291a 0%,
+      #081a10 55%,
+      #050e09 100%
+    ) !important;
+
+  color:
+    #f5f7f5 !important;
+
+  border:
+    1px solid rgba(76,155,101,.28) !important;
+
+  box-shadow:
+    0 40px 120px rgba(0,0,0,.75),
+    inset 0 1px 0 rgba(255,255,255,.035) !important;
 }
 
-.reviewModal .reviewSummary > div,
-.reviewModal .reviewQuestion {
-  background-color: #0d2a19 !important;
+.reviewModal h1,
+.reviewModal h2,
+.reviewModal h3,
+.reviewModal h4,
+.reviewModal p,
+.reviewModal span,
+.reviewModal small,
+.reviewModal strong,
+.reviewModal label {
+  background:
+    transparent !important;
 }
 
-.reviewModal .reviewAnswer,
-.reviewModal .reviewCorrectAnswer {
-  background-color: #092217 !important;
+.reviewHeader {
+  background:
+    transparent !important;
+
+  border-bottom-color:
+    rgba(76,155,101,.17) !important;
 }
 
-.reviewModal .reviewCorrect {
-  background-color: #10351f !important;
+.reviewHeader small {
+  color:
+    #f4c84e !important;
 }
 
-.reviewModal .reviewWrong {
-  background-color: #291815 !important;
+.reviewHeader h2 {
+  color:
+    #f5f7f5 !important;
 }
 
-/* Storico */
+.reviewModal .reviewClose {
+  appearance:
+    none !important;
+
+  -webkit-appearance:
+    none !important;
+
+  background:
+    #0c2416 !important;
+
+  background-color:
+    #0c2416 !important;
+
+  background-image:
+    none !important;
+
+  color:
+    #a8b9ae !important;
+
+  border:
+    1px solid rgba(83,153,103,.28) !important;
+
+  box-shadow:
+    none !important;
+}
+
+.reviewSummary {
+  background:
+    transparent !important;
+}
+
+.reviewSummary > div {
+  background:
+    #081a10 !important;
+
+  background-color:
+    #081a10 !important;
+
+  background-image:
+    none !important;
+
+  border:
+    1px solid rgba(76,155,101,.18) !important;
+
+  box-shadow:
+    none !important;
+}
+
+.reviewSummary small {
+  color:
+    #698073 !important;
+
+  background:
+    transparent !important;
+}
+
+.reviewSummary strong {
+  color:
+    #f4c84e !important;
+
+  background:
+    transparent !important;
+}
+
+.reviewSection {
+  background:
+    transparent !important;
+}
+
+.reviewSection > h3 {
+  color:
+    #f4c84e !important;
+
+  background:
+    transparent !important;
+}
+
+.reviewQuestion {
+  background:
+    #081a10 !important;
+
+  background-color:
+    #081a10 !important;
+
+  background-image:
+    none !important;
+
+  border:
+    1px solid rgba(76,155,101,.15) !important;
+
+  box-shadow:
+    none !important;
+}
+
+.reviewQuestionTop {
+  background:
+    transparent !important;
+}
+
+.reviewQuestionTop span {
+  color:
+    #64796b !important;
+
+  background:
+    transparent !important;
+}
+
+.reviewQuestion h3 {
+  color:
+    #dce6df !important;
+
+  background:
+    transparent !important;
+}
+
+.reviewCorrect {
+  background:
+    rgba(31,88,48,.16) !important;
+
+  background-color:
+    rgba(31,88,48,.16) !important;
+
+  background-image:
+    none !important;
+
+  border-color:
+    rgba(75,153,94,.45) !important;
+}
+
+.reviewCorrect .reviewQuestionTop strong {
+  color:
+    #6ee28c !important;
+
+  background:
+    transparent !important;
+}
+
+.reviewWrong {
+  background:
+    rgba(85,35,28,.16) !important;
+
+  background-color:
+    rgba(85,35,28,.16) !important;
+
+  background-image:
+    none !important;
+
+  border-color:
+    rgba(154,75,61,.45) !important;
+}
+
+.reviewWrong .reviewQuestionTop strong {
+  color:
+    #ff8f82 !important;
+
+  background:
+    transparent !important;
+}
+
+.reviewAnswer,
+.reviewCorrectAnswer {
+  background:
+    rgba(255,255,255,.025) !important;
+
+  background-color:
+    rgba(255,255,255,.025) !important;
+
+  background-image:
+    none !important;
+
+  border-color:
+    rgba(255,255,255,.045) !important;
+}
+
+.reviewAnswer small,
+.reviewCorrectAnswer small {
+  color:
+    #61766a !important;
+
+  background:
+    transparent !important;
+}
+
+.reviewAnswer strong,
+.reviewCorrectAnswer strong {
+  color:
+    #c6d3ca !important;
+
+  background:
+    transparent !important;
+}
+
+.reviewCorrectAnswer {
+  border-color:
+    rgba(112,201,135,.15) !important;
+}
+
+.reviewModal .reviewBottomClose {
+  appearance:
+    none !important;
+
+  -webkit-appearance:
+    none !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #35d47a,
+      #1fa85b
+    ) !important;
+
+  background-color:
+    #35d47a !important;
+
+  background-image:
+    linear-gradient(
+      135deg,
+      #35d47a,
+      #1fa85b
+    ) !important;
+
+  color:
+    #041008 !important;
+
+  border:
+    0 !important;
+
+  box-shadow:
+    none !important;
+}
+
+/* ---------------------------------------------------------
+   STORICO — QUESTO È IL FIX IMPORTANTE
+   main.jsx usa .historyCard, NON .profileHistoryCard
+   --------------------------------------------------------- */
+
+.historyList {
+  background:
+    transparent !important;
+}
+
+.historyCard {
+  appearance:
+    none !important;
+
+  -webkit-appearance:
+    none !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      #0d2517 0%,
+      #07170e 100%
+    ) !important;
+
+  background-color:
+    #07170e !important;
+
+  background-image:
+    linear-gradient(
+      145deg,
+      #0d2517 0%,
+      #07170e 100%
+    ) !important;
+
+  color:
+    #f5f7f5 !important;
+
+  border:
+    1px solid rgba(76,155,101,.18) !important;
+
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.25) !important;
+
+  font-family:
+    "Work Sans",
+    sans-serif !important;
+
+  text-align:
+    left !important;
+
+  outline:
+    none !important;
+}
+
+.historyCard:hover {
+  background:
+    linear-gradient(
+      145deg,
+      #12301d 0%,
+      #081a10 100%
+    ) !important;
+
+  background-color:
+    #081a10 !important;
+
+  background-image:
+    linear-gradient(
+      145deg,
+      #12301d 0%,
+      #081a10 100%
+    ) !important;
+
+  border-color:
+    rgba(76,155,101,.32) !important;
+}
+
+.historyCard:focus,
+.historyCard:active {
+  background:
+    linear-gradient(
+      145deg,
+      #0d2517 0%,
+      #07170e 100%
+    ) !important;
+
+  background-color:
+    #07170e !important;
+
+  background-image:
+    linear-gradient(
+      145deg,
+      #0d2517 0%,
+      #07170e 100%
+    ) !important;
+}
+
+.historyCard .historyWeek,
+.historyCard .historyMain,
+.historyCard .historyScore {
+  background:
+    transparent !important;
+
+  background-color:
+    transparent !important;
+
+  background-image:
+    none !important;
+}
+
+.historyCard .historyWeek small,
+.historyCard .historyScore small {
+  color:
+    #71857a !important;
+
+  background:
+    transparent !important;
+}
+
+.historyCard .historyWeek strong {
+  color:
+    #f4c84e !important;
+
+  background:
+    transparent !important;
+}
+
+.historyCard .historyMain > strong {
+  color:
+    #e3ece6 !important;
+
+  background:
+    transparent !important;
+}
+
+.historyCard .historyMain > span {
+  color:
+    #84998c !important;
+
+  background:
+    transparent !important;
+}
+
+.historyCard .historyScore {
+  text-align:
+    right !important;
+}
+
+.historyCard .historyScore strong {
+  color:
+    #f4c84e !important;
+
+  background:
+    transparent !important;
+}
+
+/* Evita che un CSS generico sui button renda bianca la scheda */
+
+.historyCard,
+.historyCard:hover,
+.historyCard:focus,
+.historyCard:active {
+  -webkit-tap-highlight-color:
+    transparent !important;
+
+  -webkit-appearance:
+    none !important;
+
+  appearance:
+    none !important;
+}
+
+/* ---------------------------------------------------------
+   VECCHIE CARD PROFILO — mantenute compatibili
+   --------------------------------------------------------- */
 
 .profileHistoryCard {
   background:
@@ -5263,12 +5848,18 @@ nav button.active::before {
       #092316
     ) !important;
 
+  background-color:
+    #092316 !important;
+
   border-color:
     rgba(53,212,122,.28) !important;
 }
 
 .profileHistoryCard > div {
   background:
+    #0d2a19 !important;
+
+  background-color:
     #0d2a19 !important;
 
   border-bottom-color:
@@ -5278,23 +5869,43 @@ nav button.active::before {
 .profileHistoryCard > div:hover {
   background:
     #123a22 !important;
+
+  background-color:
+    #123a22 !important;
 }
 
 .profileHistoryCard > div > span:first-child {
-  color: #e2eee5 !important;
+  color:
+    #e2eee5 !important;
 }
 
 .profileHistoryCard > div > strong {
-  color: var(--gold) !important;
+  color:
+    var(--gold) !important;
 }
 
-/* Collegamenti dello storico / sezioni */
+/* ---------------------------------------------------------
+   COLLEGAMENTI PROFILO
+   --------------------------------------------------------- */
 
 button.sectionAction {
-  appearance: none !important;
-  -webkit-appearance: none !important;
+  appearance:
+    none !important;
+
+  -webkit-appearance:
+    none !important;
 
   background:
+    linear-gradient(
+      145deg,
+      #123a22,
+      #092316
+    ) !important;
+
+  background-color:
+    #092316 !important;
+
+  background-image:
     linear-gradient(
       145deg,
       #123a22,
@@ -5304,11 +5915,22 @@ button.sectionAction {
   border-color:
     rgba(53,212,122,.28) !important;
 
-  color: #e9f3ec !important;
+  color:
+    #e9f3ec !important;
 }
 
 button.sectionAction:hover {
   background:
+    linear-gradient(
+      145deg,
+      #174629,
+      #0b2d1a
+    ) !important;
+
+  background-color:
+    #0b2d1a !important;
+
+  background-image:
     linear-gradient(
       145deg,
       #174629,
@@ -5320,14 +5942,20 @@ button.sectionAction:hover {
 }
 
 button.sectionAction small {
-  color: #72a487 !important;
+  color:
+    #72a487 !important;
 }
 
 button.sectionAction strong {
-  color: #e9f3ec !important;
+  color:
+    #e9f3ec !important;
 }
 
 button.sectionAction .icon {
-  color: var(--green) !important;
-  stroke: var(--green) !important;
+  color:
+    var(--green) !important;
+
+  stroke:
+    var(--green) !important;
 }
+```
