@@ -1182,26 +1182,6 @@ function Home({
             pronostici corretti
           </span>
         </div>
-
-        <button
-          className="card dashboardProfileCard"
-          onClick={() =>
-            setPage("profile")
-          }
-        >
-          <small>
-            LE TUE STATISTICHE
-          </small>
-
-          <strong>
-            PROFILO
-          </strong>
-
-          <span>
-            Visualizza storico e
-            statistiche
-          </span>
-        </button>
       </div>
 
       <Countdown
@@ -1950,256 +1930,6 @@ function Completed({
 }
 
 /* =========================================================
-   ANSWER REVIEW
-   ========================================================= */
-
-function AnswerReview({
-  week,
-  attempt,
-  onClose,
-  profile,
-}) {
-  const matchQuestions =
-    week?.matchQuestions || [];
-
-  const playerQuestions =
-    week?.playerQuestions || [];
-
-  const matchAnswers =
-    attempt?.match_answers || [];
-
-  const playerAnswers =
-    attempt?.player_answers || [];
-
-  const isMine =
-    attempt?.username ===
-    profile?.username;
-
-  const reviewedName =
-    attempt?.name ||
-    attempt?.username ||
-    "Giocatore";
-
-  const renderQuestion = (
-    question,
-    answer,
-    index
-  ) => {
-    const correctAnswers =
-      getCorrectAnswers(
-        question
-      );
-
-    const isCorrect =
-      Boolean(
-        answer &&
-          correctAnswers.includes(
-            answer
-          )
-      );
-
-    return (
-      <div
-        className={
-          isCorrect
-            ? "reviewQuestion reviewCorrect"
-            : "reviewQuestion reviewWrong"
-        }
-        key={
-          question?.id ||
-          index
-        }
-      >
-        <div className="reviewQuestionTop">
-          <span>
-            DOMANDA{" "}
-            {index + 1}
-          </span>
-
-          <strong>
-            {isCorrect ? (
-              <>
-                <Icon
-                  name="check"
-                  size={13}
-                />
-                CORRETTA
-              </>
-            ) : (
-              <>
-                <Icon
-                  name="x"
-                  size={13}
-                />
-                ERRATA
-              </>
-            )}
-          </strong>
-        </div>
-
-        <h3>
-          {question?.text ||
-            "Domanda"}
-        </h3>
-
-        <div className="reviewAnswer">
-          <small>
-            {isMine
-              ? "LA TUA RISPOSTA"
-              : `RISPOSTA DI ${reviewedName.toUpperCase()}`}
-          </small>
-
-          <strong>
-            {answer ||
-              "Nessuna risposta"}
-          </strong>
-        </div>
-
-        <div className="reviewCorrectAnswer">
-          <small>
-            RISPOSTA CORRETTA
-          </small>
-
-          <strong>
-            {correctAnswers.length
-              ? correctAnswers.join(
-                  " / "
-                )
-              : "Non disponibile"}
-          </strong>
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <div
-      className="reviewOverlay"
-      onMouseDown={(e) => {
-        if (
-          e.target ===
-          e.currentTarget
-        ) {
-          onClose();
-        }
-      }}
-    >
-      <div className="reviewModal">
-        <div className="reviewHeader">
-          <div>
-            <small>
-              FANTALUCK · SETTIMANA #
-              {week?.number}
-            </small>
-
-            <h2>
-              {isMine
-                ? "La tua partecipazione"
-                : `Partecipazione di ${reviewedName}`}
-            </h2>
-          </div>
-
-          <button
-            className="reviewClose"
-            onClick={onClose}
-            aria-label="Chiudi"
-          >
-            <Icon
-              name="close"
-              size={19}
-            />
-          </button>
-        </div>
-
-        <div className="reviewSummary">
-          <div>
-            <small>
-              RISPOSTE CORRETTE
-            </small>
-
-            <strong>
-              {attempt?.correct_answers ??
-                0}
-              /20
-            </strong>
-          </div>
-
-          <div>
-            <small>
-              MOLTIPLICATORE
-            </small>
-
-            <strong>
-              x
-              {Number(
-                attempt?.multiplier ||
-                  1
-              ).toFixed(2)}
-            </strong>
-          </div>
-
-          <div>
-            <small>
-              PUNTEGGIO FINALE
-            </small>
-
-            <strong>
-              {attempt?.final_score ||
-                0}
-            </strong>
-          </div>
-        </div>
-
-        <section className="reviewSection">
-          <h3>
-            <Icon
-              name="ball"
-              size={20}
-            />
-            DOMANDE PARTITA
-          </h3>
-
-          {matchQuestions.map(
-            (q, i) =>
-              renderQuestion(
-                q,
-                matchAnswers[i],
-                i
-              )
-          )}
-        </section>
-
-        <section className="reviewSection">
-          <h3>
-            <Icon
-              name="user"
-              size={20}
-            />
-            DOMANDE GIOCATORE
-          </h3>
-
-          {playerQuestions.map(
-            (q, i) =>
-              renderQuestion(
-                q,
-                playerAnswers[i],
-                i
-              )
-          )}
-        </section>
-
-        <button
-          className="reviewBottomClose"
-          onClick={onClose}
-        >
-          CHIUDI REVISIONE
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/* =========================================================
    RANKING CLASSIFICA GENERALE
    ========================================================= */
 
@@ -2208,11 +1938,6 @@ function Rank({
   attempts,
   profile,
 }) {
-  const [
-    reviewAttempt,
-    setReviewAttempt,
-  ] = useState(null);
-
   const [
     rankAttempts,
     setRankAttempts,
@@ -2351,9 +2076,7 @@ function Rank({
         </h1>
 
         <p className="rankingHint">
-          Clicca su un giocatore
-          per vedere le sue
-          risposte.
+          La classifica della settimana.
         </p>
       </div>
 
@@ -2419,17 +2142,12 @@ function Rank({
               <div
                 className={
                   isMine
-                    ? "row currentPlayer clickableRow"
-                    : "row clickableRow"
+                    ? "row currentPlayer"
+                    : "row"
                 }
                 key={
                   attempt.id ||
                   attempt.username
-                }
-                onClick={() =>
-                  setReviewAttempt(
-                    attempt
-                  )
                 }
               >
                 <b>
@@ -2450,12 +2168,6 @@ function Rank({
                       0}{" "}
                     gol
                   </small>
-
-                  <span className="answerReviewHint">
-                    {isMine
-                      ? "CLICCA PER RIVEDERE LE RISPOSTE"
-                      : "CLICCA PER VEDERE LE RISPOSTE"}
-                  </span>
                 </span>
 
                 <strong>
@@ -2474,21 +2186,6 @@ function Rank({
           </div>
         )}
       </div>
-
-      {reviewAttempt && (
-        <AnswerReview
-          week={week}
-          attempt={
-            reviewAttempt
-          }
-          profile={profile}
-          onClose={() =>
-            setReviewAttempt(
-              null
-            )
-          }
-        />
-      )}
     </div>
   );
 }
@@ -2810,8 +2507,7 @@ function ProfilePage({
         </h1>
 
         <p className="rankingHint">
-          Le tue statistiche e
-          il tuo storico.
+          Le tue statistiche.
         </p>
       </div>
 
@@ -3027,11 +2723,6 @@ function HistoryPage({
   weeks,
   setPage,
 }) {
-  const [
-    reviewAttempt,
-    setReviewAttempt,
-  ] = useState(null);
-
   const myAttempts =
     attempts
       .filter(
@@ -3094,15 +2785,9 @@ function HistoryPage({
               );
 
             return (
-              <button
+              <div
                 className="historyCard"
                 key={attempt.id}
-                onClick={() =>
-                  attempt.results_published &&
-                  setReviewAttempt(
-                    attempt
-                  )
-                }
               >
                 <div className="historyWeek">
                   <small>
@@ -3145,7 +2830,7 @@ function HistoryPage({
                       : "—"}
                   </strong>
                 </div>
-              </button>
+              </div>
             );
           }
         )}
@@ -3171,25 +2856,6 @@ function HistoryPage({
         />
         TORNA AL PROFILO
       </button>
-
-      {reviewAttempt && (
-        <AnswerReview
-          week={weeks.find(
-            (week) =>
-              week.id ===
-              reviewAttempt.week_id
-          )}
-          attempt={
-            reviewAttempt
-          }
-          profile={profile}
-          onClose={() =>
-            setReviewAttempt(
-              null
-            )
-          }
-        />
-      )}
     </div>
   );
 }
@@ -4914,7 +4580,7 @@ function App() {
   ]);
 
   /* -------------------------------------------------------
-     STORICO
+     TUTTE LE PARTECIPAZIONI
   ------------------------------------------------------- */
 
   useEffect(() => {
@@ -4933,7 +4599,7 @@ function App() {
       })
       .catch((err) => {
         console.error(
-          "Storico non disponibile:",
+          "Dati partecipazioni non disponibili:",
           err
         );
 
