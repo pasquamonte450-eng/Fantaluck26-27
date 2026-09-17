@@ -2052,6 +2052,453 @@ header > span {
 }
 
 /* =========================================================
+   CLASSIFICA — CARD PERSONALE
+   ========================================================= */
+
+.myRankCard {
+  display: grid;
+
+  grid-template-columns:
+    1.25fr
+    1fr
+    1fr;
+
+  align-items: stretch;
+
+  gap: 0;
+
+  margin-bottom: 15px;
+
+  padding: 0;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 12% 0%,
+      rgba(244,200,78,.10),
+      transparent 30%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(18,39,25,.96),
+      rgba(7,18,12,.97)
+    );
+
+  border:
+    1px solid rgba(244,200,78,.20);
+
+  border-radius: 17px;
+
+  box-shadow:
+    0 16px 40px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.myRankCard > div {
+  min-width: 0;
+
+  padding: 17px 20px 18px;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+
+  position: relative;
+}
+
+.myRankCard > div + div {
+  border-left:
+    1px solid rgba(76,155,101,.14);
+}
+
+.myRankCard small {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #708578;
+
+  font-family: "Work Sans", sans-serif;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 1.8px;
+
+  line-height: 1.1;
+
+  text-transform: uppercase;
+
+  white-space: nowrap;
+}
+
+.myRankCard strong {
+  display: block;
+
+  color: #f4f7f4;
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 30px;
+  font-weight: 600;
+
+  letter-spacing: .2px;
+
+  line-height: 1;
+}
+
+.myRankCard > div:first-child {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(244,200,78,.045),
+      transparent
+    );
+}
+
+.myRankCard > div:first-child strong {
+  color: var(--gold);
+
+  font-size: 35px;
+
+  text-shadow:
+    0 0 22px rgba(244,200,78,.10);
+}
+
+.myRankCard > div:nth-child(2) strong {
+  color: var(--green);
+
+  text-shadow:
+    0 0 20px rgba(53,212,122,.09);
+}
+
+.myRankCard > div:nth-child(3) strong {
+  color: #e8eee9;
+}
+
+.myRankCard > div:nth-child(3) small {
+  color: #6c8174;
+}
+
+/* =========================================================
+   PROFILO
+   ========================================================= */
+
+.profileHero {
+  display: flex;
+
+  align-items: center;
+
+  gap: 17px;
+
+  margin-bottom: 19px;
+
+  padding: 21px 22px;
+
+  position: relative;
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 0% 50%,
+      rgba(53,212,122,.10),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(15,35,22,.96),
+      rgba(7,18,12,.97)
+    );
+
+  border:
+    1px solid rgba(76,155,101,.22);
+
+  border-radius: 19px;
+
+  box-shadow:
+    0 16px 45px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.profileHero::after {
+  content: "";
+
+  position: absolute;
+
+  width: 130px;
+  height: 130px;
+
+  right: -55px;
+  top: -65px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid rgba(53,212,122,.10);
+
+  box-shadow:
+    0 0 0 20px rgba(53,212,122,.018),
+    0 0 0 40px rgba(53,212,122,.012);
+
+  pointer-events: none;
+}
+
+.profileHero > div:last-child {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: flex-start;
+}
+
+.profileAvatar {
+  width: 64px;
+  height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  color: var(--green);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(53,212,122,.15),
+      rgba(53,212,122,.045)
+    );
+
+  border:
+    1px solid rgba(53,212,122,.25);
+
+  border-radius: 17px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.035),
+    0 8px 25px rgba(0,0,0,.16);
+}
+
+.profileHero small {
+  margin-bottom: 3px;
+
+  color: var(--gold);
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 2.2px;
+
+  line-height: 1;
+
+  text-transform: uppercase;
+}
+
+.profileHero h2 {
+  margin: 0;
+
+  color: #f5f8f5;
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 31px;
+  font-weight: 600;
+
+  letter-spacing: .15px;
+
+  line-height: 1.05;
+
+  text-transform: uppercase;
+}
+
+.profileHero span {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #718679;
+
+  font-family: "Work Sans", sans-serif;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: .3px;
+
+  line-height: 1.2;
+}
+
+.statsGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 11px;
+
+  margin-bottom: 15px;
+}
+
+.statCard {
+  min-width: 0;
+
+  padding: 17px 16px 16px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(13,31,20,.92),
+      rgba(7,18,12,.95)
+    );
+
+  border:
+    1px solid rgba(76,155,101,.18);
+
+  border-radius: 15px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.025);
+
+  transition:
+    transform .18s ease,
+    border-color .18s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+
+  border-color:
+    rgba(76,177,110,.32);
+}
+
+.statCard small {
+  display: block;
+
+  color: #6f8577;
+
+  font-family: "Work Sans", sans-serif;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 1.5px;
+
+  line-height: 1.15;
+
+  text-transform: uppercase;
+}
+
+.statCard strong {
+  display: block;
+
+  margin: 7px 0 3px;
+
+  color: #f3f7f4;
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 31px;
+  font-weight: 600;
+
+  letter-spacing: .15px;
+
+  line-height: .95;
+}
+
+.statCard span {
+  display: block;
+
+  color: #688072;
+
+  font-family: "Work Sans", sans-serif;
+
+  font-size: 9px;
+  font-weight: 500;
+
+  line-height: 1.25;
+}
+
+.profileStatsCard {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 0;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(13,31,20,.94),
+      rgba(7,18,12,.96)
+    );
+
+  border:
+    1px solid rgba(76,155,101,.18);
+
+  border-radius: 16px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+.profileStatsCard > div {
+  min-width: 0;
+
+  padding: 17px 18px;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+}
+
+.profileStatsCard > div + div {
+  border-left:
+    1px solid rgba(76,155,101,.13);
+}
+
+.profileStatsCard small {
+  display: block;
+
+  color: #6f8577;
+
+  font-family: "Work Sans", sans-serif;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 1.4px;
+
+  line-height: 1.15;
+
+  text-transform: uppercase;
+}
+
+.profileStatsCard strong {
+  display: block;
+
+  margin-top: 6px;
+
+  color: var(--gold);
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 28px;
+  font-weight: 600;
+
+  letter-spacing: .1px;
+
+  line-height: 1;
+}
+
+/* =========================================================
    PRONOSTICI RANKING
    ========================================================= */
 
@@ -3620,6 +4067,133 @@ nav button.active::before {
     font-size: 50px;
   }
 
+  /* PROFILE */
+
+  .profileHero {
+    gap: 13px;
+
+    margin-bottom: 14px;
+
+    padding: 17px;
+
+    border-radius: 17px;
+  }
+
+  .profileAvatar {
+    width: 55px;
+    height: 55px;
+
+    border-radius: 14px;
+  }
+
+  .profileAvatar .icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .profileHero small {
+    margin-bottom: 3px;
+
+    font-size: 7px;
+
+    letter-spacing: 1.8px;
+  }
+
+  .profileHero h2 {
+    font-size: 25px;
+
+    letter-spacing: .1px;
+  }
+
+  .profileHero span {
+    margin-top: 4px;
+
+    font-size: 10px;
+  }
+
+  .statsGrid {
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 8px;
+
+    margin-bottom: 10px;
+  }
+
+  .statCard {
+    padding: 14px 13px;
+
+    border-radius: 13px;
+  }
+
+  .statCard small {
+    font-size: 7px;
+
+    letter-spacing: 1.25px;
+  }
+
+  .statCard strong {
+    margin: 6px 0 3px;
+
+    font-size: 27px;
+  }
+
+  .statCard span {
+    font-size: 8px;
+  }
+
+  .profileStatsCard {
+    grid-template-columns:
+      repeat(3, 1fr);
+
+    border-radius: 13px;
+  }
+
+  .profileStatsCard > div {
+    padding: 14px 10px;
+  }
+
+  .profileStatsCard small {
+    font-size: 6.5px;
+
+    letter-spacing: 1px;
+  }
+
+  .profileStatsCard strong {
+    margin-top: 5px;
+
+    font-size: 23px;
+  }
+
+  /* CLASSIFICA — CARD PERSONALE */
+
+  .myRankCard {
+    grid-template-columns:
+      1.2fr 1fr 1fr;
+
+    border-radius: 14px;
+  }
+
+  .myRankCard > div {
+    padding: 14px 10px 15px;
+  }
+
+  .myRankCard small {
+    margin-bottom: 5px;
+
+    font-size: 6.5px;
+
+    letter-spacing: 1.1px;
+  }
+
+  .myRankCard strong {
+    font-size: 25px;
+  }
+
+  .myRankCard > div:first-child strong {
+    font-size: 30px;
+  }
+
   /* PRONOSTICI RANKING */
 
   .pronosticiRankingHeader {
@@ -3929,6 +4503,79 @@ nav button.active::before {
   .pronosticiRankingIcon {
     width: 40px;
     height: 40px;
+  }
+
+  /* PROFILE — SMALL PHONES */
+
+  .profileHero {
+    gap: 10px;
+
+    padding: 15px;
+  }
+
+  .profileAvatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .profileHero h2 {
+    font-size: 22px;
+  }
+
+  .profileHero span {
+    font-size: 9px;
+  }
+
+  .statCard {
+    padding: 13px 11px;
+  }
+
+  .statCard small {
+    font-size: 6.5px;
+
+    letter-spacing: 1px;
+  }
+
+  .statCard strong {
+    font-size: 25px;
+  }
+
+  .statCard span {
+    font-size: 7.5px;
+  }
+
+  .profileStatsCard > div {
+    padding: 13px 7px;
+  }
+
+  .profileStatsCard small {
+    font-size: 6px;
+
+    letter-spacing: .8px;
+  }
+
+  .profileStatsCard strong {
+    font-size: 21px;
+  }
+
+  /* CLASSIFICA — SMALL PHONES */
+
+  .myRankCard > div {
+    padding: 13px 7px 14px;
+  }
+
+  .myRankCard small {
+    font-size: 6px;
+
+    letter-spacing: .8px;
+  }
+
+  .myRankCard strong {
+    font-size: 23px;
+  }
+
+  .myRankCard > div:first-child strong {
+    font-size: 27px;
   }
 
   .adminUserRow {
