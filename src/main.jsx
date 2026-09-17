@@ -537,10 +537,6 @@ async function dbAttempts(
   return data || [];
 }
 
-/*
- * Recupera tutte le partecipazioni.
- * Serve per lo storico personale.
- */
 async function dbAllAttempts() {
   const {
     data,
@@ -2950,49 +2946,73 @@ function ProfilePage({
         </div>
       </div>
 
-      <button
-        className="sectionAction"
-        onClick={() =>
-          setPage("history")
-        }
-      >
-        <span>
-          <small>
-            STORICO
-          </small>
+      {/* =====================================================
+          NAVIGAZIONE PROFILO
+          ===================================================== */}
 
-          <strong>
-            LE MIE PARTECIPAZIONI
-          </strong>
-        </span>
+      <div className="profileNavigation">
+        <button
+          className="profileNavigationCard"
+          onClick={() =>
+            setPage("history")
+          }
+        >
+          <div className="profileNavigationIcon">
+            <Icon
+              name="trophy"
+              size={20}
+            />
+          </div>
 
-        <Icon
-          name="arrow"
-          size={20}
-        />
-      </button>
+          <div className="profileNavigationText">
+            <small>
+              STORICO
+            </small>
 
-      <button
-        className="sectionAction"
-        onClick={() =>
-          setPage("pronostici")
-        }
-      >
-        <span>
-          <small>
-            CLASSIFICA
-          </small>
+            <strong>
+              LE MIE PARTECIPAZIONI
+            </strong>
+          </div>
 
-          <strong>
-            PRONOSTICI INDOVINATI
-          </strong>
-        </span>
+          <span className="profileNavigationArrow">
+            <Icon
+              name="arrow"
+              size={18}
+            />
+          </span>
+        </button>
 
-        <Icon
-          name="arrow"
-          size={20}
-        />
-      </button>
+        <button
+          className="profileNavigationCard"
+          onClick={() =>
+            setPage("pronostici")
+          }
+        >
+          <div className="profileNavigationIcon">
+            <Icon
+              name="target"
+              size={20}
+            />
+          </div>
+
+          <div className="profileNavigationText">
+            <small>
+              CLASSIFICA
+            </small>
+
+            <strong>
+              PRONOSTICI INDOVINATI
+            </strong>
+          </div>
+
+          <span className="profileNavigationArrow">
+            <Icon
+              name="arrow"
+              size={18}
+            />
+          </span>
+        </button>
+      </div>
     </div>
   );
 }
