@@ -1,4 +1,3 @@
-```css
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700;800&display=swap');
 
 /* =========================================================
@@ -145,7 +144,6 @@ select {
 .wrap {
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
-
   padding: 36px 0 115px;
 }
 
@@ -2571,6 +2569,10 @@ header > span {
   color: var(--gold);
 }
 
+/* =========================================================
+   VECCHIO STILE — MANTENUTO PER COMPATIBILITÀ
+   ========================================================= */
+
 .profileHistoryCard {
   overflow: hidden;
 
@@ -3046,7 +3048,7 @@ button.sectionAction + button.sectionAction {
   padding: 20px;
 
   background:
-    rgba(1,6,4,.90);
+    rgba(1,6,4,.94) !important;
 
   backdrop-filter:
     blur(13px);
@@ -3081,15 +3083,12 @@ button.sectionAction + button.sectionAction {
     linear-gradient(
       145deg,
       #10291a 0%,
-      #081a10 55%,
+      #091c11 55%,
       #050e09 100%
     ) !important;
 
-  background-color:
-    #081a10 !important;
-
   border:
-    1px solid rgba(53,212,122,.30) !important;
+    1px solid rgba(76,155,101,.28) !important;
 
   border-radius: 23px;
 
@@ -3101,21 +3100,6 @@ button.sectionAction + button.sectionAction {
 
   animation:
     reviewModalIn .22s ease;
-}
-
-.reviewModal * {
-  box-sizing: border-box;
-}
-
-.reviewModal h1,
-.reviewModal h2,
-.reviewModal h3,
-.reviewModal h4,
-.reviewModal p,
-.reviewModal span,
-.reviewModal small,
-.reviewModal strong {
-  background: transparent !important;
 }
 
 @keyframes reviewModalIn {
@@ -3134,6 +3118,18 @@ button.sectionAction + button.sectionAction {
   }
 }
 
+.reviewModal h1,
+.reviewModal h2,
+.reviewModal h3,
+.reviewModal h4,
+.reviewModal p,
+.reviewModal span,
+.reviewModal small,
+.reviewModal strong,
+.reviewModal label {
+  background: transparent !important;
+}
+
 .reviewHeader {
   display: flex;
 
@@ -3148,7 +3144,7 @@ button.sectionAction + button.sectionAction {
   background: transparent !important;
 
   border-bottom:
-    1px solid rgba(53,212,122,.17) !important;
+    1px solid rgba(53,212,122,.17);
 }
 
 .reviewHeader small {
@@ -3190,11 +3186,10 @@ button.sectionAction + button.sectionAction {
   background:
     #0c2416 !important;
 
-  background-image:
-    none !important;
+  background-image: none !important;
 
   border:
-    1px solid rgba(53,212,122,.25) !important;
+    1px solid rgba(83,153,103,.28) !important;
 
   border-radius: 50%;
 
@@ -3234,16 +3229,14 @@ button.sectionAction + button.sectionAction {
   background:
     #081a10 !important;
 
-  background-image:
-    none !important;
+  background-image: none !important;
 
   border:
     1px solid rgba(76,155,101,.18) !important;
 
   border-radius: 12px;
 
-  box-shadow:
-    none !important;
+  box-shadow: none !important;
 }
 
 .reviewSummary small {
@@ -3287,13 +3280,13 @@ button.sectionAction + button.sectionAction {
 
   color: var(--gold) !important;
 
-  background: transparent !important;
-
   font-family: Oswald, sans-serif;
 
   font-size: 22px;
 
   letter-spacing: .5px;
+
+  background: transparent !important;
 }
 
 .reviewQuestion {
@@ -3304,19 +3297,14 @@ button.sectionAction + button.sectionAction {
   background:
     #081a10 !important;
 
-  background-color:
-    #081a10 !important;
-
-  background-image:
-    none !important;
+  background-image: none !important;
 
   border:
     1px solid rgba(76,155,101,.15) !important;
 
   border-radius: 13px;
 
-  box-shadow:
-    none !important;
+  box-shadow: none !important;
 }
 
 .reviewCorrect {
@@ -3326,8 +3314,7 @@ button.sectionAction + button.sectionAction {
   background:
     rgba(31,88,48,.16) !important;
 
-  background-color:
-    rgba(31,88,48,.16) !important;
+  background-image: none !important;
 }
 
 .reviewWrong {
@@ -3337,8 +3324,7 @@ button.sectionAction + button.sectionAction {
   background:
     rgba(85,35,28,.16) !important;
 
-  background-color:
-    rgba(85,35,28,.16) !important;
+  background-image: none !important;
 }
 
 .reviewQuestionTop {
@@ -3398,11 +3384,7 @@ button.sectionAction + button.sectionAction {
   background:
     rgba(255,255,255,.025) !important;
 
-  background-color:
-    rgba(255,255,255,.025) !important;
-
-  background-image:
-    none !important;
+  background-image: none !important;
 
   border:
     1px solid rgba(255,255,255,.045) !important;
@@ -4319,7 +4301,8 @@ nav {
   backdrop-filter:
     blur(22px);
 
-  -webkit-backdrop-filter: blur(22px);
+  -webkit-backdrop-filter:
+    blur(22px);
 
   box-shadow:
     0 -15px 45px rgba(0,0,0,.20);
@@ -5026,11 +5009,9 @@ nav button.active::before {
       linear-gradient(
         145deg,
         #10291a,
-        #081a10
+        #091c11,
+        #050e09
       ) !important;
-
-    background-color:
-      #081a10 !important;
   }
 
   .reviewHeader h2 {
@@ -5062,6 +5043,16 @@ nav button.active::before {
       #081a10 !important;
   }
 
+  .reviewCorrect {
+    background:
+      rgba(31,88,48,.16) !important;
+  }
+
+  .reviewWrong {
+    background:
+      rgba(85,35,28,.16) !important;
+  }
+
   .reviewAnswer,
   .reviewCorrectAnswer {
     background:
@@ -5069,24 +5060,56 @@ nav button.active::before {
   }
 
   /* =====================================================
-     STORICO — MOBILE
+     STORICO REALE — MOBILE
      ===================================================== */
 
   .historyCard {
     width: 100% !important;
+
+    min-height: 72px;
+
+    padding: 11px !important;
+
+    gap: 9px !important;
   }
 
-  .historyWeek strong,
+  .historyWeek {
+    min-width: 48px !important;
+  }
+
+  .historyWeek small,
+  .historyScore small {
+    font-size: 6px !important;
+
+    letter-spacing: .9px !important;
+  }
+
+  .historyWeek strong {
+    font-size: 21px !important;
+  }
+
+  .historyMain {
+    min-width: 0 !important;
+  }
+
+  .historyMain strong {
+    font-size: 11px !important;
+
+    line-height: 1.2 !important;
+  }
+
+  .historyMain span {
+    font-size: 8px !important;
+
+    line-height: 1.2 !important;
+  }
+
+  .historyScore {
+    min-width: 55px !important;
+  }
+
   .historyScore strong {
-    font-size: 20px !important;
-  }
-
-  .historyMain > strong {
-    font-size: 12px !important;
-  }
-
-  .historyMain > span {
-    font-size: 9px !important;
+    font-size: 22px !important;
   }
 
   nav {
@@ -5322,592 +5345,489 @@ nav button.active::before {
   }
 
   /* =====================================================
-     STORICO — SMALL PHONE
+     STORICO REALE — SMALL PHONES
      ===================================================== */
 
   .historyCard {
-    gap: 8px !important;
-    padding: 11px !important;
+    min-height: 68px;
+
+    padding: 9px !important;
+
+    gap: 7px !important;
+  }
+
+  .historyWeek {
+    min-width: 43px !important;
   }
 
   .historyWeek small,
   .historyScore small {
-    font-size: 6px !important;
+    font-size: 5.5px !important;
+
+    letter-spacing: .7px !important;
   }
 
-  .historyWeek strong,
+  .historyWeek strong {
+    font-size: 19px !important;
+  }
+
+  .historyMain strong {
+    font-size: 10px !important;
+  }
+
+  .historyMain span {
+    font-size: 7.5px !important;
+  }
+
+  .historyScore {
+    min-width: 48px !important;
+  }
+
   .historyScore strong {
-    font-size: 18px !important;
-  }
-
-  .historyMain > strong {
-    font-size: 11px !important;
-  }
-
-  .historyMain > span {
-    font-size: 8px !important;
+    font-size: 20px !important;
   }
 }
 
 /* =========================================================
-   FINAL DARK GREEN OVERRIDE
-   REVIEW + STORICO
+   FINAL FORCE OVERRIDE
+   REVIEW + STORICO REALE
    ========================================================= */
 
 /* ---------------------------------------------------------
-   REVIEW — FORZA TUTTO IL MODALE IN DARK MODE
+   REVIEW MODAL
    --------------------------------------------------------- */
 
-.reviewOverlay {
-  background:
-    rgba(1,6,4,.94) !important;
-
-  backdrop-filter:
-    blur(14px) !important;
-
-  -webkit-backdrop-filter:
-    blur(14px) !important;
+.reviewModal,
+.reviewModal * {
+  -webkit-tap-highlight-color: transparent;
 }
 
 .reviewModal {
+  color: #f5f7f5 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      #10291a 0%,
+      #091c11 55%,
+      #050e09 100%
+    ) !important;
+}
+
+.reviewModal button {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  font-family: inherit !important;
+}
+
+.reviewModal .reviewSummary > div {
+  background:
+    #081a10 !important;
+
+  background-image: none !important;
+
+  color: #f5f7f5 !important;
+}
+
+.reviewModal .reviewQuestion {
+  background:
+    #081a10 !important;
+
+  background-image: none !important;
+
+  color: #f5f7f5 !important;
+}
+
+.reviewModal .reviewCorrect {
+  background:
+    rgba(31,88,48,.16) !important;
+}
+
+.reviewModal .reviewWrong {
+  background:
+    rgba(85,35,28,.16) !important;
+}
+
+.reviewModal .reviewAnswer,
+.reviewModal .reviewCorrectAnswer {
+  background:
+    rgba(255,255,255,.025) !important;
+
+  background-image: none !important;
+}
+
+.reviewModal .reviewClose {
+  background:
+    #0c2416 !important;
+
+  background-image: none !important;
+
+  color: #a8b9ae !important;
+}
+
+.reviewModal .reviewBottomClose {
+  background:
+    linear-gradient(
+      135deg,
+      #35d47a,
+      #1fa85b
+    ) !important;
+
+  background-image:
+    linear-gradient(
+      135deg,
+      #35d47a,
+      #1fa85b
+    ) !important;
+
+  color: #041008 !important;
+}
+
+/* ---------------------------------------------------------
+   STORICO
+   QUESTE SONO LE CLASSI REALMENTE USATE DA HistoryPage
+   --------------------------------------------------------- */
+
+.historyList {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  background: transparent !important;
+}
+
+.historyCard {
+  width: 100% !important;
+
+  min-width: 0;
+
+  display: flex !important;
+
+  align-items: center !important;
+
+  gap: 14px !important;
+
+  padding: 13px 15px !important;
+
+  margin: 0 !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  font-family: "Work Sans", sans-serif !important;
+
+  text-align: left !important;
+
+  color: #f5f7f5 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      #0d2517 0%,
+      #07170e 100%
+    ) !important;
+
+  background-image:
+    linear-gradient(
+      145deg,
+      #0d2517 0%,
+      #07170e 100%
+    ) !important;
+
+  border:
+    1px solid rgba(76,155,101,.18) !important;
+
+  border-radius: 14px !important;
+
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.025) !important;
+
+  outline: none !important;
+
+  cursor: pointer !important;
+
+  transition:
+    transform .16s ease,
+    border-color .16s ease,
+    background .16s ease,
+    box-shadow .16s ease !important;
+}
+
+.historyCard:hover {
+  color: #f5f7f5 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      #102b1a 0%,
+      #081a10 100%
+    ) !important;
+
+  background-image:
+    linear-gradient(
+      145deg,
+      #102b1a 0%,
+      #081a10 100%
+    ) !important;
+
+  border-color:
+    rgba(76,155,101,.34) !important;
+
+  transform:
+    translateY(-1px) !important;
+
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.035) !important;
+}
+
+.historyCard:active {
+  transform:
+    translateY(0)
+    scale(.995) !important;
+}
+
+.historyCard:focus {
+  outline: none !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      #0d2517 0%,
+      #07170e 100%
+    ) !important;
+}
+
+.historyCard:focus-visible {
+  outline:
+    2px solid rgba(53,212,122,.35) !important;
+
+  outline-offset: 2px !important;
+}
+
+.historyCard,
+.historyCard *,
+.historyWeek,
+.historyMain,
+.historyScore,
+.historyWeek *,
+.historyMain *,
+.historyScore * {
+  background-color: transparent !important;
+}
+
+.historyCard {
+  background-color: #07170e !important;
+}
+
+.historyWeek {
+  min-width: 60px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  text-align: center;
+}
+
+.historyWeek small {
+  display: block;
+
+  margin: 0 0 3px;
+
+  color: #698073 !important;
+
+  font-family: "Work Sans", sans-serif !important;
+
+  font-size: 7px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.2px;
+
+  line-height: 1;
+
+  text-transform: uppercase;
+
+  background: transparent !important;
+}
+
+.historyWeek strong {
+  display: block;
+
+  color: var(--gold) !important;
+
+  font-family: Oswald, sans-serif !important;
+
+  font-size: 25px;
+
+  font-weight: 600;
+
+  line-height: 1;
+
+  background: transparent !important;
+}
+
+.historyMain {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  gap: 4px;
+}
+
+.historyMain strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: #e2ece5 !important;
+
+  font-family: "Work Sans", sans-serif !important;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  line-height: 1.25;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  background: transparent !important;
+}
+
+.historyMain span {
+  display: block;
+
+  overflow: hidden;
+
+  color: #879b8e !important;
+
+  font-family: "Work Sans", sans-serif !important;
+
+  font-size: 9px;
+
+  font-weight: 500;
+
+  line-height: 1.2;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  background: transparent !important;
+}
+
+.historyScore {
+  min-width: 72px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  text-align: right;
+}
+
+.historyScore small {
+  display: block;
+
+  margin: 0 0 4px;
+
+  color: #698073 !important;
+
+  font-family: "Work Sans", sans-serif !important;
+
+  font-size: 7px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.1px;
+
+  line-height: 1;
+
+  text-transform: uppercase;
+
+  background: transparent !important;
+}
+
+.historyScore strong {
+  display: block;
+
+  color: var(--gold) !important;
+
+  font-family: Oswald, sans-serif !important;
+
+  font-size: 27px;
+
+  font-weight: 600;
+
+  line-height: 1;
+
+  background: transparent !important;
+}
+
+/* ---------------------------------------------------------
+   IMPEDISCE AL BROWSER DI MOSTRARE IL BUTTON BIANCO
+   --------------------------------------------------------- */
+
+button.historyCard,
+button.historyCard:hover,
+button.historyCard:active,
+button.historyCard:focus {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  background-color: #07170e !important;
+
+  color: #f5f7f5 !important;
+}
+
+/* Hover separato perché background-color sopra non deve
+   cancellare il gradient */
+button.historyCard:hover {
+  background:
+    linear-gradient(
+      145deg,
+      #102b1a 0%,
+      #081a10 100%
+    ) !important;
+}
+
+/* ---------------------------------------------------------
+   SEZIONI COLLEGATE
+   --------------------------------------------------------- */
+
+button.sectionAction {
   appearance: none !important;
   -webkit-appearance: none !important;
 
   background:
     linear-gradient(
       145deg,
-      #10291a 0%,
-      #081a10 55%,
-      #050e09 100%
-    ) !important;
-
-  background-color:
-    #081a10 !important;
-
-  background-image:
-    linear-gradient(
-      145deg,
-      #10291a 0%,
-      #081a10 55%,
-      #050e09 100%
-    ) !important;
-
-  color:
-    #f5f7f5 !important;
-
-  border:
-    1px solid rgba(76,155,101,.28) !important;
-
-  box-shadow:
-    0 40px 120px rgba(0,0,0,.75),
-    inset 0 1px 0 rgba(255,255,255,.035) !important;
-}
-
-.reviewModal h1,
-.reviewModal h2,
-.reviewModal h3,
-.reviewModal h4,
-.reviewModal p,
-.reviewModal span,
-.reviewModal small,
-.reviewModal strong,
-.reviewModal label {
-  background:
-    transparent !important;
-}
-
-.reviewHeader {
-  background:
-    transparent !important;
-
-  border-bottom-color:
-    rgba(76,155,101,.17) !important;
-}
-
-.reviewHeader small {
-  color:
-    #f4c84e !important;
-}
-
-.reviewHeader h2 {
-  color:
-    #f5f7f5 !important;
-}
-
-.reviewModal .reviewClose {
-  appearance:
-    none !important;
-
-  -webkit-appearance:
-    none !important;
-
-  background:
-    #0c2416 !important;
-
-  background-color:
-    #0c2416 !important;
-
-  background-image:
-    none !important;
-
-  color:
-    #a8b9ae !important;
-
-  border:
-    1px solid rgba(83,153,103,.28) !important;
-
-  box-shadow:
-    none !important;
-}
-
-.reviewSummary {
-  background:
-    transparent !important;
-}
-
-.reviewSummary > div {
-  background:
-    #081a10 !important;
-
-  background-color:
-    #081a10 !important;
-
-  background-image:
-    none !important;
-
-  border:
-    1px solid rgba(76,155,101,.18) !important;
-
-  box-shadow:
-    none !important;
-}
-
-.reviewSummary small {
-  color:
-    #698073 !important;
-
-  background:
-    transparent !important;
-}
-
-.reviewSummary strong {
-  color:
-    #f4c84e !important;
-
-  background:
-    transparent !important;
-}
-
-.reviewSection {
-  background:
-    transparent !important;
-}
-
-.reviewSection > h3 {
-  color:
-    #f4c84e !important;
-
-  background:
-    transparent !important;
-}
-
-.reviewQuestion {
-  background:
-    #081a10 !important;
-
-  background-color:
-    #081a10 !important;
-
-  background-image:
-    none !important;
-
-  border:
-    1px solid rgba(76,155,101,.15) !important;
-
-  box-shadow:
-    none !important;
-}
-
-.reviewQuestionTop {
-  background:
-    transparent !important;
-}
-
-.reviewQuestionTop span {
-  color:
-    #64796b !important;
-
-  background:
-    transparent !important;
-}
-
-.reviewQuestion h3 {
-  color:
-    #dce6df !important;
-
-  background:
-    transparent !important;
-}
-
-.reviewCorrect {
-  background:
-    rgba(31,88,48,.16) !important;
-
-  background-color:
-    rgba(31,88,48,.16) !important;
-
-  background-image:
-    none !important;
-
-  border-color:
-    rgba(75,153,94,.45) !important;
-}
-
-.reviewCorrect .reviewQuestionTop strong {
-  color:
-    #6ee28c !important;
-
-  background:
-    transparent !important;
-}
-
-.reviewWrong {
-  background:
-    rgba(85,35,28,.16) !important;
-
-  background-color:
-    rgba(85,35,28,.16) !important;
-
-  background-image:
-    none !important;
-
-  border-color:
-    rgba(154,75,61,.45) !important;
-}
-
-.reviewWrong .reviewQuestionTop strong {
-  color:
-    #ff8f82 !important;
-
-  background:
-    transparent !important;
-}
-
-.reviewAnswer,
-.reviewCorrectAnswer {
-  background:
-    rgba(255,255,255,.025) !important;
-
-  background-color:
-    rgba(255,255,255,.025) !important;
-
-  background-image:
-    none !important;
-
-  border-color:
-    rgba(255,255,255,.045) !important;
-}
-
-.reviewAnswer small,
-.reviewCorrectAnswer small {
-  color:
-    #61766a !important;
-
-  background:
-    transparent !important;
-}
-
-.reviewAnswer strong,
-.reviewCorrectAnswer strong {
-  color:
-    #c6d3ca !important;
-
-  background:
-    transparent !important;
-}
-
-.reviewCorrectAnswer {
-  border-color:
-    rgba(112,201,135,.15) !important;
-}
-
-.reviewModal .reviewBottomClose {
-  appearance:
-    none !important;
-
-  -webkit-appearance:
-    none !important;
-
-  background:
-    linear-gradient(
-      135deg,
-      #35d47a,
-      #1fa85b
-    ) !important;
-
-  background-color:
-    #35d47a !important;
-
-  background-image:
-    linear-gradient(
-      135deg,
-      #35d47a,
-      #1fa85b
-    ) !important;
-
-  color:
-    #041008 !important;
-
-  border:
-    0 !important;
-
-  box-shadow:
-    none !important;
-}
-
-/* ---------------------------------------------------------
-   STORICO — QUESTO È IL FIX IMPORTANTE
-   main.jsx usa .historyCard, NON .profileHistoryCard
-   --------------------------------------------------------- */
-
-.historyList {
-  background:
-    transparent !important;
-}
-
-.historyCard {
-  appearance:
-    none !important;
-
-  -webkit-appearance:
-    none !important;
-
-  background:
-    linear-gradient(
-      145deg,
-      #0d2517 0%,
-      #07170e 100%
-    ) !important;
-
-  background-color:
-    #07170e !important;
-
-  background-image:
-    linear-gradient(
-      145deg,
-      #0d2517 0%,
-      #07170e 100%
-    ) !important;
-
-  color:
-    #f5f7f5 !important;
-
-  border:
-    1px solid rgba(76,155,101,.18) !important;
-
-  box-shadow:
-    0 8px 24px rgba(0,0,0,.25) !important;
-
-  font-family:
-    "Work Sans",
-    sans-serif !important;
-
-  text-align:
-    left !important;
-
-  outline:
-    none !important;
-}
-
-.historyCard:hover {
-  background:
-    linear-gradient(
-      145deg,
-      #12301d 0%,
-      #081a10 100%
-    ) !important;
-
-  background-color:
-    #081a10 !important;
-
-  background-image:
-    linear-gradient(
-      145deg,
-      #12301d 0%,
-      #081a10 100%
-    ) !important;
-
-  border-color:
-    rgba(76,155,101,.32) !important;
-}
-
-.historyCard:focus,
-.historyCard:active {
-  background:
-    linear-gradient(
-      145deg,
-      #0d2517 0%,
-      #07170e 100%
-    ) !important;
-
-  background-color:
-    #07170e !important;
-
-  background-image:
-    linear-gradient(
-      145deg,
-      #0d2517 0%,
-      #07170e 100%
-    ) !important;
-}
-
-.historyCard .historyWeek,
-.historyCard .historyMain,
-.historyCard .historyScore {
-  background:
-    transparent !important;
-
-  background-color:
-    transparent !important;
-
-  background-image:
-    none !important;
-}
-
-.historyCard .historyWeek small,
-.historyCard .historyScore small {
-  color:
-    #71857a !important;
-
-  background:
-    transparent !important;
-}
-
-.historyCard .historyWeek strong {
-  color:
-    #f4c84e !important;
-
-  background:
-    transparent !important;
-}
-
-.historyCard .historyMain > strong {
-  color:
-    #e3ece6 !important;
-
-  background:
-    transparent !important;
-}
-
-.historyCard .historyMain > span {
-  color:
-    #84998c !important;
-
-  background:
-    transparent !important;
-}
-
-.historyCard .historyScore {
-  text-align:
-    right !important;
-}
-
-.historyCard .historyScore strong {
-  color:
-    #f4c84e !important;
-
-  background:
-    transparent !important;
-}
-
-/* Evita che un CSS generico sui button renda bianca la scheda */
-
-.historyCard,
-.historyCard:hover,
-.historyCard:focus,
-.historyCard:active {
-  -webkit-tap-highlight-color:
-    transparent !important;
-
-  -webkit-appearance:
-    none !important;
-
-  appearance:
-    none !important;
-}
-
-/* ---------------------------------------------------------
-   VECCHIE CARD PROFILO — mantenute compatibili
-   --------------------------------------------------------- */
-
-.profileHistoryCard {
-  background:
-    linear-gradient(
-      145deg,
-      #123a22,
-      #092316
-    ) !important;
-
-  background-color:
-    #092316 !important;
-
-  border-color:
-    rgba(53,212,122,.28) !important;
-}
-
-.profileHistoryCard > div {
-  background:
-    #0d2a19 !important;
-
-  background-color:
-    #0d2a19 !important;
-
-  border-bottom-color:
-    rgba(53,212,122,.14) !important;
-}
-
-.profileHistoryCard > div:hover {
-  background:
-    #123a22 !important;
-
-  background-color:
-    #123a22 !important;
-}
-
-.profileHistoryCard > div > span:first-child {
-  color:
-    #e2eee5 !important;
-}
-
-.profileHistoryCard > div > strong {
-  color:
-    var(--gold) !important;
-}
-
-/* ---------------------------------------------------------
-   COLLEGAMENTI PROFILO
-   --------------------------------------------------------- */
-
-button.sectionAction {
-  appearance:
-    none !important;
-
-  -webkit-appearance:
-    none !important;
-
-  background:
-    linear-gradient(
-      145deg,
-      #123a22,
-      #092316
-    ) !important;
-
-  background-color:
-    #092316 !important;
-
-  background-image:
-    linear-gradient(
-      145deg,
       #123a22,
       #092316
     ) !important;
@@ -5915,22 +5835,11 @@ button.sectionAction {
   border-color:
     rgba(53,212,122,.28) !important;
 
-  color:
-    #e9f3ec !important;
+  color: #e9f3ec !important;
 }
 
 button.sectionAction:hover {
   background:
-    linear-gradient(
-      145deg,
-      #174629,
-      #0b2d1a
-    ) !important;
-
-  background-color:
-    #0b2d1a !important;
-
-  background-image:
     linear-gradient(
       145deg,
       #174629,
@@ -5942,20 +5851,14 @@ button.sectionAction:hover {
 }
 
 button.sectionAction small {
-  color:
-    #72a487 !important;
+  color: #72a487 !important;
 }
 
 button.sectionAction strong {
-  color:
-    #e9f3ec !important;
+  color: #e9f3ec !important;
 }
 
 button.sectionAction .icon {
-  color:
-    var(--green) !important;
-
-  stroke:
-    var(--green) !important;
+  color: var(--green) !important;
+  stroke: var(--green) !important;
 }
-```
