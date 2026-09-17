@@ -159,15 +159,10 @@ select {
 
 .icon {
   display: inline-block;
-
   flex-shrink: 0;
-
   vertical-align: middle;
-
   color: currentColor;
-
   stroke: currentColor;
-
   overflow: visible;
 
   transition:
@@ -178,23 +173,17 @@ select {
 
 .iconInline {
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
   flex-shrink: 0;
-
   color: currentColor;
-
   line-height: 0;
 }
 
 .iconButton {
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
   line-height: 0;
 }
 
@@ -215,8 +204,7 @@ header {
   top: 0;
   z-index: 100;
 
-  background:
-    rgba(3, 10, 7, .82);
+  background: rgba(3, 10, 7, .82);
 
   border-bottom:
     1px solid rgba(95, 180, 119, .16);
@@ -369,7 +357,6 @@ header > span {
   font-size: 52px;
   font-weight: 700;
   letter-spacing: 2px;
-
   line-height: .9;
 
   text-shadow:
@@ -391,7 +378,6 @@ header > span {
 .loginCard form {
   display: grid;
   gap: 12px;
-
   margin-top: 34px;
 }
 
@@ -2590,17 +2576,18 @@ header > span {
   background:
     linear-gradient(
       145deg,
-      rgba(13,37,23,.96),
-      rgba(7,23,14,.96)
+      #123a22,
+      #092316
     );
 
   border:
-    1px solid rgba(76,155,101,.18);
+    1px solid rgba(53,212,122,.28);
 
-  border-radius: 13px;
+  border-radius: 14px;
 
   box-shadow:
-    0 8px 24px rgba(0,0,0,.12);
+    0 10px 30px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.025);
 }
 
 .profileHistoryCard > div {
@@ -2615,8 +2602,19 @@ header > span {
 
   padding: 11px 14px;
 
+  background:
+    rgba(10,35,20,.88);
+
   border-bottom:
-    1px solid rgba(76,139,91,.12);
+    1px solid rgba(53,212,122,.14);
+
+  transition:
+    background .15s ease;
+}
+
+.profileHistoryCard > div:hover {
+  background:
+    rgba(16,52,29,.96);
 }
 
 .profileHistoryCard > div:last-child {
@@ -2624,7 +2622,7 @@ header > span {
 }
 
 .profileHistoryCard > div > span:first-child {
-  color: #dbe7df;
+  color: #e2eee5;
 
   font-family: "Work Sans", sans-serif;
 
@@ -2757,13 +2755,6 @@ header > span {
    PROFILO — AZIONI STORICO / CLASSIFICA
    ========================================================= */
 
-/*
-   IMPORTANTE:
-   Questi selettori sono volutamente specifici.
-   Servono a impedire che il browser mostri i button
-   con il classico sfondo bianco e testo nero.
-*/
-
 button.sectionAction {
   width: 100% !important;
 
@@ -2793,8 +2784,8 @@ button.sectionAction {
   background:
     linear-gradient(
       145deg,
-      rgba(18,58,34,.98),
-      rgba(7,27,16,.99)
+      #123a22,
+      #092316
     ) !important;
 
   border:
@@ -2832,8 +2823,8 @@ button.sectionAction:hover {
   background:
     linear-gradient(
       145deg,
-      rgba(23,70,41,.99),
-      rgba(8,32,19,.99)
+      #174629,
+      #0b2d1a
     ) !important;
 
   border-color:
@@ -2918,7 +2909,6 @@ button.sectionAction .icon {
   flex-shrink: 0 !important;
 
   color: var(--green) !important;
-
   stroke: var(--green) !important;
 
   opacity: 1 !important;
@@ -3055,7 +3045,7 @@ button.sectionAction + button.sectionAction {
   padding: 20px;
 
   background:
-    rgba(1,6,4,.88);
+    rgba(1,6,4,.90);
 
   backdrop-filter:
     blur(13px);
@@ -3086,18 +3076,21 @@ button.sectionAction + button.sectionAction {
   background:
     linear-gradient(
       145deg,
-      #10291a,
-      #06130c
-    );
+      #123a22 0%,
+      #0a2416 55%,
+      #06130c 100%
+    ) !important;
 
   border:
-    1px solid rgba(77,164,103,.28);
+    1px solid rgba(53,212,122,.30) !important;
 
   border-radius: 23px;
 
   box-shadow:
     0 40px 120px rgba(0,0,0,.65),
-    inset 0 1px 0 rgba(255,255,255,.04);
+    inset 0 1px 0 rgba(255,255,255,.035);
+
+  color: #f5f7f5;
 
   animation:
     reviewModalIn .22s ease;
@@ -3131,7 +3124,7 @@ button.sectionAction + button.sectionAction {
   margin-bottom: 18px;
 
   border-bottom:
-    1px solid rgba(76,155,101,.17);
+    1px solid rgba(53,212,122,.17);
 }
 
 .reviewHeader small {
@@ -3145,6 +3138,8 @@ button.sectionAction + button.sectionAction {
 
 .reviewHeader h2 {
   margin: 5px 0 0;
+
+  color: #f5f8f5;
 
   font-family: Oswald, sans-serif;
 
@@ -3163,13 +3158,16 @@ button.sectionAction + button.sectionAction {
 
   flex-shrink: 0;
 
-  color: #9fb0a5;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  color: #a8b9ae !important;
 
   background:
-    #10291a;
+    #0d2a19 !important;
 
   border:
-    1px solid rgba(83,153,103,.25);
+    1px solid rgba(53,212,122,.25) !important;
 
   border-radius: 50%;
 
@@ -3177,10 +3175,13 @@ button.sectionAction + button.sectionAction {
 }
 
 .reviewClose:hover {
-  color: #fff;
+  color: #fff !important;
+
+  background:
+    #174629 !important;
 
   border-color:
-    rgba(244,200,78,.65);
+    rgba(244,200,78,.65) !important;
 
   transform: rotate(5deg);
 }
@@ -3200,18 +3201,21 @@ button.sectionAction + button.sectionAction {
   padding: 15px;
 
   background:
-    rgba(4,17,10,.72);
+    #0d2a19 !important;
 
   border:
-    1px solid rgba(76,155,101,.18);
+    1px solid rgba(53,212,122,.22) !important;
 
   border-radius: 12px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.018);
 }
 
 .reviewSummary small {
   display: block;
 
-  color: #698073;
+  color: #789083;
 
   font-size: 8px;
 
@@ -3260,28 +3264,31 @@ button.sectionAction + button.sectionAction {
   padding: 15px;
 
   background:
-    rgba(5,18,11,.72);
+    #0d2a19 !important;
 
   border:
-    1px solid rgba(76,155,101,.15);
+    1px solid rgba(53,212,122,.20) !important;
 
   border-radius: 13px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.015);
 }
 
 .reviewCorrect {
   border-color:
-    rgba(75,153,94,.45);
+    rgba(53,212,122,.42) !important;
 
   background:
-    rgba(31,88,48,.12);
+    #10351f !important;
 }
 
 .reviewWrong {
   border-color:
-    rgba(154,75,61,.45);
+    rgba(255,98,84,.30) !important;
 
   background:
-    rgba(85,35,28,.12);
+    #291815 !important;
 }
 
 .reviewQuestionTop {
@@ -3301,7 +3308,7 @@ button.sectionAction + button.sectionAction {
 }
 
 .reviewQuestionTop span {
-  color: #64796b;
+  color: #71877a;
 }
 
 .reviewCorrect .reviewQuestionTop strong {
@@ -3329,10 +3336,10 @@ button.sectionAction + button.sectionAction {
   padding: 9px 11px;
 
   background:
-    rgba(255,255,255,.018);
+    #092217 !important;
 
   border:
-    1px solid rgba(255,255,255,.035);
+    1px solid rgba(53,212,122,.13) !important;
 
   border-radius: 8px;
 }
@@ -3343,7 +3350,7 @@ button.sectionAction + button.sectionAction {
 
   margin-bottom: 3px;
 
-  color: #61766a;
+  color: #71877a;
 
   font-size: 8px;
 
@@ -3352,7 +3359,7 @@ button.sectionAction + button.sectionAction {
 
 .reviewAnswer strong,
 .reviewCorrectAnswer strong {
-  color: #c6d3ca;
+  color: #cbd8cf;
 
   font-size: 12px;
 
@@ -3361,7 +3368,7 @@ button.sectionAction + button.sectionAction {
 
 .reviewCorrectAnswer {
   border-color:
-    rgba(112,201,135,.15);
+    rgba(53,212,122,.25) !important;
 }
 
 .reviewBottomClose {
@@ -3374,6 +3381,19 @@ button.sectionAction + button.sectionAction {
   border-radius: 10px;
 
   font-weight: 800;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  color: #061009 !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #65ed99,
+      #35d47a 50%,
+      #20ad5d
+    ) !important;
 }
 
 /* =========================================================
@@ -4902,10 +4922,17 @@ nav button.active::before {
     font-size: 11px;
   }
 
+  /* =====================================================
+     REVIEW
+     ===================================================== */
+
   .reviewOverlay {
     align-items: flex-start;
 
     padding: 8px;
+
+    background:
+      rgba(1,6,4,.94) !important;
   }
 
   .reviewModal {
@@ -4914,6 +4941,13 @@ nav button.active::before {
     padding: 17px;
 
     border-radius: 18px;
+
+    background:
+      linear-gradient(
+        145deg,
+        #123a22,
+        #092316
+      ) !important;
   }
 
   .reviewHeader h2 {
@@ -4929,6 +4963,9 @@ nav button.active::before {
 
   .reviewSummary > div {
     padding: 10px 8px;
+
+    background:
+      #0d2a19 !important;
   }
 
   .reviewSummary strong {
@@ -4937,6 +4974,15 @@ nav button.active::before {
 
   .reviewQuestion {
     padding: 12px;
+
+    background:
+      #0d2a19 !important;
+  }
+
+  .reviewAnswer,
+  .reviewCorrectAnswer {
+    background:
+      #092217 !important;
   }
 
   nav {
@@ -5170,4 +5216,118 @@ nav button.active::before {
     padding:
       6px 8px;
   }
+}
+
+/* =========================================================
+   FINAL DARK GREEN OVERRIDE
+   REVIEW + STORICO + COLLEGAMENTI
+   ========================================================= */
+
+/* Review: impedisce definitivamente gli sfondi bianchi */
+
+.reviewModal,
+.reviewModal * {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.reviewModal button {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+.reviewModal .reviewSummary > div,
+.reviewModal .reviewQuestion {
+  background-color: #0d2a19 !important;
+}
+
+.reviewModal .reviewAnswer,
+.reviewModal .reviewCorrectAnswer {
+  background-color: #092217 !important;
+}
+
+.reviewModal .reviewCorrect {
+  background-color: #10351f !important;
+}
+
+.reviewModal .reviewWrong {
+  background-color: #291815 !important;
+}
+
+/* Storico */
+
+.profileHistoryCard {
+  background:
+    linear-gradient(
+      145deg,
+      #123a22,
+      #092316
+    ) !important;
+
+  border-color:
+    rgba(53,212,122,.28) !important;
+}
+
+.profileHistoryCard > div {
+  background:
+    #0d2a19 !important;
+
+  border-bottom-color:
+    rgba(53,212,122,.14) !important;
+}
+
+.profileHistoryCard > div:hover {
+  background:
+    #123a22 !important;
+}
+
+.profileHistoryCard > div > span:first-child {
+  color: #e2eee5 !important;
+}
+
+.profileHistoryCard > div > strong {
+  color: var(--gold) !important;
+}
+
+/* Collegamenti dello storico / sezioni */
+
+button.sectionAction {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      #123a22,
+      #092316
+    ) !important;
+
+  border-color:
+    rgba(53,212,122,.28) !important;
+
+  color: #e9f3ec !important;
+}
+
+button.sectionAction:hover {
+  background:
+    linear-gradient(
+      145deg,
+      #174629,
+      #0b2d1a
+    ) !important;
+
+  border-color:
+    rgba(53,212,122,.52) !important;
+}
+
+button.sectionAction small {
+  color: #72a487 !important;
+}
+
+button.sectionAction strong {
+  color: #e9f3ec !important;
+}
+
+button.sectionAction .icon {
+  color: var(--green) !important;
+  stroke: var(--green) !important;
 }
