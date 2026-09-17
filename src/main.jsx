@@ -1,4 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { createRoot } from "react-dom/client";
 import { supabase } from "./supabase";
 import "./styles.css";
@@ -11,7 +15,9 @@ const EMAIL_DOMAIN = "fantaluck.local";
 
 const toAuthEmail = (username) => {
   const value = username.trim().toLowerCase();
-  return value.includes("@") ? value : `${value}@${EMAIL_DOMAIN}`;
+  return value.includes("@")
+    ? value
+    : `${value}@${EMAIL_DOMAIN}`;
 };
 
 const EMPTY_OPTIONS = ["", "", "", ""];
@@ -24,7 +30,10 @@ const makeQuestion = (type, index) => ({
 });
 
 const makeQuestions = (type) =>
-  Array.from({ length: 10 }, (_, i) => makeQuestion(type, i));
+  Array.from(
+    { length: 10 },
+    (_, i) => makeQuestion(type, i)
+  );
 
 const newWeek = (number) => ({
   id: `week-${number}-${Date.now()}`,
@@ -41,10 +50,14 @@ const newWeek = (number) => ({
 });
 
 /* =========================================================
-   ICONS — FANTALUCK SVG
+   ICONS
    ========================================================= */
 
-function Icon({ name, size = 22, strokeWidth = 2 }) {
+function Icon({
+  name,
+  size = 22,
+  strokeWidth = 2,
+}) {
   const common = {
     width: size,
     height: size,
@@ -213,27 +226,48 @@ function getCorrectAnswers(question) {
   return [];
 }
 
-function normalizeQuestion(question, type, index) {
+function normalizeQuestion(
+  question,
+  type,
+  index
+) {
   return {
     ...question,
-    id: question?.id || `${type}-${index + 1}-${Date.now()}`,
+    id:
+      question?.id ||
+      `${type}-${index + 1}-${Date.now()}`,
     text: question?.text || "",
     options: Array.from(
       { length: 4 },
-      (_, i) => question?.options?.[i] || ""
+      (_, i) =>
+        question?.options?.[i] || ""
     ),
-    correct: getCorrectAnswers(question),
+    correct: getCorrectAnswers(
+      question
+    ),
   };
 }
 
 function normalizeWeek(week) {
   return {
     ...week,
-    matchQuestions: Array.from({ length: 10 }, (_, i) =>
-      normalizeQuestion(week?.matchQuestions?.[i], "match", i)
+    matchQuestions: Array.from(
+      { length: 10 },
+      (_, i) =>
+        normalizeQuestion(
+          week?.matchQuestions?.[i],
+          "match",
+          i
+        )
     ),
-    playerQuestions: Array.from({ length: 10 }, (_, i) =>
-      normalizeQuestion(week?.playerQuestions?.[i], "player", i)
+    playerQuestions: Array.from(
+      { length: 10 },
+      (_, i) =>
+        normalizeQuestion(
+          week?.playerQuestions?.[i],
+          "player",
+          i
+        )
     ),
   };
 }
@@ -243,11 +277,17 @@ function toDateTimeLocalValue(value) {
 
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) return "";
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
 
-  const offset = date.getTimezoneOffset();
+  const offset =
+    date.getTimezoneOffset();
 
-  return new Date(date.getTime() - offset * 60000)
+  return new Date(
+    date.getTime() -
+      offset * 60000
+  )
     .toISOString()
     .slice(0, 16);
 }
@@ -258,51 +298,86 @@ function getWeekState(week) {
   const now = Date.now();
 
   const start = week.starts_at
-    ? new Date(week.starts_at).getTime()
+    ? new Date(
+        week.starts_at
+      ).getTime()
     : null;
 
   const end = week.deadline
-    ? new Date(week.deadline).getTime()
+    ? new Date(
+        week.deadline
+      ).getTime()
     : null;
 
-  if (week.status === "closed") return "closed";
+  if (week.status === "closed") {
+    return "closed";
+  }
 
-  if (week.status === "published") return "published";
+  if (
+    week.status === "published"
+  ) {
+    return "published";
+  }
 
-  if (start && now < start) return "waiting";
+  if (start && now < start) {
+    return "waiting";
+  }
 
-  if (end && now > end) return "closed";
+  if (end && now > end) {
+    return "closed";
+  }
 
-  if (week.status === "open") return "open";
+  if (week.status === "open") {
+    return "open";
+  }
 
   return "draft";
 }
 
-function goalsAvailableForShot(shotNumber) {
-  const pair = Math.floor(shotNumber / 2);
-  return Math.max(2, 11 - pair);
+function goalsAvailableForShot(
+  shotNumber
+) {
+  const pair = Math.floor(
+    shotNumber / 2
+  );
+
+  return Math.max(
+    2,
+    11 - pair
+  );
 }
 
 /* =========================================================
    EDGE FUNCTIONS
    ========================================================= */
 
-async function callFunction(name, body) {
-  const { data, error } = await supabase.functions.invoke(name, {
-    body,
-  });
+async function callFunction(
+  name,
+  body
+) {
+  const {
+    data,
+    error,
+  } =
+    await supabase.functions.invoke(
+      name,
+      { body }
+    );
 
   if (error) {
-    let message = error.message || "Errore di rete.";
+    let message =
+      error.message ||
+      "Errore di rete.";
 
     try {
-      const parsed = await error.context?.json?.();
+      const parsed =
+        await error.context?.json?.();
 
       if (parsed?.error) {
         message = parsed.error;
       }
     } catch {
-      // usa il messaggio predefinito
+      // usa messaggio predefinito
     }
 
     throw new Error(message);
@@ -312,26 +387,38 @@ async function callFunction(name, body) {
 }
 
 /* =========================================================
-   AGGIORNA PRONOSTICI INDOVINATI
+   PRONOSTICI
    ========================================================= */
 
-async function updatePronostici(userId, delta) {
-  return callFunction("pronostici", {
-    user_id: userId,
-    delta,
-  });
+async function updatePronostici(
+  userId,
+  delta
+) {
+  return callFunction(
+    "pronostici",
+    {
+      user_id: userId,
+      delta,
+    }
+  );
 }
 
 /* =========================================================
    DATABASE
    ========================================================= */
 
-async function dbProfile(userId) {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", userId)
-    .single();
+async function dbProfile(
+  userId
+) {
+  const {
+    data,
+    error,
+  } =
+    await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
 
   if (error) throw error;
 
@@ -339,10 +426,14 @@ async function dbProfile(userId) {
 }
 
 async function dbAllProfiles() {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .order("username");
+  const {
+    data,
+    error,
+  } =
+    await supabase
+      .from("profiles")
+      .select("*")
+      .order("username");
 
   if (error) throw error;
 
@@ -350,15 +441,24 @@ async function dbAllProfiles() {
 }
 
 async function dbPublicProfiles() {
-  const { data, error } = await supabase
-    .from("profiles_public")
-    .select("id, username, name, pronostici_indovinati")
-    .order("pronostici_indovinati", {
-      ascending: false,
-    })
-    .order("name", {
-      ascending: true,
-    });
+  const {
+    data,
+    error,
+  } =
+    await supabase
+      .from("profiles_public")
+      .select(
+        "id, username, name, pronostici_indovinati"
+      )
+      .order(
+        "pronostici_indovinati",
+        {
+          ascending: false,
+        }
+      )
+      .order("name", {
+        ascending: true,
+      });
 
   if (error) throw error;
 
@@ -366,10 +466,16 @@ async function dbPublicProfiles() {
 }
 
 async function dbWeeksPublic() {
-  const { data, error } = await supabase
-    .from("weeks_public")
-    .select("*")
-    .order("number", { ascending: true });
+  const {
+    data,
+    error,
+  } =
+    await supabase
+      .from("weeks_public")
+      .select("*")
+      .order("number", {
+        ascending: true,
+      });
 
   if (error) throw error;
 
@@ -377,10 +483,16 @@ async function dbWeeksPublic() {
 }
 
 async function dbWeeksAdmin() {
-  const { data, error } = await supabase
-    .from("weeks")
-    .select("*")
-    .order("number", { ascending: true });
+  const {
+    data,
+    error,
+  } =
+    await supabase
+      .from("weeks")
+      .select("*")
+      .order("number", {
+        ascending: true,
+      });
 
   if (error) throw error;
 
@@ -388,38 +500,70 @@ async function dbWeeksAdmin() {
 }
 
 async function saveWeek(week) {
-  const { error } = await supabase
-    .from("weeks")
-    .upsert(week, { onConflict: "id" });
+  const { error } =
+    await supabase
+      .from("weeks")
+      .upsert(week, {
+        onConflict: "id",
+      });
 
   if (error) throw error;
 }
 
 async function deleteWeek(id) {
-  const { error } = await supabase
-    .from("weeks")
-    .delete()
-    .eq("id", id);
+  const { error } =
+    await supabase
+      .from("weeks")
+      .delete()
+      .eq("id", id);
 
   if (error) throw error;
 }
 
-async function dbAttempts(weekId) {
-  const { data, error } = await supabase
-    .from("attempts")
-    .select("*")
-    .eq("week_id", weekId);
+async function dbAttempts(
+  weekId
+) {
+  const {
+    data,
+    error,
+  } =
+    await supabase
+      .from("attempts")
+      .select("*")
+      .eq("week_id", weekId);
 
   if (error) throw error;
 
   return data || [];
 }
 
-async function updateAttempt(id, values) {
-  const { error } = await supabase
-    .from("attempts")
-    .update(values)
-    .eq("id", id);
+/*
+ * Recupera tutte le partecipazioni.
+ * Serve per lo storico personale.
+ */
+async function dbAllAttempts() {
+  const {
+    data,
+    error,
+  } =
+    await supabase
+      .from("attempts")
+      .select("*");
+
+  if (error) throw error;
+
+  return data || [];
+}
+
+async function updateAttempt(
+  id,
+  values
+) {
+  const { error } =
+    await supabase
+      .from("attempts")
+      .update(values)
+      .eq("id", id);
 
   if (error) throw error;
 }
@@ -428,8 +572,11 @@ async function updateAttempt(id, values) {
    COUNTDOWN
    ========================================================= */
 
-function Countdown({ week }) {
-  const state = getWeekState(week);
+function Countdown({
+  week,
+}) {
+  const state =
+    getWeekState(week);
 
   const target =
     state === "waiting"
@@ -438,11 +585,17 @@ function Countdown({ week }) {
       ? week?.deadline
       : null;
 
-  const [remaining, setRemaining] = useState(() =>
+  const [
+    remaining,
+    setRemaining,
+  ] = useState(() =>
     target
       ? Math.max(
           0,
-          new Date(target).getTime() - Date.now()
+          new Date(
+            target
+          ).getTime() -
+            Date.now()
         )
       : 0
   );
@@ -457,38 +610,55 @@ function Countdown({ week }) {
       setRemaining(
         Math.max(
           0,
-          new Date(target).getTime() - Date.now()
+          new Date(
+            target
+          ).getTime() -
+            Date.now()
         )
       );
     };
 
     update();
 
-    const timer = setInterval(update, 1000);
+    const timer =
+      setInterval(
+        update,
+        1000
+      );
 
-    return () => clearInterval(timer);
+    return () =>
+      clearInterval(timer);
   }, [target]);
 
   if (
     !target ||
-    (state !== "waiting" && state !== "open")
+    (state !== "waiting" &&
+      state !== "open")
   ) {
     return null;
   }
 
-  const totalSeconds = Math.floor(remaining / 1000);
+  const totalSeconds =
+    Math.floor(
+      remaining / 1000
+    );
 
-  const days = Math.floor(totalSeconds / 86400);
+  const days = Math.floor(
+    totalSeconds / 86400
+  );
 
   const hours = Math.floor(
-    (totalSeconds % 86400) / 3600
+    (totalSeconds % 86400) /
+      3600
   );
 
   const minutes = Math.floor(
-    (totalSeconds % 3600) / 60
+    (totalSeconds % 3600) /
+      60
   );
 
-  const seconds = totalSeconds % 60;
+  const seconds =
+    totalSeconds % 60;
 
   return (
     <div className="countdownCard">
@@ -503,7 +673,10 @@ function Countdown({ week }) {
       <div className="countdownNumbers">
         <div>
           <strong>
-            {String(days).padStart(2, "0")}
+            {String(days).padStart(
+              2,
+              "0"
+            )}
           </strong>
           <small>GIORNI</small>
         </div>
@@ -512,7 +685,9 @@ function Countdown({ week }) {
 
         <div>
           <strong>
-            {String(hours).padStart(2, "0")}
+            {String(
+              hours
+            ).padStart(2, "0")}
           </strong>
           <small>ORE</small>
         </div>
@@ -521,7 +696,9 @@ function Countdown({ week }) {
 
         <div>
           <strong>
-            {String(minutes).padStart(2, "0")}
+            {String(
+              minutes
+            ).padStart(2, "0")}
           </strong>
           <small>MIN</small>
         </div>
@@ -530,7 +707,9 @@ function Countdown({ week }) {
 
         <div>
           <strong>
-            {String(seconds).padStart(2, "0")}
+            {String(
+              seconds
+            ).padStart(2, "0")}
           </strong>
           <small>SEC</small>
         </div>
@@ -543,46 +722,73 @@ function Countdown({ week }) {
    LOGIN
    ========================================================= */
 
-function Login({ onLoggedIn }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+function Login({
+  onLoggedIn,
+}) {
+  const [
+    username,
+    setUsername,
+  ] = useState("");
 
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [
+    password,
+    setPassword,
+  ] = useState("");
 
-  const submit = async (event) => {
+  const [error, setError] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const submit = async (
+    event
+  ) => {
     event.preventDefault();
 
     setError("");
 
-    if (!username.trim() || !password) {
-      setError("Inserisci username e password.");
+    if (
+      !username.trim() ||
+      !password
+    ) {
+      setError(
+        "Inserisci username e password."
+      );
       return;
     }
 
     setLoading(true);
 
-    const { data, error: authError } =
-      await supabase.auth.signInWithPassword({
-        email: toAuthEmail(username),
-        password,
-      });
+    const {
+      data,
+      error: authError,
+    } =
+      await supabase.auth.signInWithPassword(
+        {
+          email:
+            toAuthEmail(
+              username
+            ),
+          password,
+        }
+      );
 
-    if (authError || !data?.user) {
+    if (
+      authError ||
+      !data?.user
+    ) {
       setLoading(false);
-      setError("Username o password non validi.");
+      setError(
+        "Username o password non validi."
+      );
       return;
     }
 
     try {
-      /*
-       * L'account bloccato può comunque effettuare il login
-       * e accedere alla piattaforma.
-       *
-       * Il divieto di giocare viene gestito lato server
-       * dalle Edge Functions start-attempt e rigori.
-       */
-      await dbProfile(data.user.id);
+      await dbProfile(
+        data.user.id
+      );
 
       setLoading(false);
       onLoggedIn();
@@ -604,7 +810,10 @@ function Login({ onLoggedIn }) {
       <div className="loginCard">
         <div className="logo">
           <span className="logoIcon">
-            <Icon name="target" size={25} />
+            <Icon
+              name="target"
+              size={25}
+            />
           </span>
           FANTALUCK
         </div>
@@ -618,7 +827,9 @@ function Login({ onLoggedIn }) {
             placeholder="Username"
             value={username}
             onChange={(e) =>
-              setUsername(e.target.value)
+              setUsername(
+                e.target.value
+              )
             }
           />
 
@@ -627,7 +838,9 @@ function Login({ onLoggedIn }) {
             type="password"
             value={password}
             onChange={(e) =>
-              setPassword(e.target.value)
+              setPassword(
+                e.target.value
+              )
             }
           />
 
@@ -635,7 +848,9 @@ function Login({ onLoggedIn }) {
             type="submit"
             disabled={loading}
           >
-            {loading ? "ACCESSO..." : "ENTRA"}
+            {loading
+              ? "ACCESSO..."
+              : "ENTRA"}
           </button>
         </form>
 
@@ -663,48 +878,99 @@ function Nav({
     <nav>
       <button
         className={
-          page === "home" ? "active" : ""
+          page === "home"
+            ? "active"
+            : ""
         }
-        onClick={() => setPage("home")}
+        onClick={() =>
+          setPage("home")
+        }
       >
-        <Icon name="home" size={21} />
+        <Icon
+          name="home"
+          size={21}
+        />
         <span>Home</span>
       </button>
 
       <button
         className={
-          page === "quiz" ? "active" : ""
+          page === "quiz"
+            ? "active"
+            : ""
         }
-        onClick={() => setPage("quiz")}
+        onClick={() =>
+          setPage("quiz")
+        }
       >
-        <Icon name="ball" size={21} />
+        <Icon
+          name="ball"
+          size={21}
+        />
         <span>Gioca</span>
       </button>
 
       <button
         className={
-          page === "rank" ? "active" : ""
+          page === "rank"
+            ? "active"
+            : ""
         }
-        onClick={() => setPage("rank")}
+        onClick={() =>
+          setPage("rank")
+        }
       >
-        <Icon name="trophy" size={21} />
+        <Icon
+          name="trophy"
+          size={21}
+        />
         <span>Classifica</span>
       </button>
 
-      {profile.role === "admin" && (
+      <button
+        className={
+          page === "profile"
+            ? "active"
+            : ""
+        }
+        onClick={() =>
+          setPage("profile")
+        }
+      >
+        <Icon
+          name="user"
+          size={21}
+        />
+        <span>Profilo</span>
+      </button>
+
+      {profile.role ===
+        "admin" && (
         <button
           className={
-            page === "admin" ? "active" : ""
+            page === "admin"
+              ? "active"
+              : ""
           }
-          onClick={() => setPage("admin")}
+          onClick={() =>
+            setPage("admin")
+          }
         >
-          <Icon name="settings" size={21} />
+          <Icon
+            name="settings"
+            size={21}
+          />
           <span>Admin</span>
         </button>
       )}
 
-      <button onClick={onLogout}>
-        <Icon name="logout" size={21} />
+      <button
+        onClick={onLogout}
+      >
+        <Icon
+          name="logout"
+          size={21}
+        />
         <span>Esci</span>
       </button>
     </nav>
@@ -721,40 +987,102 @@ function Home({
   setPage,
   attempt,
 }) {
-  const state = getWeekState(week);
+  const state =
+    getWeekState(week);
 
-  const [rulesOpen, setRulesOpen] =
-    useState(false);
+  const [
+    rulesOpen,
+    setRulesOpen,
+  ] = useState(false);
+
+  const blocked =
+    profile?.blocked === true;
+
+  const canPlay =
+    state === "open" &&
+    !attempt &&
+    !blocked;
 
   return (
     <div className="wrap">
+      {blocked && (
+        <div className="blockedBanner">
+          <div>
+            <strong>
+              🔒 ACCOUNT BLOCCATO
+            </strong>
+
+            <span>
+              Puoi consultare Fantaluck,
+              ma non puoi partecipare
+              alle sfide.
+            </span>
+          </div>
+        </div>
+      )}
+
       <section className="hero">
         <div className="badge">
-          <Icon name="target" size={16} />
+          <Icon
+            name="target"
+            size={16}
+          />
           FANTALUCK
         </div>
 
         <h1>
           La sfida
           <br />
-          <em>settimanale.</em>
+          <em>
+            settimanale.
+          </em>
         </h1>
 
         <p>
-          Conosci il calcio. Indovina. Segna.
+          Conosci il calcio.
+          Indovina. Segna.
         </p>
 
-        {state === "open" && !attempt && (
+        {canPlay && (
           <button
-            onClick={() => setPage("quiz")}
+            onClick={() =>
+              setPage("quiz")
+            }
           >
-            GIOCA ORA <Icon name="arrow" size={18} />
+            GIOCA ORA{" "}
+            <Icon
+              name="arrow"
+              size={18}
+            />
           </button>
+        )}
+
+        {blocked &&
+          state === "open" && (
+            <div className="notice blockedNotice">
+              <strong>
+                🔒 Partecipazione
+                disabilitata
+              </strong>
+              <br />
+              Il tuo account è
+              bloccato.
+            </div>
+          )}
+
+        {attempt && (
+          <div className="notice">
+            Hai già partecipato.
+            <br />
+            Puoi consultare il tuo
+            risultato e la classifica.
+          </div>
         )}
 
         {state === "waiting" && (
           <div className="notice">
-            La nuova sfida non è ancora iniziata.
+            La nuova sfida non è
+            ancora iniziata.
           </div>
         )}
 
@@ -763,26 +1091,23 @@ function Home({
             <div className="notice">
               La settimana è chiusa.
               <br />
-              I risultati saranno pubblicati
+              I risultati saranno
+              pubblicati
               dall'organizzatore.
-            </div>
-          )}
-
-        {attempt &&
-          !week?.results_published && (
-            <div className="notice">
-              Hai già partecipato.
-              <br />
-              Il risultato sarà disponibile
-              dopo la pubblicazione.
             </div>
           )}
 
         {week?.results_published && (
           <button
-            onClick={() => setPage("rank")}
+            onClick={() =>
+              setPage("rank")
+            }
           >
-            VEDI RISULTATI <Icon name="arrow" size={18} />
+            VEDI RISULTATI{" "}
+            <Icon
+              name="arrow"
+              size={18}
+            />
           </button>
         )}
       </section>
@@ -796,21 +1121,30 @@ function Home({
           </strong>
 
           <span>
-            {state === "open" && "APERTA"}
-            {state === "waiting" && "IN ARRIVO"}
-            {state === "closed" && "CHIUSA"}
-            {state === "published" &&
+            {state === "open" &&
+              "APERTA"}
+            {state === "waiting" &&
+              "IN ARRIVO"}
+            {state === "closed" &&
+              "CHIUSA"}
+            {state ===
+              "published" &&
               "RISULTATI PUBBLICATI"}
             {state === "draft" &&
               "IN PREPARAZIONE"}
-            {state === "none" && "NESSUNA"}
+            {state === "none" &&
+              "NESSUNA"}
           </span>
         </div>
 
         <div className="card">
-          <small>IL TUO PROFILO</small>
+          <small>
+            IL TUO PROFILO
+          </small>
 
-          <strong>{profile.name}</strong>
+          <strong>
+            {profile.name}
+          </strong>
 
           <span>
             @{profile.username}
@@ -819,13 +1153,17 @@ function Home({
 
         <div className="card pronosticiCard">
           <div className="pronosticiCardTop">
-            <small>PRONOSTICI INDOVINATI</small>
+            <small>
+              PRONOSTICI INDOVINATI
+            </small>
 
             <button
               type="button"
               className="pronosticiDashboardButton"
               onClick={() =>
-                setPage("pronostici")
+                setPage(
+                  "pronostici"
+                )
               }
               aria-label="Apri classifica pronostici"
               title="Classifica pronostici"
@@ -839,25 +1177,57 @@ function Home({
 
           <strong>
             {Number(
-              profile.pronostici_indovinati || 0
+              profile.pronostici_indovinati ||
+                0
             )}
           </strong>
 
-          <span>pronostici corretti</span>
+          <span>
+            pronostici corretti
+          </span>
         </div>
+
+        <button
+          className="card dashboardProfileCard"
+          onClick={() =>
+            setPage("profile")
+          }
+        >
+          <small>
+            LE TUE STATISTICHE
+          </small>
+
+          <strong>
+            PROFILO
+          </strong>
+
+          <span>
+            Visualizza storico e
+            statistiche
+          </span>
+        </button>
       </div>
 
-      <Countdown week={week} />
+      <Countdown
+        week={week}
+      />
 
       <button
         className="rulesToggle"
         onClick={() =>
-          setRulesOpen(!rulesOpen)
+          setRulesOpen(
+            !rulesOpen
+          )
         }
       >
         <span>
-          <small>FANTALUCK</small>
-          <strong>REGOLAMENTO</strong>
+          <small>
+            FANTALUCK
+          </small>
+
+          <strong>
+            REGOLAMENTO
+          </strong>
         </span>
 
         <span
@@ -867,7 +1237,10 @@ function Home({
               : "rulesArrow"
           }
         >
-          <Icon name="chevron" size={18} />
+          <Icon
+            name="chevron"
+            size={18}
+          />
         </span>
       </button>
 
@@ -877,78 +1250,86 @@ function Home({
             <div className="ruleItem">
               <b>01</b>
               <span>
-                20 domande: 10 sulle partite
-                e 10 sui giocatori.
+                20 domande: 10 sulle
+                partite e 10 sui
+                giocatori.
               </span>
             </div>
 
             <div className="ruleItem">
               <b>02</b>
               <span>
-                Ogni risposta corretta vale
-                10 punti.
+                Ogni risposta corretta
+                vale 10 punti.
               </span>
             </div>
 
             <div className="ruleItem">
               <b>03</b>
               <span>
-                Terminato il quiz si passa
-                alla sfida dei rigori.
+                Terminato il quiz si
+                passa alla sfida dei
+                rigori.
               </span>
             </div>
 
             <div className="ruleItem">
               <b>04</b>
               <span>
-                Ogni rigore ha 12 caselle.
-                La possibilità di segnare
-                diminuisce ogni 2 rigori,
-                fino a un minimo di 2/12.
+                Ogni rigore ha 12
+                caselle. La possibilità
+                di segnare diminuisce
+                ogni 2 rigori, fino a un
+                minimo di 2/12.
               </span>
             </div>
 
             <div className="ruleItem">
               <b>05</b>
               <span>
-                Il moltiplicatore parte da
-                x1.00 e aumenta di 0.15 per
-                ogni gol.
+                Il moltiplicatore parte
+                da x1.00 e aumenta di
+                0.15 per ogni gol.
               </span>
             </div>
 
             <div className="ruleItem">
               <b>06</b>
               <span>
-                Un rigore parato interrompe
-                la serie.
+                Un rigore parato
+                interrompe la serie.
               </span>
             </div>
 
             <div className="ruleItem">
               <b>07</b>
               <span>
-                Il punteggio finale è il
-                punteggio del quiz moltiplicato
-                per il moltiplicatore.
+                Il punteggio finale è
+                il punteggio del quiz
+                moltiplicato per il
+                moltiplicatore.
               </span>
             </div>
 
             <div className="ruleItem">
               <b>08</b>
               <span>
-                Se una domanda ha più risposte
-                corrette, è sufficiente scegliere
-                una delle alternative valide.
+                Se una domanda ha più
+                risposte corrette, è
+                sufficiente scegliere
+                una delle alternative
+                valide.
               </span>
             </div>
 
             <div className="ruleItem">
               <b>09</b>
               <span>
-                I risultati vengono pubblicati
-                dall'organizzatore dopo la
-                chiusura della settimana.
+                I risultati vengono
+                pubblicati
+                dall'organizzatore dopo
+                la chiusura della
+                settimana.
               </span>
             </div>
           </div>
@@ -968,39 +1349,59 @@ function Quiz({
 }) {
   const questions = useMemo(
     () => [
-      ...(week?.matchQuestions || []),
-      ...(week?.playerQuestions || []),
+      ...(week?.matchQuestions ||
+        []),
+      ...(week?.playerQuestions ||
+        []),
     ],
     [week]
   );
 
-  const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [error, setError] = useState("");
-  const [submitting, setSubmitting] =
-    useState(false);
+  const [
+    index,
+    setIndex,
+  ] = useState(0);
+
+  const [
+    answers,
+    setAnswers,
+  ] = useState({});
+
+  const [error, setError] =
+    useState("");
+
+  const [
+    submitting,
+    setSubmitting,
+  ] = useState(false);
 
   if (!week) {
     return (
       <div className="empty">
-        Nessuna settimana disponibile.
+        Nessuna settimana
+        disponibile.
       </div>
     );
   }
 
-  const state = getWeekState(week);
+  const state =
+    getWeekState(week);
 
   if (state !== "open") {
     return (
       <div className="empty">
-        Questa settimana non è disponibile.
+        Questa settimana non è
+        disponibile.
       </div>
     );
   }
 
-  const question = questions[index];
+  const question =
+    questions[index];
 
-  const choose = (answer) => {
+  const choose = (
+    answer
+  ) => {
     setAnswers({
       ...answers,
       [index]: answer,
@@ -1018,11 +1419,16 @@ function Quiz({
 
   const next = async () => {
     if (!answers[index]) {
-      setError("Scegli una risposta.");
+      setError(
+        "Scegli una risposta."
+      );
       return;
     }
 
-    if (index === questions.length - 1) {
+    if (
+      index ===
+      questions.length - 1
+    ) {
       const matchAnswers =
         questions
           .slice(0, 10)
@@ -1036,7 +1442,8 @@ function Quiz({
           .slice(10, 20)
           .map(
             (_, i) =>
-              answers[i + 10] || ""
+              answers[i + 10] ||
+              ""
           );
 
       setSubmitting(true);
@@ -1065,7 +1472,9 @@ function Quiz({
   return (
     <div className="wrap">
       <div className="progress">
-        DOMANDA {index + 1} / {questions.length}
+        DOMANDA{" "}
+        {index + 1} /{" "}
+        {questions.length}
 
         <div>
           <i
@@ -1093,33 +1502,43 @@ function Quiz({
         </h2>
 
         <div className="answers">
-          {(question?.options || [
-            "A",
-            "B",
-            "C",
-            "D",
-          ]).map((option, i) => (
-            <button
-              key={i}
-              className={
-                answers[index] === option
-                  ? "selected"
-                  : ""
-              }
-              onClick={() =>
-                choose(option)
-              }
-            >
-              {String.fromCharCode(
-                65 + i
-              )}
+          {(
+            question?.options || [
+              "A",
+              "B",
+              "C",
+              "D",
+            ]
+          ).map(
+            (
+              option,
+              i
+            ) => (
+              <button
+                key={i}
+                className={
+                  answers[index] ===
+                  option
+                    ? "selected"
+                    : ""
+                }
+                onClick={() =>
+                  choose(option)
+                }
+              >
+                {String.fromCharCode(
+                  65 + i
+                )}
 
-              <span>
-                {option ||
-                  `Risposta ${i + 1}`}
-              </span>
-            </button>
-          ))}
+                <span>
+                  {option ||
+                    `Risposta ${
+                      i + 1
+                    }`}
+                </span>
+              </button>
+            )
+          )}
         </div>
 
         {error && (
@@ -1137,7 +1556,10 @@ function Quiz({
               submitting
             }
           >
-            <Icon name="arrow-left" size={16} />
+            <Icon
+              name="arrow-left"
+              size={16}
+            />
             INDIETRO
           </button>
 
@@ -1149,11 +1571,16 @@ function Quiz({
             {submitting
               ? "SALVATAGGIO..."
               : index ===
-                questions.length - 1
+                questions.length -
+                  1
               ? "VAI AI RIGORI"
               : "AVANTI"}
+
             {!submitting && (
-              <Icon name="arrow" size={16} />
+              <Icon
+                name="arrow"
+                size={16}
+              />
             )}
           </button>
         </div>
@@ -1170,13 +1597,21 @@ function Rigori({
   week,
   onDone,
 }) {
-  const [shot, setShot] = useState(0);
-  const [goals, setGoals] = useState(0);
-  const [multiplier, setMultiplier] =
-    useState(1);
+  const [shot, setShot] =
+    useState(0);
 
-  const [selected, setSelected] =
-    useState(null);
+  const [goals, setGoals] =
+    useState(0);
+
+  const [
+    multiplier,
+    setMultiplier,
+  ] = useState(1);
+
+  const [
+    selected,
+    setSelected,
+  ] = useState(null);
 
   const [result, setResult] =
     useState(null);
@@ -1195,13 +1630,14 @@ function Rigori({
 
     (async () => {
       try {
-        const status = await callFunction(
-          "rigori",
-          {
-            week_id: week.id,
-            action: "status",
-          }
-        );
+        const status =
+          await callFunction(
+            "rigori",
+            {
+              week_id: week.id,
+              action: "status",
+            }
+          );
 
         if (cancelled) return;
 
@@ -1242,8 +1678,11 @@ function Rigori({
     };
   }, [week.id]);
 
-  const shoot = async (cell) => {
-    if (busy || result) return;
+  const shoot = async (
+    cell
+  ) => {
+    if (busy || result)
+      return;
 
     setBusy(true);
     setError("");
@@ -1292,7 +1731,10 @@ function Rigori({
       return;
     }
 
-    setShot((s) => s + 1);
+    setShot(
+      (s) => s + 1
+    );
+
     setSelected(null);
     setResult(null);
   };
@@ -1306,20 +1748,35 @@ function Rigori({
   }
 
   const goalCount =
-    goalsAvailableForShot(shot);
+    goalsAvailableForShot(
+      shot
+    );
 
   return (
     <div className="wrap">
       <div className="penalty">
         <div className="penaltyTop">
           <span>RIGORI</span>
+
           <strong>
             {shot + 1}° RIGORE
           </strong>
         </div>
 
-        <div className="keeper">
-          <Icon name="target" size={35} />
+        <div
+          className={
+            result
+              ? result.goal
+                ? "keeper keeperGoal"
+                : "keeper keeperSave"
+              : "keeper"
+          }
+        >
+          <Icon
+            name="target"
+            size={35}
+          />
+
           <span>PORTA</span>
         </div>
 
@@ -1372,8 +1829,17 @@ function Rigori({
             MOLTIPLICATORE
           </small>
 
-          <strong>
-            x{multiplier.toFixed(2)}
+          <strong
+            className={
+              result?.goal
+                ? "multiplierPulse"
+                : ""
+            }
+          >
+            x
+            {multiplier.toFixed(
+              2
+            )}
           </strong>
 
           <span>
@@ -1426,7 +1892,11 @@ function Rigori({
               {result.goal
                 ? "PROSSIMO RIGORE"
                 : "CONTINUA"}
-              <Icon name="arrow" size={16} />
+
+              <Icon
+                name="arrow"
+                size={16}
+              />
             </button>
           </div>
         )}
@@ -1436,7 +1906,7 @@ function Rigori({
 }
 
 /* =========================================================
-   PARTICIPATION COMPLETE
+   PARTECIPAZIONE COMPLETA
    ========================================================= */
 
 function Completed({
@@ -1446,22 +1916,29 @@ function Completed({
     <div className="wrap">
       <div className="completedCard">
         <div className="completedIcon">
-          <Icon name="check" size={38} />
+          <Icon
+            name="check"
+            size={38}
+          />
         </div>
 
         <h1>
-          Partecipazione registrata!
+          Partecipazione
+          registrata!
         </h1>
 
         <p>
-          Le tue risposte e il risultato
-          dei rigori sono stati salvati.
+          Le tue risposte e il
+          risultato dei rigori
+          sono stati salvati.
         </p>
 
         <p>
-          Il punteggio sarà calcolato e
-          pubblicato dall'organizzatore
-          dopo la chiusura della settimana.
+          Il punteggio sarà
+          calcolato e pubblicato
+          dall'organizzatore dopo
+          la chiusura della
+          settimana.
         </p>
 
         <button
@@ -1513,7 +1990,9 @@ function AnswerReview({
     index
   ) => {
     const correctAnswers =
-      getCorrectAnswers(question);
+      getCorrectAnswers(
+        question
+      );
 
     const isCorrect =
       Boolean(
@@ -1537,7 +2016,8 @@ function AnswerReview({
       >
         <div className="reviewQuestionTop">
           <span>
-            DOMANDA {index + 1}
+            DOMANDA{" "}
+            {index + 1}
           </span>
 
           <strong>
@@ -1732,11 +2212,17 @@ function Rank({
   attempts,
   profile,
 }) {
-  const [reviewAttempt, setReviewAttempt] =
-    useState(null);
+  const [
+    reviewAttempt,
+    setReviewAttempt,
+  ] = useState(null);
 
-  const [rankAttempts, setRankAttempts] =
-    useState(attempts || []);
+  const [
+    rankAttempts,
+    setRankAttempts,
+  ] = useState(
+    attempts || []
+  );
 
   const [rankError, setRankError] =
     useState("");
@@ -1754,7 +2240,9 @@ function Rank({
     dbAttempts(week.id)
       .then((data) => {
         if (!cancelled) {
-          setRankAttempts(data || []);
+          setRankAttempts(
+            data || []
+          );
         }
       })
       .catch((err) => {
@@ -1776,50 +2264,144 @@ function Rank({
     return (
       <div className="wrap">
         <div className="title">
-          <small>FANTALUCK</small>
-          <h1>Classifica</h1>
+          <small>
+            FANTALUCK
+          </small>
+
+          <h1>
+            Classifica
+          </h1>
         </div>
 
         <div className="empty">
           <div className="bigEmoji">
-            <Icon name="trophy" size={48} />
+            <Icon
+              name="trophy"
+              size={48}
+            />
           </div>
 
           <h2>
-            Risultati non ancora pubblicati
+            Risultati non ancora
+            pubblicati
           </h2>
 
           <p>
-            L'organizzatore deve prima correggere le
-            risposte e pubblicare i risultati.
+            L'organizzatore deve
+            prima correggere le
+            risposte e pubblicare i
+            risultati.
           </p>
         </div>
       </div>
     );
   }
 
-  const rows = [...rankAttempts]
+  const rows = [
+    ...rankAttempts,
+  ]
     .filter(
       (attempt) =>
-        attempt.results_published === true ||
-        week.results_published === true
+        attempt.results_published ===
+          true ||
+        week.results_published ===
+          true
     )
     .sort(
       (a, b) =>
-        Number(b.final_score || 0) -
-        Number(a.final_score || 0)
+        Number(
+          b.final_score || 0
+        ) -
+        Number(
+          a.final_score || 0
+        )
     );
+
+  const myIndex =
+    rows.findIndex(
+      (attempt) =>
+        attempt.username ===
+        profile.username
+    );
+
+  const myPosition =
+    myIndex >= 0
+      ? myIndex + 1
+      : null;
+
+  const above =
+    myIndex > 0
+      ? rows[myIndex - 1]
+      : null;
+
+  const myScore =
+    myIndex >= 0
+      ? Number(
+          rows[myIndex]
+            .final_score || 0
+        )
+      : 0;
 
   return (
     <div className="wrap">
       <div className="title">
-        <small>SETTIMANA #{week.number}</small>
-        <h1>Classifica</h1>
+        <small>
+          SETTIMANA #
+          {week.number}
+        </small>
+
+        <h1>
+          Classifica
+        </h1>
 
         <p className="rankingHint">
-          Clicca su un giocatore per vedere le sue risposte.
+          Clicca su un giocatore
+          per vedere le sue
+          risposte.
         </p>
       </div>
+
+      {myPosition && (
+        <div className="myRankCard">
+          <div>
+            <small>
+              LA TUA POSIZIONE
+            </small>
+
+            <strong>
+              #{myPosition}
+            </strong>
+          </div>
+
+          <div>
+            <small>
+              PUNTEGGIO
+            </small>
+
+            <strong>
+              {myScore}
+            </strong>
+          </div>
+
+          {above && (
+            <div>
+              <small>
+                DISTACCO
+              </small>
+
+              <strong>
+                {Math.max(
+                  0,
+                  Number(
+                    above.final_score ||
+                      0
+                  ) - myScore
+                )}
+              </strong>
+            </div>
+          )}
+        </div>
+      )}
 
       {rankError && (
         <div className="error">
@@ -1828,50 +2410,71 @@ function Rank({
       )}
 
       <div className="table">
-        {rows.map((attempt, index) => {
-          const isMine =
-            attempt.username === profile.username;
+        {rows.map(
+          (
+            attempt,
+            index
+          ) => {
+            const isMine =
+              attempt.username ===
+              profile.username;
 
-          return (
-            <div
-              className={
-                isMine
-                  ? "row currentPlayer clickableRow"
-                  : "row clickableRow"
-              }
-              key={attempt.id || attempt.username}
-              onClick={() =>
-                setReviewAttempt(attempt)
-              }
-            >
-              <b>{index + 1}</b>
+            return (
+              <div
+                className={
+                  isMine
+                    ? "row currentPlayer clickableRow"
+                    : "row clickableRow"
+                }
+                key={
+                  attempt.id ||
+                  attempt.username
+                }
+                onClick={() =>
+                  setReviewAttempt(
+                    attempt
+                  )
+                }
+              >
+                <b>
+                  {index + 1}
+                </b>
 
-              <span>
-                <strong>
-                  {attempt.name || attempt.username}
-                </strong>
+                <span>
+                  <strong>
+                    {attempt.name ||
+                      attempt.username}
+                  </strong>
 
-                <small>
-                  {attempt.correct_answers || 0}/20 corrette · {attempt.goals || 0} gol
-                </small>
+                  <small>
+                    {attempt.correct_answers ||
+                      0}
+                    /20 corrette ·{" "}
+                    {attempt.goals ||
+                      0}{" "}
+                    gol
+                  </small>
 
-                <span className="answerReviewHint">
-                  {isMine
-                    ? "CLICCA PER RIVEDERE LE RISPOSTE"
-                    : "CLICCA PER VEDERE LE RISPOSTE"}
+                  <span className="answerReviewHint">
+                    {isMine
+                      ? "CLICCA PER RIVEDERE LE RISPOSTE"
+                      : "CLICCA PER VEDERE LE RISPOSTE"}
+                  </span>
                 </span>
-              </span>
 
-              <strong>
-                {attempt.final_score || 0}
-              </strong>
-            </div>
-          );
-        })}
+                <strong>
+                  {attempt.final_score ||
+                    0}
+                </strong>
+              </div>
+            );
+          }
+        )}
 
         {!rows.length && (
           <div className="empty">
-            Nessun risultato disponibile.
+            Nessun risultato
+            disponibile.
           </div>
         )}
       </div>
@@ -1879,10 +2482,14 @@ function Rank({
       {reviewAttempt && (
         <AnswerReview
           week={week}
-          attempt={reviewAttempt}
+          attempt={
+            reviewAttempt
+          }
           profile={profile}
           onClose={() =>
-            setReviewAttempt(null)
+            setReviewAttempt(
+              null
+            )
           }
         />
       )}
@@ -1898,8 +2505,10 @@ function PronosticiRank({
   profile,
   setPage,
 }) {
-  const [profiles, setProfiles] =
-    useState([]);
+  const [
+    profiles,
+    setProfiles,
+  ] = useState([]);
 
   const [loading, setLoading] =
     useState(true);
@@ -1943,43 +2552,49 @@ function PronosticiRank({
     };
   }, []);
 
-  const rows = [...profiles].sort(
-    (a, b) => {
-      const diff =
-        Number(
-          b.pronostici_indovinati || 0
-        ) -
-        Number(
-          a.pronostici_indovinati || 0
-        );
-
-      if (diff !== 0) return diff;
-
-      return String(
-        a.name ||
-          a.username ||
-          ""
-      ).localeCompare(
-        String(
-          b.name ||
-            b.username ||
-            ""
-        )
+  const rows = [
+    ...profiles,
+  ].sort((a, b) => {
+    const diff =
+      Number(
+        b.pronostici_indovinati ||
+          0
+      ) -
+      Number(
+        a.pronostici_indovinati ||
+          0
       );
-    }
-  );
+
+    if (diff !== 0)
+      return diff;
+
+    return String(
+      a.name ||
+        a.username ||
+        ""
+    ).localeCompare(
+      String(
+        b.name ||
+          b.username ||
+          ""
+      )
+    );
+  });
 
   return (
     <div className="wrap">
       <div className="title">
-        <small>FANTALUCK</small>
+        <small>
+          FANTALUCK
+        </small>
 
         <h1>
           Pronostici
         </h1>
 
         <p className="rankingHint">
-          Classifica dei pronostici indovinati.
+          Classifica dei
+          pronostici indovinati.
         </p>
       </div>
 
@@ -2019,7 +2634,10 @@ function PronosticiRank({
         rows.length > 0 && (
           <div className="table pronosticiRankingTable">
             {rows.map(
-              (player, index) => {
+              (
+                player,
+                index
+              ) => {
                 const isMine =
                   player.username ===
                   profile?.username;
@@ -2047,7 +2665,10 @@ function PronosticiRank({
                       </strong>
 
                       <small>
-                        @{player.username}
+                        @
+                        {
+                          player.username
+                        }
                       </small>
                     </span>
 
@@ -2068,7 +2689,8 @@ function PronosticiRank({
         !error &&
         !rows.length && (
           <div className="empty">
-            Nessun giocatore trovato.
+            Nessun giocatore
+            trovato.
           </div>
         )}
 
@@ -2078,9 +2700,476 @@ function PronosticiRank({
           setPage("home")
         }
       >
-        <Icon name="arrow-left" size={16} />
+        <Icon
+          name="arrow-left"
+          size={16}
+        />
         TORNA ALLA HOME
       </button>
+    </div>
+  );
+}
+
+/* =========================================================
+   PROFILO
+   ========================================================= */
+
+function ProfilePage({
+  profile,
+  attempts,
+  allWeeks,
+  setPage,
+}) {
+  const myAttempts =
+    attempts.filter(
+      (attempt) =>
+        attempt.username ===
+        profile.username
+    );
+
+  const completedAttempts =
+    myAttempts.filter(
+      (attempt) =>
+        attempt.rigori_finished
+    );
+
+  const publishedAttempts =
+    completedAttempts.filter(
+      (attempt) =>
+        attempt.results_published
+    );
+
+  const totalCorrect =
+    publishedAttempts.reduce(
+      (sum, attempt) =>
+        sum +
+        Number(
+          attempt.correct_answers ||
+            0
+        ),
+      0
+    );
+
+  const totalGoals =
+    completedAttempts.reduce(
+      (sum, attempt) =>
+        sum +
+        Number(
+          attempt.goals || 0
+        ),
+      0
+    );
+
+  const bestScore =
+    publishedAttempts.length
+      ? Math.max(
+          ...publishedAttempts.map(
+            (attempt) =>
+              Number(
+                attempt.final_score ||
+                  0
+              )
+          )
+        )
+      : 0;
+
+  const average =
+    publishedAttempts.length
+      ? (
+          publishedAttempts.reduce(
+            (sum, attempt) =>
+              sum +
+              Number(
+                attempt.final_score ||
+                  0
+              ),
+            0
+          ) /
+          publishedAttempts.length
+        ).toFixed(1)
+      : "0.0";
+
+  const totalQuestions =
+    publishedAttempts.length *
+    20;
+
+  const accuracy =
+    totalQuestions
+      ? Math.round(
+          (totalCorrect /
+            totalQuestions) *
+            100
+        )
+      : 0;
+
+  return (
+    <div className="wrap">
+      <div className="title">
+        <small>
+          FANTALUCK
+        </small>
+
+        <h1>
+          Il tuo profilo
+        </h1>
+
+        <p className="rankingHint">
+          Le tue statistiche e
+          il tuo storico.
+        </p>
+      </div>
+
+      {profile.blocked && (
+        <div className="blockedBanner">
+          <div>
+            <strong>
+              🔒 ACCOUNT BLOCCATO
+            </strong>
+
+            <span>
+              La consultazione del
+              profilo resta disponibile.
+            </span>
+          </div>
+        </div>
+      )}
+
+      <div className="profileHero">
+        <div className="profileAvatar">
+          <Icon
+            name="user"
+            size={36}
+          />
+        </div>
+
+        <div>
+          <small>
+            GIOCATORE
+          </small>
+
+          <h2>
+            {profile.name}
+          </h2>
+
+          <span>
+            @{profile.username}
+          </span>
+        </div>
+      </div>
+
+      <div className="statsGrid">
+        <div className="statCard">
+          <small>
+            SETTIMANE
+          </small>
+
+          <strong>
+            {completedAttempts.length}
+          </strong>
+
+          <span>
+            partecipate
+          </span>
+        </div>
+
+        <div className="statCard">
+          <small>
+            CORRETTE
+          </small>
+
+          <strong>
+            {totalCorrect}
+          </strong>
+
+          <span>
+            {accuracy}% precisione
+          </span>
+        </div>
+
+        <div className="statCard">
+          <small>
+            RIGORI
+          </small>
+
+          <strong>
+            {totalGoals}
+          </strong>
+
+          <span>
+            gol segnati
+          </span>
+        </div>
+
+        <div className="statCard">
+          <small>
+            MIGLIOR RISULTATO
+          </small>
+
+          <strong>
+            {bestScore}
+          </strong>
+
+          <span>
+            punti
+          </span>
+        </div>
+      </div>
+
+      <div className="profileStatsCard">
+        <div>
+          <small>
+            MEDIA PUNTEGGIO
+          </small>
+
+          <strong>
+            {average}
+          </strong>
+        </div>
+
+        <div>
+          <small>
+            PRONOSTICI
+          </small>
+
+          <strong>
+            {Number(
+              profile.pronostici_indovinati ||
+                0
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>
+            SETTIMANE DISPONIBILI
+          </small>
+
+          <strong>
+            {allWeeks.length}
+          </strong>
+        </div>
+      </div>
+
+      <button
+        className="sectionAction"
+        onClick={() =>
+          setPage("history")
+        }
+      >
+        <span>
+          <small>
+            STORICO
+          </small>
+
+          <strong>
+            LE MIE PARTECIPAZIONI
+          </strong>
+        </span>
+
+        <Icon
+          name="arrow"
+          size={20}
+        />
+      </button>
+
+      <button
+        className="sectionAction"
+        onClick={() =>
+          setPage("pronostici")
+        }
+      >
+        <span>
+          <small>
+            CLASSIFICA
+          </small>
+
+          <strong>
+            PRONOSTICI INDOVINATI
+          </strong>
+        </span>
+
+        <Icon
+          name="arrow"
+          size={20}
+        />
+      </button>
+    </div>
+  );
+}
+
+/* =========================================================
+   STORICO
+   ========================================================= */
+
+function HistoryPage({
+  profile,
+  attempts,
+  weeks,
+  setPage,
+}) {
+  const [
+    reviewAttempt,
+    setReviewAttempt,
+  ] = useState(null);
+
+  const myAttempts =
+    attempts
+      .filter(
+        (attempt) =>
+          attempt.username ===
+          profile.username
+      )
+      .sort(
+        (a, b) => {
+          const weekA =
+            weeks.find(
+              (week) =>
+                week.id ===
+                a.week_id
+            );
+
+          const weekB =
+            weeks.find(
+              (week) =>
+                week.id ===
+                b.week_id
+            );
+
+          return (
+            Number(
+              weekB?.number || 0
+            ) -
+            Number(
+              weekA?.number || 0
+            )
+          );
+        }
+      );
+
+  return (
+    <div className="wrap">
+      <div className="title">
+        <small>
+          FANTALUCK
+        </small>
+
+        <h1>
+          Storico
+        </h1>
+
+        <p className="rankingHint">
+          Tutte le tue
+          partecipazioni.
+        </p>
+      </div>
+
+      <div className="historyList">
+        {myAttempts.map(
+          (attempt) => {
+            const week =
+              weeks.find(
+                (item) =>
+                  item.id ===
+                  attempt.week_id
+              );
+
+            return (
+              <button
+                className="historyCard"
+                key={attempt.id}
+                onClick={() =>
+                  attempt.results_published &&
+                  setReviewAttempt(
+                    attempt
+                  )
+                }
+              >
+                <div className="historyWeek">
+                  <small>
+                    SETTIMANA
+                  </small>
+
+                  <strong>
+                    #
+                    {week?.number ??
+                      "?"}
+                  </strong>
+                </div>
+
+                <div className="historyMain">
+                  <strong>
+                    {attempt.results_published
+                      ? `${attempt.correct_answers || 0}/20 corrette`
+                      : "Risultato in attesa"}
+                  </strong>
+
+                  <span>
+                    {attempt.rigori_finished
+                      ? `${attempt.goals || 0} gol · x${Number(
+                          attempt.multiplier ||
+                            1
+                        ).toFixed(2)}`
+                      : "Rigori non completati"}
+                  </span>
+                </div>
+
+                <div className="historyScore">
+                  <small>
+                    PUNTEGGIO
+                  </small>
+
+                  <strong>
+                    {attempt.results_published
+                      ? attempt.final_score ||
+                        0
+                      : "—"}
+                  </strong>
+                </div>
+              </button>
+            );
+          }
+        )}
+
+        {!myAttempts.length && (
+          <div className="empty">
+            Non hai ancora
+            partecipato a nessuna
+            settimana.
+          </div>
+        )}
+      </div>
+
+      <button
+        className="backButton"
+        onClick={() =>
+          setPage("profile")
+        }
+      >
+        <Icon
+          name="arrow-left"
+          size={16}
+        />
+        TORNA AL PROFILO
+      </button>
+
+      {reviewAttempt && (
+        <AnswerReview
+          week={weeks.find(
+            (week) =>
+              week.id ===
+              reviewAttempt.week_id
+          )}
+          attempt={
+            reviewAttempt
+          }
+          profile={profile}
+          onClose={() =>
+            setReviewAttempt(
+              null
+            )
+          }
+        />
+      )}
     </div>
   );
 }
@@ -2099,7 +3188,9 @@ function QuestionEditor({
     field,
     value
   ) => {
-    const next = [...questions];
+    const next = [
+      ...questions,
+    ];
 
     next[index] = {
       ...next[index],
@@ -2114,7 +3205,9 @@ function QuestionEditor({
     optionIndex,
     value
   ) => {
-    const next = [...questions];
+    const next = [
+      ...questions,
+    ];
 
     const currentQuestion =
       next[questionIndex];
@@ -2127,7 +3220,8 @@ function QuestionEditor({
     const oldValue =
       options[optionIndex];
 
-    options[optionIndex] = value;
+    options[optionIndex] =
+      value;
 
     let correct =
       getCorrectAnswers(
@@ -2141,13 +3235,15 @@ function QuestionEditor({
       correct = value
         ? correct.map(
             (item) =>
-              item === oldValue
+              item ===
+              oldValue
                 ? value
                 : item
           )
         : correct.filter(
             (item) =>
-              item !== oldValue
+              item !==
+              oldValue
           );
     }
 
@@ -2170,7 +3266,9 @@ function QuestionEditor({
     questionIndex,
     option
   ) => {
-    const next = [...questions];
+    const next = [
+      ...questions,
+    ];
 
     const question =
       next[questionIndex];
@@ -2181,14 +3279,19 @@ function QuestionEditor({
       );
 
     const exists =
-      current.includes(option);
+      current.includes(
+        option
+      );
 
     const correct = exists
       ? current.filter(
           (item) =>
             item !== option
         )
-      : [...current, option];
+      : [
+          ...current,
+          option,
+        ];
 
     next[questionIndex] = {
       ...question,
@@ -2203,7 +3306,10 @@ function QuestionEditor({
       <h2>{title}</h2>
 
       {questions.map(
-        (question, index) => {
+        (
+          question,
+          index
+        ) => {
           const correctAnswers =
             getCorrectAnswers(
               question
@@ -2212,16 +3318,20 @@ function QuestionEditor({
           return (
             <div
               className="questionEditor"
-              key={question.id}
+              key={
+                question.id
+              }
             >
               <div className="questionNumber">
-                DOMANDA {index + 1}
+                DOMANDA{" "}
+                {index + 1}
               </div>
 
               <textarea
                 placeholder="Scrivi la domanda..."
                 value={
-                  question.text || ""
+                  question.text ||
+                  ""
                 }
                 onChange={(e) =>
                   updateQuestion(
@@ -2235,23 +3345,33 @@ function QuestionEditor({
               <div className="optionGrid">
                 {Array.from(
                   { length: 4 },
-                  (_, optionIndex) => (
+                  (
+                    _,
+                    optionIndex
+                  ) => (
                     <input
-                      key={optionIndex}
+                      key={
+                        optionIndex
+                      }
                       placeholder={`Risposta ${String.fromCharCode(
                         65 +
                           optionIndex
                       )}`}
                       value={
-                        question.options?.[
+                        question
+                          .options?.[
                           optionIndex
-                        ] || ""
+                        ] ||
+                        ""
                       }
-                      onChange={(e) =>
+                      onChange={(
+                        e
+                      ) =>
                         updateOption(
                           index,
                           optionIndex,
-                          e.target.value
+                          e.target
+                            .value
                         )
                       }
                     />
@@ -2265,13 +3385,17 @@ function QuestionEditor({
                 </div>
 
                 <p>
-                  Puoi selezionare anche
-                  più alternative.
+                  Puoi
+                  selezionare
+                  anche più
+                  alternative.
                 </p>
 
                 <div className="correctCheckboxes">
                   {question.options
-                    ?.filter(Boolean)
+                    ?.filter(
+                      Boolean
+                    )
                     .map(
                       (
                         option,
@@ -2309,7 +3433,10 @@ function QuestionEditor({
                                 65 +
                                   optionIndex
                               )}{" "}
-                              — {option}
+                              —{" "}
+                              {
+                                option
+                              }
                             </span>
                           </label>
                         );
@@ -2321,7 +3448,8 @@ function QuestionEditor({
                   Boolean
                 ) && (
                   <div className="noCorrectAnswer">
-                    Inserisci prima le
+                    Inserisci
+                    prima le
                     alternative.
                   </div>
                 )}
@@ -2412,97 +3540,112 @@ function Admin({
     }
   }, [tab]);
 
-  const changePronostici = async (
-    userId,
-    delta
-  ) => {
-    if (pronosticiBusyId) return;
+  const changePronostici =
+    async (
+      userId,
+      delta
+    ) => {
+      if (pronosticiBusyId)
+        return;
 
-    setPronosticiBusyId(userId);
-
-    try {
-      const data =
-        await updatePronostici(
-          userId,
-          delta
-        );
-
-      if (data?.profile) {
-        setParticipants(
-          (current) =>
-            current.map((p) =>
-              p.id ===
-              data.profile.id
-                ? {
-                    ...p,
-                    pronostici_indovinati:
-                      data.profile
-                        .pronostici_indovinati,
-                  }
-                : p
-            )
-        );
-      }
-    } catch (err) {
-      alert(
-        err.message ||
-          "Impossibile aggiornare i pronostici indovinati."
+      setPronosticiBusyId(
+        userId
       );
-    } finally {
-      setPronosticiBusyId(null);
-    }
-  };
 
-  /* =======================================================
-     BLOCCA / SBLOCCA UTENTE
-     ======================================================= */
+      try {
+        const data =
+          await updatePronostici(
+            userId,
+            delta
+          );
 
-  const toggleUserBlock = async (
-    username,
-    currentlyBlocked
-  ) => {
-    const action = currentlyBlocked
-      ? "sbloccare"
-      : "bloccare";
-
-    const confirmed = window.confirm(
-      `Vuoi ${action} ${username}?`
-    );
-
-    if (!confirmed) return;
-
-    try {
-      const data = await callFunction(
-        "bloccautente",
-        {
-          username,
-          blocked: !currentlyBlocked,
+        if (data?.profile) {
+          setParticipants(
+            (current) =>
+              current.map(
+                (p) =>
+                  p.id ===
+                  data.profile.id
+                    ? {
+                        ...p,
+                        pronostici_indovinati:
+                          data
+                            .profile
+                            .pronostici_indovinati,
+                      }
+                    : p
+              )
+          );
         }
-      );
-
-      if (data?.profile) {
-        setParticipants(
-          (current) =>
-            current.map((p) =>
-              p.id === data.profile.id
-                ? {
-                    ...p,
-                    blocked:
-                      data.profile.blocked,
-                  }
-                : p
-            )
+      } catch (err) {
+        alert(
+          err.message ||
+            "Impossibile aggiornare i pronostici indovinati."
+        );
+      } finally {
+        setPronosticiBusyId(
+          null
         );
       }
-    } catch (err) {
-      alert(
-        err.message ||
-          "Impossibile modificare lo stato dell'account."
-      );
-    }
-  };
+    };
 
-  const addUser = async (event) => {
+  const toggleUserBlock =
+    async (
+      username,
+      currentlyBlocked
+    ) => {
+      const action =
+        currentlyBlocked
+          ? "sbloccare"
+          : "bloccare";
+
+      const confirmed =
+        window.confirm(
+          `Vuoi ${action} ${username}?`
+        );
+
+      if (!confirmed)
+        return;
+
+      try {
+        const data =
+          await callFunction(
+            "bloccautente",
+            {
+              username,
+              blocked:
+                !currentlyBlocked,
+            }
+          );
+
+        if (data?.profile) {
+          setParticipants(
+            (current) =>
+              current.map(
+                (p) =>
+                  p.id ===
+                  data.profile.id
+                    ? {
+                        ...p,
+                        blocked:
+                          data.profile
+                            .blocked,
+                      }
+                    : p
+              )
+          );
+        }
+      } catch (err) {
+        alert(
+          err.message ||
+            "Impossibile modificare lo stato dell'account."
+        );
+      }
+    };
+
+  const addUser = async (
+    event
+  ) => {
     event.preventDefault();
 
     setUserError("");
@@ -2553,66 +3696,78 @@ function Admin({
     }
   };
 
-  /* =======================================================
-     ELIMINAZIONE PERMANENTE — INVARIATA
-     ======================================================= */
+  const removeUser =
+    async (
+      username
+    ) => {
+      if (
+        !window.confirm(
+          "Vuoi eliminare questo giocatore?"
+        )
+      ) {
+        return;
+      }
 
-  const removeUser = async (
-    username
-  ) => {
-    if (
-      !window.confirm(
-        "Vuoi eliminare questo giocatore?"
-      )
-    ) {
-      return;
-    }
+      try {
+        await callFunction(
+          "togliutente",
+          {
+            username,
+          }
+        );
 
-    try {
-      await callFunction(
-        "togliutente",
-        {
-          username,
-        }
-      );
-
-      await reloadParticipants();
-    } catch (err) {
-      alert(
-        err.message ||
-          "Impossibile eliminare il giocatore."
-      );
-    }
-  };
+        await reloadParticipants();
+      } catch (err) {
+        alert(
+          err.message ||
+            "Impossibile eliminare il giocatore."
+        );
+      }
+    };
 
   const selectedWeek =
     weeks.find(
       (w) =>
-        w.id === selectedWeekId
+        w.id ===
+        selectedWeekId
     );
 
-  const createNewWeek = () => {
-    const highest =
-      weeks.length > 0
-        ? Math.max(
-            ...weeks.map(
-              (w) =>
-                Number(w.number) || 0
+  const createNewWeek =
+    () => {
+      const highest =
+        weeks.length > 0
+          ? Math.max(
+              ...weeks.map(
+                (w) =>
+                  Number(
+                    w.number
+                  ) || 0
+              )
             )
-          )
-        : 0;
+          : 0;
 
-    const week =
-      newWeek(highest + 1);
+      const week =
+        newWeek(
+          highest + 1
+        );
 
-    setEditingWeek(week);
-    setSelectedWeekId(week.id);
-    setTab("editWeek");
-  };
+      setEditingWeek(
+        week
+      );
+
+      setSelectedWeekId(
+        week.id
+      );
+
+      setTab(
+        "editWeek"
+      );
+    };
 
   const saveCurrentWeek =
     async () => {
-      if (!editingWeek) return;
+      if (!editingWeek)
+        return;
 
       setSaving(true);
       setMessage("");
@@ -2647,20 +3802,28 @@ function Admin({
       }
     };
 
-  const editWeek = (week) => {
+  const editWeek = (
+    week
+  ) => {
     setEditingWeek(
-      normalizeWeek(week)
+      normalizeWeek(
+        week
+      )
     );
 
     setSelectedWeekId(
       week.id
     );
 
-    setTab("editWeek");
+    setTab(
+      "editWeek"
+    );
   };
 
   const removeWeek =
-    async (week) => {
+    async (
+      week
+    ) => {
       if (
         !window.confirm(
           `Eliminare la Settimana #${week.number}?`
@@ -2679,15 +3842,24 @@ function Admin({
         selectedWeekId ===
         week.id
       ) {
-        setSelectedWeekId(null);
-        setEditingWeek(null);
+        setSelectedWeekId(
+          null
+        );
+
+        setEditingWeek(
+          null
+        );
       }
     };
 
   const toggleWeek =
-    async (week) => {
+    async (
+      week
+    ) => {
       const current =
-        getWeekState(week);
+        getWeekState(
+          week
+        );
 
       const nextStatus =
         current === "open"
@@ -2696,14 +3868,17 @@ function Admin({
 
       await saveWeek({
         ...week,
-        status: nextStatus,
+        status:
+          nextStatus,
       });
 
       await reloadWeeks();
     };
 
   const openResults =
-    async (week) => {
+    async (
+      week
+    ) => {
       setSelectedWeekId(
         week.id
       );
@@ -2714,7 +3889,9 @@ function Admin({
         );
 
       setAttempts(data);
-      setTab("results");
+      setTab(
+        "results"
+      );
     };
 
   const allAnswersInserted =
@@ -2727,17 +3904,21 @@ function Admin({
       ];
 
       return (
-        questions.length === 20 &&
+        questions.length ===
+          20 &&
         questions.every(
           (q) =>
-            getCorrectAnswers(q)
-              .length > 0
+            getCorrectAnswers(
+              q
+            ).length > 0
         )
       );
     };
 
   const calculateAndPublish =
-    async (week) => {
+    async (
+      week
+    ) => {
       if (
         !allAnswersInserted(
           week
@@ -2771,13 +3952,16 @@ function Admin({
             !a.rigori_finished
         );
 
-      if (notFinished.length) {
+      if (
+        notFinished.length
+      ) {
         const proceed =
           window.confirm(
             `${notFinished.length} giocatore/i non ha ancora terminato i rigori. Vuoi pubblicare comunque escludendo loro dal calcolo del punteggio?`
           );
 
-        if (!proceed) return;
+        if (!proceed)
+          return;
       }
 
       const allQuestions = [
@@ -2804,7 +3988,10 @@ function Admin({
         let correct = 0;
 
         allQuestions.forEach(
-          (question, i) => {
+          (
+            question,
+            i
+          ) => {
             const correctAnswers =
               getCorrectAnswers(
                 question
@@ -2857,8 +4044,10 @@ function Admin({
 
       await saveWeek({
         ...week,
-        status: "published",
-        results_published: true,
+        status:
+          "published",
+        results_published:
+          true,
       });
 
       await reloadWeeks();
@@ -2881,7 +4070,9 @@ function Admin({
           CONTROL ROOM
         </small>
 
-        <h1>Admin</h1>
+        <h1>
+          Admin
+        </h1>
       </div>
 
       <div className="tabs">
@@ -2931,7 +4122,9 @@ function Admin({
 
           <div className="table">
             {weeks.map(
-              (week) => {
+              (
+                week
+              ) => {
                 const state =
                   getWeekState(
                     week
@@ -2940,12 +4133,16 @@ function Admin({
                 return (
                   <div
                     className="adminWeek"
-                    key={week.id}
+                    key={
+                      week.id
+                    }
                   >
                     <div>
                       <b>
                         SETTIMANA #
-                        {week.number}
+                        {
+                          week.number
+                        }
                       </b>
 
                       <small>
@@ -3026,7 +4223,8 @@ function Admin({
                 Nessuna settimana
                 creata.
                 <br />
-                Crea la Settimana #1.
+                Crea la
+                Settimana #1.
               </div>
             )}
           </div>
@@ -3037,7 +4235,9 @@ function Admin({
         <>
           <form
             className="adminForm"
-            onSubmit={addUser}
+            onSubmit={
+              addUser
+            }
           >
             <input
               placeholder="Nome"
@@ -3048,7 +4248,8 @@ function Admin({
                 setUserForm({
                   ...userForm,
                   name:
-                    e.target.value,
+                    e.target
+                      .value,
                 })
               }
             />
@@ -3062,7 +4263,8 @@ function Admin({
                 setUserForm({
                   ...userForm,
                   username:
-                    e.target.value,
+                    e.target
+                      .value,
                 })
               }
             />
@@ -3077,13 +4279,16 @@ function Admin({
                 setUserForm({
                   ...userForm,
                   password:
-                    e.target.value,
+                    e.target
+                      .value,
                 })
               }
             />
 
             <button
-              disabled={userBusy}
+              disabled={
+                userBusy
+              }
             >
               {userBusy
                 ? "..."
@@ -3102,13 +4307,22 @@ function Admin({
               (p) => (
                 <div
                   className="row adminUserRow"
-                  key={p.username}
+                  key={
+                    p.username
+                  }
                 >
                   <span>
-                    <b>{p.name}</b>
+                    <b>
+                      {p.name}
+                    </b>
 
                     <small>
-                      @{p.username} · {p.role}
+                      @
+                      {
+                        p.username
+                      }{" "}
+                      ·{" "}
+                      {p.role}
                     </small>
 
                     <small
@@ -3124,27 +4338,34 @@ function Admin({
                     </small>
 
                     <small className="adminPronosticiLabel">
-                      PRONOSTICI INDOVINATI
+                      PRONOSTICI
+                      INDOVINATI
                     </small>
 
                     <strong className="adminPronosticiValue">
                       {Number(
-                        p.pronostici_indovinati || 0
+                        p.pronostici_indovinati ||
+                          0
                       )}
                     </strong>
                   </span>
 
-                  {p.role !== "admin" && (
+                  {p.role !==
+                    "admin" && (
                     <div className="adminUserActions">
                       <div className="pronosticiControls">
                         <button
                           type="button"
                           className="pronosticiButton"
                           onClick={() =>
-                            changePronostici(p.id, 1)
+                            changePronostici(
+                              p.id,
+                              1
+                            )
                           }
                           disabled={
-                            pronosticiBusyId === p.id
+                            pronosticiBusyId ===
+                            p.id
                           }
                           title="Aumenta"
                         >
@@ -3155,12 +4376,17 @@ function Admin({
                           type="button"
                           className="pronosticiButton"
                           onClick={() =>
-                            changePronostici(p.id, -1)
+                            changePronostici(
+                              p.id,
+                              -1
+                            )
                           }
                           disabled={
-                            pronosticiBusyId === p.id ||
+                            pronosticiBusyId ===
+                              p.id ||
                             Number(
-                              p.pronostici_indovinati || 0
+                              p.pronostici_indovinati ||
+                                0
                             ) <= 0
                           }
                           title="Diminuisci"
@@ -3179,7 +4405,9 @@ function Admin({
                         onClick={() =>
                           toggleUserBlock(
                             p.username,
-                            Boolean(p.blocked)
+                            Boolean(
+                              p.blocked
+                            )
                           )
                         }
                       >
@@ -3191,7 +4419,9 @@ function Admin({
                       <button
                         className="danger"
                         onClick={() =>
-                          removeUser(p.username)
+                          removeUser(
+                            p.username
+                          )
                         }
                       >
                         ELIMINA
@@ -3204,7 +4434,8 @@ function Admin({
 
             {!participants.length && (
               <div className="empty">
-                Nessun giocatore trovato.
+                Nessun giocatore
+                trovato.
               </div>
             )}
           </div>
@@ -3220,14 +4451,20 @@ function Admin({
                 setTab("weeks")
               }
             >
-              <Icon name="arrow-left" size={16} />
-              TORNA ALLE SETTIMANE
+              <Icon
+                name="arrow-left"
+                size={16}
+              />
+              TORNA ALLE
+              SETTIMANE
             </button>
 
             <div className="adminEditor">
               <h2>
                 Settimana #
-                {editingWeek.number}
+                {
+                  editingWeek.number
+                }
               </h2>
 
               <label>
@@ -3243,7 +4480,8 @@ function Admin({
                       ...editingWeek,
                       number:
                         Number(
-                          e.target.value
+                          e.target
+                            .value
                         ),
                     })
                   }
@@ -3262,7 +4500,8 @@ function Admin({
                     setEditingWeek({
                       ...editingWeek,
                       starts_at:
-                        e.target.value,
+                        e.target
+                          .value,
                     })
                   }
                 />
@@ -3280,7 +4519,8 @@ function Admin({
                     setEditingWeek({
                       ...editingWeek,
                       deadline:
-                        e.target.value,
+                        e.target
+                          .value,
                     })
                   }
                 />
@@ -3323,8 +4563,10 @@ function Admin({
                   name="info"
                   size={18}
                 />
-                Puoi selezionare
-                una o più risposte
+
+                Puoi
+                selezionare una o
+                più risposte
                 corrette per ogni
                 domanda.
               </div>
@@ -3334,7 +4576,9 @@ function Admin({
                 onClick={
                   saveCurrentWeek
                 }
-                disabled={saving}
+                disabled={
+                  saving
+                }
               >
                 {saving
                   ? "SALVATAGGIO..."
@@ -3353,26 +4597,34 @@ function Admin({
                 setTab("weeks")
               }
             >
-              <Icon name="arrow-left" size={16} />
-              TORNA ALLE SETTIMANE
+              <Icon
+                name="arrow-left"
+                size={16}
+              />
+              TORNA ALLE
+              SETTIMANE
             </button>
 
             <div className="resultsAdmin">
               <h2>
                 Risultati —
                 Settimana #
-                {selectedWeek.number}
+                {
+                  selectedWeek.number
+                }
               </h2>
 
               <div className="publishBox">
                 <h3>
-                  Correzione risposte
+                  Correzione
+                  risposte
                 </h3>
 
                 <p>
-                  Inserisci le risposte
-                  corrette modificando
-                  la settimana.
+                  Inserisci le
+                  risposte corrette
+                  modificando la
+                  settimana.
                 </p>
 
                 <button
@@ -3401,10 +4653,14 @@ function Admin({
 
               <div className="table">
                 {attempts.map(
-                  (attempt) => (
+                  (
+                    attempt
+                  ) => (
                     <div
                       className="row"
-                      key={attempt.id}
+                      key={
+                        attempt.id
+                      }
                     >
                       <span>
                         <b>
@@ -3430,7 +4686,8 @@ function Admin({
 
                 {!attempts.length && (
                   <div className="empty">
-                    Nessun partecipante.
+                    Nessun
+                    partecipante.
                   </div>
                 )}
               </div>
@@ -3449,11 +4706,15 @@ function App() {
   const [loading, setLoading] =
     useState(true);
 
-  const [session, setSession] =
-    useState(null);
+  const [
+    session,
+    setSession,
+  ] = useState(null);
 
-  const [profile, setProfile] =
-    useState(null);
+  const [
+    profile,
+    setProfile,
+  ] = useState(null);
 
   const [weeks, setWeeks] =
     useState([]);
@@ -3461,22 +4722,32 @@ function App() {
   const [page, setPage] =
     useState("home");
 
-  const [attempts, setAttempts] =
-    useState([]);
+  const [
+    attempts,
+    setAttempts,
+  ] = useState([]);
+
+  const [
+    allAttempts,
+    setAllAttempts,
+  ] = useState([]);
 
   const isAdmin =
-    profile?.role === "admin";
+    profile?.role ===
+    "admin";
 
-  const reloadWeeks = async () => {
-    const data = isAdmin
-      ? await dbWeeksAdmin()
-      : await dbWeeksPublic();
+  const reloadWeeks =
+    async () => {
+      const data =
+        isAdmin
+          ? await dbWeeksAdmin()
+          : await dbWeeksPublic();
 
-    setWeeks(data);
-  };
+      setWeeks(data);
+    };
 
   /* -------------------------------------------------------
-     SESSIONE SUPABASE
+     SESSIONE
   ------------------------------------------------------- */
 
   useEffect(() => {
@@ -3487,17 +4758,21 @@ function App() {
 
     supabase.auth
       .getSession()
-      .then(({ data }) =>
-        setSession(
-          data.session
-        )
+      .then(
+        ({ data }) =>
+          setSession(
+            data.session
+          )
       );
 
     const {
       data: listener,
     } =
       supabase.auth.onAuthStateChange(
-        (_event, newSession) => {
+        (
+          _event,
+          newSession
+        ) => {
           setSession(
             newSession
           );
@@ -3516,6 +4791,8 @@ function App() {
     if (!session?.user) {
       setProfile(null);
       setWeeks([]);
+      setAttempts([]);
+      setAllAttempts([]);
       setLoading(false);
       return;
     }
@@ -3531,17 +4808,8 @@ function App() {
             session.user.id
           );
 
-        if (cancelled) return;
-
-        /*
-         * NON effettuiamo più il logout degli account bloccati.
-         *
-         * Un account bloccato può entrare nella piattaforma
-         * e consultare i contenuti.
-         *
-         * Il blocco del gioco resta gestito lato server
-         * dalle Edge Functions start-attempt e rigori.
-         */
+        if (cancelled)
+          return;
 
         setProfile(
           loadedProfile
@@ -3568,7 +4836,9 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [session?.user?.id]);
+  }, [
+    session?.user?.id,
+  ]);
 
   /* -------------------------------------------------------
      SETTIMANA ATTIVA
@@ -3578,22 +4848,31 @@ function App() {
     weeks
       .filter(
         (week) =>
-          getWeekState(week) ===
-          "open"
+          getWeekState(
+            week
+          ) === "open"
       )
       .sort(
         (a, b) =>
-          Number(b.number) -
-          Number(a.number)
+          Number(
+            b.number
+          ) -
+          Number(
+            a.number
+          )
       )[0] ||
     [...weeks].sort(
       (a, b) =>
-        Number(b.number) -
-        Number(a.number)
+        Number(
+          b.number
+        ) -
+        Number(
+          a.number
+        )
     )[0];
 
   /* -------------------------------------------------------
-     TENTATIVI
+     TENTATIVI SETTIMANA ATTIVA
   ------------------------------------------------------- */
 
   useEffect(() => {
@@ -3614,6 +4893,69 @@ function App() {
     profile?.username,
   ]);
 
+  /* -------------------------------------------------------
+     STORICO
+  ------------------------------------------------------- */
+
+  useEffect(() => {
+    if (!profile)
+      return;
+
+    let cancelled = false;
+
+    dbAllAttempts()
+      .then((data) => {
+        if (!cancelled) {
+          setAllAttempts(
+            data || []
+          );
+        }
+      })
+      .catch((err) => {
+        console.error(
+          "Storico non disponibile:",
+          err
+        );
+
+        if (!cancelled) {
+          setAllAttempts([]);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    profile?.username,
+  ]);
+
+  const combinedAttempts =
+    useMemo(() => {
+      const map =
+        new Map();
+
+      [
+        ...allAttempts,
+        ...attempts,
+      ].forEach(
+        (attempt) => {
+          if (attempt?.id) {
+            map.set(
+              attempt.id,
+              attempt
+            );
+          }
+        }
+      );
+
+      return Array.from(
+        map.values()
+      );
+    }, [
+      allAttempts,
+      attempts,
+    ]);
+
   const myAttempt =
     attempts.find(
       (a) =>
@@ -3630,6 +4972,14 @@ function App() {
       matchAnswers,
       playerAnswers,
     }) => {
+      if (
+        profile?.blocked
+      ) {
+        throw new Error(
+          "ACCOUNT BLOCCATO"
+        );
+      }
+
       await callFunction(
         "start-attempt",
         {
@@ -3644,13 +4994,43 @@ function App() {
         }
       );
 
-      setAttempts(
+      const refreshed =
         await dbAttempts(
           activeWeek.id
-        )
+        );
+
+      setAttempts(
+        refreshed
       );
 
-      setPage("rigori");
+      setAllAttempts(
+        (current) => {
+          const map =
+            new Map();
+
+          [
+            ...current,
+            ...refreshed,
+          ].forEach(
+            (item) => {
+              if (item?.id) {
+                map.set(
+                  item.id,
+                  item
+                );
+              }
+            }
+          );
+
+          return Array.from(
+            map.values()
+          );
+        }
+      );
+
+      setPage(
+        "rigori"
+      );
     };
 
   /* -------------------------------------------------------
@@ -3659,13 +5039,43 @@ function App() {
 
   const finishRigori =
     async () => {
-      setAttempts(
+      const refreshed =
         await dbAttempts(
           activeWeek.id
-        )
+        );
+
+      setAttempts(
+        refreshed
       );
 
-      setPage("completed");
+      setAllAttempts(
+        (current) => {
+          const map =
+            new Map();
+
+          [
+            ...current,
+            ...refreshed,
+          ].forEach(
+            (item) => {
+              if (item?.id) {
+                map.set(
+                  item.id,
+                  item
+                );
+              }
+            }
+          );
+
+          return Array.from(
+            map.values()
+          );
+        }
+      );
+
+      setPage(
+        "completed"
+      );
     };
 
   /* -------------------------------------------------------
@@ -3678,6 +5088,7 @@ function App() {
 
       setPage("home");
       setAttempts([]);
+      setAllAttempts([]);
       setProfile(null);
       setSession(null);
     };
@@ -3690,7 +5101,8 @@ function App() {
     return (
       <div className="empty">
         <h2>
-          Configurazione mancante
+          Configurazione
+          mancante
         </h2>
 
         <p>
@@ -3751,14 +5163,46 @@ function App() {
       )}
 
       {page === "quiz" &&
-        (myAttempt ? (
+        (profile.blocked ? (
+          <div className="wrap">
+            <div className="empty blockedPage">
+              <div className="blockedBigIcon">
+                🔒
+              </div>
+
+              <h2>
+                Account bloccato
+              </h2>
+
+              <p>
+                Puoi continuare a
+                consultare Fantaluck,
+                ma non puoi
+                partecipare alla
+                sfida.
+              </p>
+
+              <button
+                onClick={() =>
+                  setPage(
+                    "home"
+                  )
+                }
+              >
+                TORNA ALLA HOME
+              </button>
+            </div>
+          </div>
+        ) : myAttempt ? (
           <div className="empty">
-            Hai già partecipato a
-            questa settimana.
+            Hai già partecipato
+            a questa settimana.
           </div>
         ) : (
           <Quiz
-            week={activeWeek}
+            week={
+              activeWeek
+            }
             onDone={
               finishQuiz
             }
@@ -3795,6 +5239,28 @@ function App() {
         />
       )}
 
+      {page === "profile" && (
+        <ProfilePage
+          profile={profile}
+          attempts={
+            combinedAttempts
+          }
+          allWeeks={weeks}
+          setPage={setPage}
+        />
+      )}
+
+      {page === "history" && (
+        <HistoryPage
+          profile={profile}
+          attempts={
+            combinedAttempts
+          }
+          weeks={weeks}
+          setPage={setPage}
+        />
+      )}
+
       {page === "admin" &&
         isAdmin && (
           <Admin
@@ -3817,5 +5283,7 @@ function App() {
 }
 
 createRoot(
-  document.getElementById("root")
+  document.getElementById(
+    "root"
+  )
 ).render(<App />);
