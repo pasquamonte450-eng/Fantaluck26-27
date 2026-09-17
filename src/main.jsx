@@ -575,19 +575,14 @@ function Login({ onLoggedIn }) {
     }
 
     try {
-      const profile = await dbProfile(data.user.id);
-
-      if (profile.blocked === true) {
-        await supabase.auth.signOut();
-
-        setLoading(false);
-
-        setError(
-          "ACCOUNT BLOCCATO. Contatta l'organizzatore."
-        );
-
-        return;
-      }
+      /*
+       * L'account bloccato può comunque effettuare il login
+       * e accedere alla piattaforma.
+       *
+       * Il divieto di giocare viene gestito lato server
+       * dalle Edge Functions start-attempt e rigori.
+       */
+      await dbProfile(data.user.id);
 
       setLoading(false);
       onLoggedIn();
@@ -3538,21 +3533,15 @@ function App() {
 
         if (cancelled) return;
 
-        /* =================================================
-           CONTROLLO ACCOUNT BLOCCATO
-           ================================================= */
-
-        if (loadedProfile.blocked === true) {
-          await supabase.auth.signOut();
-
-          if (!cancelled) {
-            setProfile(null);
-            setWeeks([]);
-            setSession(null);
-          }
-
-          return;
-        }
+        /*
+         * NON effettuiamo più il logout degli account bloccati.
+         *
+         * Un account bloccato può entrare nella piattaforma
+         * e consultare i contenuti.
+         *
+         * Il blocco del gioco resta gestito lato server
+         * dalle Edge Functions start-attempt e rigori.
+         */
 
         setProfile(
           loadedProfile
