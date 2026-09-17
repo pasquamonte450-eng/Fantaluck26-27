@@ -1055,7 +1055,7 @@ header > span {
     rgba(76,177,110,.42);
 
   background:
-    rgba(13, 38, 23, .96);
+    rgba(13,38,23,.96);
 }
 
 .rulesToggle > span:first-child {
@@ -2757,10 +2757,15 @@ header > span {
    PROFILO — AZIONI STORICO / CLASSIFICA
    ========================================================= */
 
+/*
+   IMPORTANTE:
+   Questi due pulsanti sono volutamente VERDI.
+   Lo stile è specifico per evitare che venga
+   sovrascritto dallo stile globale dei button.
+*/
+
 .sectionAction {
   width: 100% !important;
-
-  min-height: 72px;
 
   display: flex !important;
   align-items: center !important;
@@ -2770,35 +2775,42 @@ header > span {
 
   margin-top: 10px;
 
-  padding: 15px 18px !important;
+  padding: 17px 18px;
 
   text-align: left;
 
-  color: #e9f5ed !important;
+  appearance: none;
+  -webkit-appearance: none;
+
+  color: #e9f4ed !important;
 
   background:
     linear-gradient(
       145deg,
-      #163d25 0%,
-      #0f301c 48%,
-      #092313 100%
+      rgba(18,58,34,.98),
+      rgba(7,27,16,.99)
     ) !important;
 
   border:
-    1px solid rgba(53,212,122,.34) !important;
+    1px solid rgba(53,212,122,.28) !important;
 
   border-radius: 14px;
 
   box-shadow:
-    0 9px 26px rgba(0,0,0,.18),
-    inset 0 1px 0 rgba(255,255,255,.035),
-    inset 0 0 22px rgba(53,212,122,.025);
+    0 8px 24px rgba(0,0,0,.16),
+    inset 0 1px 0 rgba(255,255,255,.025),
+    0 0 0 1px rgba(53,212,122,.025);
+
+  font-family: "Work Sans", sans-serif;
+
+  cursor: pointer;
 
   transition:
     transform .16s ease,
     border-color .16s ease,
     background .16s ease,
-    box-shadow .16s ease;
+    box-shadow .16s ease,
+    filter .16s ease;
 }
 
 .sectionAction:first-of-type {
@@ -2808,27 +2820,27 @@ header > span {
 .sectionAction:hover {
   transform: translateY(-2px);
 
-  color: #fff !important;
+  color: #f2faf4 !important;
 
   border-color:
-    rgba(53,212,122,.68) !important;
+    rgba(53,212,122,.52) !important;
 
   background:
     linear-gradient(
       145deg,
-      #1b4d2d 0%,
-      #123a21 48%,
-      #0b2816 100%
+      rgba(22,73,43,1),
+      rgba(8,32,19,1)
     ) !important;
 
   box-shadow:
-    0 12px 30px rgba(0,0,0,.22),
-    0 0 20px rgba(53,212,122,.07),
-    inset 0 1px 0 rgba(255,255,255,.05);
+    0 12px 30px rgba(0,0,0,.20),
+    0 0 0 1px rgba(53,212,122,.08),
+    0 0 24px rgba(53,212,122,.055);
 }
 
 .sectionAction:active {
   transform:
+    translateY(0)
     scale(.985);
 }
 
@@ -2838,43 +2850,43 @@ header > span {
   display: flex;
   flex-direction: column;
 
-  gap: 4px;
+  gap: 5px;
 }
 
 .sectionAction small {
-  display: block !important;
+  display: block;
 
-  margin: 0 !important;
+  margin: 0;
 
-  color: #76aa87 !important;
+  color: #73a087 !important;
 
-  font-family: "Work Sans", sans-serif !important;
+  font-family: "Work Sans", sans-serif;
 
-  font-size: 8px !important;
-  font-weight: 800 !important;
+  font-size: 8px;
+  font-weight: 800;
 
   letter-spacing: 1.7px;
 
-  line-height: 1 !important;
+  line-height: 1;
 
   text-transform: uppercase;
 }
 
 .sectionAction strong {
-  display: block !important;
+  display: block;
 
-  margin: 0 !important;
+  margin: 0;
 
-  color: #edf7f0 !important;
+  color: #e9f4ed !important;
 
-  font-family: Oswald, sans-serif !important;
+  font-family: Oswald, sans-serif;
 
-  font-size: 19px !important;
-  font-weight: 600 !important;
+  font-size: 19px;
+  font-weight: 600;
 
   letter-spacing: .25px;
 
-  line-height: 1.08 !important;
+  line-height: 1.1;
 
   text-transform: uppercase;
 }
@@ -2885,9 +2897,11 @@ header > span {
   width: 20px;
   height: 20px;
 
-  color: #35d47a !important;
+  color: var(--green) !important;
 
-  opacity: 1 !important;
+  stroke: var(--green) !important;
+
+  opacity: 1;
 
   filter:
     drop-shadow(0 0 7px rgba(53,212,122,.18));
@@ -2899,13 +2913,17 @@ header > span {
 }
 
 .sectionAction:hover .icon {
+  color: #65ed99 !important;
+
+  stroke: #65ed99 !important;
+
   opacity: 1;
 
   transform:
-    translateX(3px);
+    translateX(4px);
 
   filter:
-    drop-shadow(0 0 10px rgba(53,212,122,.35));
+    drop-shadow(0 0 10px rgba(53,212,122,.32));
 }
 
 .sectionAction + .sectionAction {
@@ -2913,7 +2931,7 @@ header > span {
 }
 
 .sectionAction + .sectionAction strong {
-  color: #edf7f0 !important;
+  color: #e9f4ed !important;
 }
 
 /* =========================================================
@@ -3025,6 +3043,7 @@ header > span {
   z-index: 999;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -3962,7 +3981,7 @@ header > span {
     );
 
   border:
-    1px solid rgba(76, 155, 101, .28);
+    1px solid rgba(76,155,101,.28);
 
   border-radius: 9px;
 
@@ -3995,7 +4014,7 @@ header > span {
     translateY(-1px);
 
   box-shadow:
-    0 5px 15px rgba(244, 200, 78, .13);
+    0 5px 15px rgba(244,200,78,.13);
 }
 
 .pronosticiButton:active:not(:disabled) {
@@ -4021,12 +4040,12 @@ header > span {
     8px 12px;
 
   border:
-    1px solid rgba(210, 150, 50, .28);
+    1px solid rgba(210,150,50,.28);
 
   border-radius: 9px;
 
   background:
-    rgba(210, 150, 50, .08);
+    rgba(210,150,50,.08);
 
   color: var(--gold);
 
@@ -4049,10 +4068,10 @@ header > span {
 
 .userBlockButton:hover {
   background:
-    rgba(210, 150, 50, .15);
+    rgba(210,150,50,.15);
 
   border-color:
-    rgba(210, 150, 50, .5);
+    rgba(210,150,50,.5);
 
   box-shadow:
     0 5px 16px rgba(210,150,50,.08);
@@ -4068,20 +4087,20 @@ header > span {
 
 .userBlockButton.unblock {
   border-color:
-    rgba(100, 170, 120, .3);
+    rgba(100,170,120,.3);
 
   background:
-    rgba(100, 170, 120, .08);
+    rgba(100,170,120,.08);
 
   color: #8fbd9b;
 }
 
 .userBlockButton.unblock:hover {
   background:
-    rgba(100, 170, 120, .15);
+    rgba(100,170,120,.15);
 
   border-color:
-    rgba(100, 170, 120, .5);
+    rgba(100,170,120,.5);
 
   box-shadow:
     0 5px 16px rgba(100,170,120,.08);
@@ -4640,13 +4659,11 @@ nav button.active::before {
      ===================================================== */
 
   .sectionAction {
-    min-height: 64px;
-
     gap: 13px;
 
     margin-top: 8px;
 
-    padding: 14px 15px !important;
+    padding: 15px 15px;
 
     border-radius: 13px;
   }
@@ -4656,21 +4673,21 @@ nav button.active::before {
   }
 
   .sectionAction > span {
-    gap: 4px;
+    gap: 5px;
   }
 
   .sectionAction small {
-    font-size: 7px !important;
+    font-size: 7px;
 
     letter-spacing: 1.35px;
   }
 
   .sectionAction strong {
-    font-size: 17px !important;
+    font-size: 17px;
 
     letter-spacing: .15px;
 
-    line-height: 1.1 !important;
+    line-height: 1.12;
   }
 
   .sectionAction .icon {
@@ -5126,26 +5143,26 @@ nav button.active::before {
     font-size: 29px !important;
   }
 
-  /* PROFILO — AZIONI */
+  /* =====================================================
+     PROFILO — AZIONI
+     ===================================================== */
 
   .sectionAction {
-    min-height: 60px;
-
-    padding: 13px 13px !important;
+    padding: 14px 13px;
 
     border-radius: 12px;
   }
 
   .sectionAction small {
-    font-size: 6.5px !important;
+    font-size: 6.5px;
 
     letter-spacing: 1.1px;
   }
 
   .sectionAction strong {
-    font-size: 15.5px !important;
+    font-size: 15.5px;
 
-    line-height: 1.12 !important;
+    line-height: 1.15;
   }
 
   .sectionAction .icon {
