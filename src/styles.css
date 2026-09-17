@@ -2065,24 +2065,19 @@ header > span {
 
   align-items: stretch;
 
-  gap: 0;
+  gap: 1px;
 
   margin-bottom: 15px;
 
-  padding: 0;
+  padding: 1px;
 
   overflow: hidden;
 
   background:
-    radial-gradient(
-      circle at 12% 0%,
-      rgba(244,200,78,.10),
-      transparent 30%
-    ),
     linear-gradient(
       145deg,
-      rgba(18,39,25,.96),
-      rgba(7,18,12,.97)
+      rgba(244,200,78,.24),
+      rgba(76,155,101,.18)
     );
 
   border:
@@ -2091,41 +2086,62 @@ header > span {
   border-radius: 17px;
 
   box-shadow:
-    0 16px 40px rgba(0,0,0,.18),
+    0 16px 40px rgba(0,0,0,.20),
     inset 0 1px 0 rgba(255,255,255,.035);
 }
 
 .myRankCard > div {
   min-width: 0;
 
-  padding: 17px 20px 18px;
+  min-height: 88px;
+
+  padding: 15px 18px;
 
   display: flex;
   flex-direction: column;
 
+  align-items: flex-start;
   justify-content: center;
 
   position: relative;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15,35,22,.98),
+      rgba(7,18,12,.98)
+    );
+}
+
+.myRankCard > div:first-child {
+  padding-left: 20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(23,49,29,.99),
+      rgba(10,27,16,.99)
+    );
 }
 
 .myRankCard > div + div {
   border-left:
-    1px solid rgba(76,155,101,.14);
+    1px solid rgba(76,155,101,.15);
 }
 
 .myRankCard small {
   display: block;
 
-  margin-bottom: 6px;
+  margin-bottom: 7px;
 
-  color: #708578;
+  color: #74897c;
 
   font-family: "Work Sans", sans-serif;
 
   font-size: 8px;
   font-weight: 800;
 
-  letter-spacing: 1.8px;
+  letter-spacing: 1.65px;
 
   line-height: 1.1;
 
@@ -2134,52 +2150,44 @@ header > span {
   white-space: nowrap;
 }
 
+.myRankCard > div:first-child small {
+  color: #91a79a;
+}
+
 .myRankCard strong {
   display: block;
 
-  color: #f4f7f4;
+  color: #eef5f0;
 
   font-family: Oswald, sans-serif;
 
-  font-size: 30px;
+  font-size: 29px;
   font-weight: 600;
 
-  letter-spacing: .2px;
+  letter-spacing: .25px;
 
   line-height: 1;
-}
-
-.myRankCard > div:first-child {
-  background:
-    linear-gradient(
-      90deg,
-      rgba(244,200,78,.045),
-      transparent
-    );
 }
 
 .myRankCard > div:first-child strong {
   color: var(--gold);
 
-  font-size: 35px;
+  font-size: 38px;
 
   text-shadow:
-    0 0 22px rgba(244,200,78,.10);
+    0 0 22px rgba(244,200,78,.13);
 }
 
 .myRankCard > div:nth-child(2) strong {
-  color: var(--green);
+  color: #eef6f0;
 
-  text-shadow:
-    0 0 20px rgba(53,212,122,.09);
+  font-size: 31px;
 }
 
 .myRankCard > div:nth-child(3) strong {
-  color: #e8eee9;
-}
+  color: #dce9e0;
 
-.myRankCard > div:nth-child(3) small {
-  color: #6c8174;
+  font-size: 31px;
 }
 
 /* =========================================================
@@ -2191,11 +2199,11 @@ header > span {
 
   align-items: center;
 
-  gap: 17px;
+  gap: 18px;
 
   margin-bottom: 19px;
 
-  padding: 21px 22px;
+  padding: 22px 23px;
 
   position: relative;
   overflow: hidden;
@@ -2255,8 +2263,8 @@ header > span {
 }
 
 .profileAvatar {
-  width: 64px;
-  height: 64px;
+  width: 66px;
+  height: 66px;
 
   display: flex;
   align-items: center;
@@ -2284,14 +2292,18 @@ header > span {
 }
 
 .profileHero small {
-  margin-bottom: 3px;
+  display: block;
 
-  color: var(--gold);
+  margin-bottom: 6px;
+
+  color: #71877a;
+
+  font-family: "Work Sans", sans-serif;
 
   font-size: 8px;
   font-weight: 800;
 
-  letter-spacing: 2.2px;
+  letter-spacing: 2px;
 
   line-height: 1;
 
@@ -2305,12 +2317,12 @@ header > span {
 
   font-family: Oswald, sans-serif;
 
-  font-size: 31px;
+  font-size: 32px;
   font-weight: 600;
 
-  letter-spacing: .15px;
+  letter-spacing: .25px;
 
-  line-height: 1.05;
+  line-height: 1.03;
 
   text-transform: uppercase;
 }
@@ -2318,7 +2330,7 @@ header > span {
 .profileHero span {
   display: block;
 
-  margin-top: 5px;
+  margin-top: 6px;
 
   color: #718679;
 
@@ -2327,7 +2339,7 @@ header > span {
   font-size: 11px;
   font-weight: 600;
 
-  letter-spacing: .3px;
+  letter-spacing: .5px;
 
   line-height: 1.2;
 }
@@ -2346,7 +2358,7 @@ header > span {
 .statCard {
   min-width: 0;
 
-  padding: 17px 16px 16px;
+  padding: 18px 16px 17px;
 
   background:
     linear-gradient(
@@ -2395,7 +2407,7 @@ header > span {
 .statCard strong {
   display: block;
 
-  margin: 7px 0 3px;
+  margin: 8px 0 4px;
 
   color: #f3f7f4;
 
@@ -2451,7 +2463,7 @@ header > span {
 .profileStatsCard > div {
   min-width: 0;
 
-  padding: 17px 18px;
+  padding: 18px 18px;
 
   display: flex;
   flex-direction: column;
@@ -2484,18 +2496,255 @@ header > span {
 .profileStatsCard strong {
   display: block;
 
-  margin-top: 6px;
+  margin-top: 7px;
 
   color: var(--gold);
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 29px;
+  font-weight: 600;
+
+  letter-spacing: .1px;
+
+  line-height: 1;
+}
+
+/* =========================================================
+   PROFILO — STORICO / PARTECIPAZIONI
+   ========================================================= */
+
+.profileHistorySection {
+  margin-top: 22px;
+}
+
+.profileHistorySection > h3 {
+  margin: 0 0 12px;
+
+  color: #e6efe8;
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 23px;
+  font-weight: 600;
+
+  letter-spacing: .4px;
+  line-height: 1.1;
+
+  text-transform: uppercase;
+}
+
+.profileHistorySection > h3::after {
+  content: "";
+
+  display: block;
+
+  width: 34px;
+  height: 2px;
+
+  margin-top: 7px;
+
+  background: var(--gold);
+
+  border-radius: 2px;
+
+  box-shadow:
+    0 0 8px rgba(244,200,78,.18);
+}
+
+.profileHistoryTitle {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin-bottom: 12px;
+
+  color: #cbd8cf;
+
+  font-family: "Work Sans", sans-serif;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 1.5px;
+  line-height: 1.1;
+
+  text-transform: uppercase;
+}
+
+.profileHistoryTitle .icon {
+  color: var(--gold);
+}
+
+.profileHistoryCard {
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(13,37,23,.96),
+      rgba(7,23,14,.96)
+    );
+
+  border:
+    1px solid rgba(76,155,101,.18);
+
+  border-radius: 13px;
+
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.12);
+}
+
+.profileHistoryCard > div {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  min-height: 58px;
+
+  padding: 11px 14px;
+
+  border-bottom:
+    1px solid rgba(76,139,91,.12);
+}
+
+.profileHistoryCard > div:last-child {
+  border-bottom: 0;
+}
+
+.profileHistoryCard > div > span:first-child {
+  color: #dbe7df;
+
+  font-family: "Work Sans", sans-serif;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  line-height: 1.2;
+}
+
+.profileHistoryCard > div > strong {
+  color: var(--gold);
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 22px;
+  font-weight: 600;
+
+  line-height: 1;
+}
+
+/* =========================================================
+   PROFILO — PRONOSTICI INDOVINATI
+   ========================================================= */
+
+.profilePronosticiCard {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-top: 16px;
+
+  padding: 16px 18px;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 90% 15%,
+      rgba(244,200,78,.07),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(22,55,32,.96),
+      rgba(9,28,17,.98)
+    );
+
+  border:
+    1px solid rgba(244,200,78,.18);
+
+  border-radius: 13px;
+
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.14);
+}
+
+.profilePronosticiCard::after {
+  content: "";
+
+  position: absolute;
+
+  right: -35px;
+  top: -35px;
+
+  width: 100px;
+  height: 100px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(244,200,78,.045);
+
+  pointer-events: none;
+}
+
+.profilePronosticiCard > div:first-child {
+  min-width: 0;
+}
+
+.profilePronosticiCard small {
+  display: block;
+
+  color: #809589;
+
+  font-family: "Work Sans", sans-serif;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 1.45px;
+  line-height: 1.1;
+
+  text-transform: uppercase;
+}
+
+.profilePronosticiCard strong {
+  display: block;
+
+  margin-top: 6px;
+
+  color: #edf5ef;
 
   font-family: Oswald, sans-serif;
 
   font-size: 28px;
   font-weight: 600;
 
-  letter-spacing: .1px;
-
   line-height: 1;
+}
+
+.profilePronosticiValue {
+  flex-shrink: 0;
+
+  color: var(--gold) !important;
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 36px !important;
+  font-weight: 600 !important;
+
+  line-height: 1 !important;
 }
 
 /* =========================================================
@@ -4067,7 +4316,9 @@ nav button.active::before {
     font-size: 50px;
   }
 
-  /* PROFILE */
+  /* =====================================================
+     PROFILE
+     ===================================================== */
 
   .profileHero {
     gap: 13px;
@@ -4092,11 +4343,11 @@ nav button.active::before {
   }
 
   .profileHero small {
-    margin-bottom: 3px;
+    margin-bottom: 4px;
 
     font-size: 7px;
 
-    letter-spacing: 1.8px;
+    letter-spacing: 1.7px;
   }
 
   .profileHero h2 {
@@ -4129,7 +4380,7 @@ nav button.active::before {
   .statCard small {
     font-size: 7px;
 
-    letter-spacing: 1.25px;
+    letter-spacing: 1.15px;
   }
 
   .statCard strong {
@@ -4156,7 +4407,7 @@ nav button.active::before {
   .profileStatsCard small {
     font-size: 6.5px;
 
-    letter-spacing: 1px;
+    letter-spacing: .9px;
   }
 
   .profileStatsCard strong {
@@ -4165,7 +4416,59 @@ nav button.active::before {
     font-size: 23px;
   }
 
-  /* CLASSIFICA — CARD PERSONALE */
+  /* PROFILO — STORICO */
+
+  .profileHistorySection {
+    margin-top: 19px;
+  }
+
+  .profileHistorySection > h3 {
+    font-size: 21px;
+  }
+
+  .profileHistoryTitle {
+    font-size: 9px;
+
+    letter-spacing: 1.25px;
+  }
+
+  .profileHistoryCard > div {
+    min-height: 54px;
+
+    padding: 10px 12px;
+  }
+
+  .profileHistoryCard > div > span:first-child {
+    font-size: 11px;
+  }
+
+  .profileHistoryCard > div > strong {
+    font-size: 20px;
+  }
+
+  .profilePronosticiCard {
+    padding: 14px 15px;
+
+    border-radius: 12px;
+  }
+
+  .profilePronosticiCard small {
+    font-size: 7px;
+
+    letter-spacing: 1.2px;
+  }
+
+  .profilePronosticiCard strong {
+    font-size: 25px;
+  }
+
+  .profilePronosticiValue {
+    font-size: 32px !important;
+  }
+
+  /* =====================================================
+     CLASSIFICA — CARD PERSONALE
+     ===================================================== */
 
   .myRankCard {
     grid-template-columns:
@@ -4175,7 +4478,13 @@ nav button.active::before {
   }
 
   .myRankCard > div {
-    padding: 14px 10px 15px;
+    min-height: 78px;
+
+    padding: 13px 9px;
+  }
+
+  .myRankCard > div:first-child {
+    padding-left: 12px;
   }
 
   .myRankCard small {
@@ -4183,7 +4492,7 @@ nav button.active::before {
 
     font-size: 6.5px;
 
-    letter-spacing: 1.1px;
+    letter-spacing: 1px;
   }
 
   .myRankCard strong {
@@ -4191,7 +4500,12 @@ nav button.active::before {
   }
 
   .myRankCard > div:first-child strong {
-    font-size: 30px;
+    font-size: 31px;
+  }
+
+  .myRankCard > div:nth-child(2) strong,
+  .myRankCard > div:nth-child(3) strong {
+    font-size: 24px;
   }
 
   /* PRONOSTICI RANKING */
@@ -4558,10 +4872,58 @@ nav button.active::before {
     font-size: 21px;
   }
 
+  /* PROFILO — STORICO */
+
+  .profileHistorySection {
+    margin-top: 17px;
+  }
+
+  .profileHistorySection > h3 {
+    font-size: 19px;
+  }
+
+  .profileHistoryTitle {
+    font-size: 8px;
+
+    letter-spacing: 1px;
+  }
+
+  .profileHistoryCard > div {
+    min-height: 51px;
+
+    padding: 9px 10px;
+  }
+
+  .profileHistoryCard > div > span:first-child {
+    font-size: 10px;
+  }
+
+  .profileHistoryCard > div > strong {
+    font-size: 19px;
+  }
+
+  .profilePronosticiCard {
+    padding: 13px;
+  }
+
+  .profilePronosticiCard small {
+    font-size: 6.5px;
+  }
+
+  .profilePronosticiValue {
+    font-size: 29px !important;
+  }
+
   /* CLASSIFICA — SMALL PHONES */
 
   .myRankCard > div {
-    padding: 13px 7px 14px;
+    min-height: 73px;
+
+    padding: 11px 6px;
+  }
+
+  .myRankCard > div:first-child {
+    padding-left: 9px;
   }
 
   .myRankCard small {
@@ -4571,11 +4933,16 @@ nav button.active::before {
   }
 
   .myRankCard strong {
-    font-size: 23px;
+    font-size: 22px;
   }
 
   .myRankCard > div:first-child strong {
-    font-size: 27px;
+    font-size: 28px;
+  }
+
+  .myRankCard > div:nth-child(2) strong,
+  .myRankCard > div:nth-child(3) strong {
+    font-size: 21px;
   }
 
   .adminUserRow {
