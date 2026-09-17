@@ -1055,7 +1055,7 @@ header > span {
     rgba(76,177,110,.42);
 
   background:
-    rgba(13,38,23,.96);
+    rgba(13, 38, 23, .96);
 }
 
 .rulesToggle > span:first-child {
@@ -2517,7 +2517,7 @@ header > span {
 }
 
 /* =========================================================
-   PROFILO — STORICO / PARTECIPAZIONI
+   PROFILO — STORICO
    ========================================================= */
 
 .profileHistorySection {
@@ -2759,30 +2759,36 @@ header > span {
 
 /*
    IMPORTANTE:
-   Questi due pulsanti sono volutamente VERDI.
-   Lo stile è specifico per evitare che venga
-   sovrascritto dallo stile globale dei button.
+   Questi selettori sono volutamente specifici.
+   Servono a impedire che il browser mostri i button
+   con il classico sfondo bianco e testo nero.
 */
 
-.sectionAction {
+button.sectionAction {
   width: 100% !important;
+
+  min-height: 68px;
 
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
 
-  gap: 18px;
+  flex-direction: row !important;
 
-  margin-top: 10px;
+  gap: 18px !important;
 
-  padding: 17px 18px;
+  margin: 10px 0 0 !important;
 
-  text-align: left;
+  padding: 16px 18px !important;
 
-  appearance: none;
-  -webkit-appearance: none;
+  box-sizing: border-box !important;
 
-  color: #e9f4ed !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  text-align: left !important;
+
+  color: #e9f3ec !important;
 
   background:
     linear-gradient(
@@ -2794,144 +2800,146 @@ header > span {
   border:
     1px solid rgba(53,212,122,.28) !important;
 
-  border-radius: 14px;
+  border-radius: 14px !important;
 
   box-shadow:
-    0 8px 24px rgba(0,0,0,.16),
-    inset 0 1px 0 rgba(255,255,255,.025),
-    0 0 0 1px rgba(53,212,122,.025);
+    0 9px 28px rgba(0,0,0,.16),
+    inset 0 1px 0 rgba(255,255,255,.035),
+    0 0 0 1px rgba(53,212,122,.025) !important;
 
-  font-family: "Work Sans", sans-serif;
+  font-family: "Work Sans", sans-serif !important;
 
-  cursor: pointer;
+  cursor: pointer !important;
+
+  outline: none !important;
 
   transition:
     transform .16s ease,
     border-color .16s ease,
     background .16s ease,
-    box-shadow .16s ease,
-    filter .16s ease;
+    box-shadow .16s ease !important;
 }
 
-.sectionAction:first-of-type {
-  margin-top: 18px;
+button.sectionAction:first-of-type {
+  margin-top: 18px !important;
 }
 
-.sectionAction:hover {
-  transform: translateY(-2px);
+button.sectionAction:hover {
+  transform: translateY(-1px) !important;
 
-  color: #f2faf4 !important;
-
-  border-color:
-    rgba(53,212,122,.52) !important;
+  color: #f0f8f2 !important;
 
   background:
     linear-gradient(
       145deg,
-      rgba(22,73,43,1),
-      rgba(8,32,19,1)
+      rgba(23,70,41,.99),
+      rgba(8,32,19,.99)
     ) !important;
 
+  border-color:
+    rgba(53,212,122,.52) !important;
+
   box-shadow:
-    0 12px 30px rgba(0,0,0,.20),
-    0 0 0 1px rgba(53,212,122,.08),
-    0 0 24px rgba(53,212,122,.055);
+    0 12px 32px rgba(0,0,0,.20),
+    0 0 22px rgba(53,212,122,.07),
+    inset 0 1px 0 rgba(255,255,255,.045) !important;
 }
 
-.sectionAction:active {
+button.sectionAction:active {
   transform:
     translateY(0)
-    scale(.985);
+    scale(.985) !important;
 }
 
-.sectionAction > span {
-  min-width: 0;
+button.sectionAction > span {
+  min-width: 0 !important;
 
-  display: flex;
-  flex-direction: column;
+  flex: 1 !important;
 
-  gap: 5px;
+  display: flex !important;
+  flex-direction: column !important;
+
+  align-items: flex-start !important;
+
+  justify-content: center !important;
+
+  gap: 5px !important;
 }
 
-.sectionAction small {
-  display: block;
+button.sectionAction small {
+  display: block !important;
 
-  margin: 0;
+  margin: 0 !important;
 
-  color: #73a087 !important;
+  padding: 0 !important;
 
-  font-family: "Work Sans", sans-serif;
+  color: #72a487 !important;
 
-  font-size: 8px;
-  font-weight: 800;
+  font-family: "Work Sans", sans-serif !important;
 
-  letter-spacing: 1.7px;
+  font-size: 8px !important;
+  font-weight: 800 !important;
 
-  line-height: 1;
+  letter-spacing: 1.7px !important;
 
-  text-transform: uppercase;
+  line-height: 1 !important;
+
+  text-transform: uppercase !important;
+
+  white-space: nowrap !important;
 }
 
-.sectionAction strong {
-  display: block;
+button.sectionAction strong {
+  display: block !important;
 
-  margin: 0;
+  margin: 0 !important;
+  padding: 0 !important;
 
-  color: #e9f4ed !important;
+  color: #e9f3ec !important;
 
-  font-family: Oswald, sans-serif;
+  font-family: Oswald, sans-serif !important;
 
-  font-size: 19px;
-  font-weight: 600;
+  font-size: 19px !important;
+  font-weight: 600 !important;
 
-  letter-spacing: .25px;
+  letter-spacing: .25px !important;
 
-  line-height: 1.1;
+  line-height: 1.1 !important;
 
-  text-transform: uppercase;
+  text-transform: uppercase !important;
+
+  white-space: normal !important;
 }
 
-.sectionAction .icon {
-  flex-shrink: 0;
+button.sectionAction .icon {
+  width: 20px !important;
+  height: 20px !important;
 
-  width: 20px;
-  height: 20px;
+  flex-shrink: 0 !important;
 
   color: var(--green) !important;
 
   stroke: var(--green) !important;
 
-  opacity: 1;
-
-  filter:
-    drop-shadow(0 0 7px rgba(53,212,122,.18));
+  opacity: 1 !important;
 
   transition:
     transform .16s ease,
-    opacity .16s ease,
-    filter .16s ease;
+    filter .16s ease !important;
 }
 
-.sectionAction:hover .icon {
+button.sectionAction:hover .icon {
   color: #65ed99 !important;
-
   stroke: #65ed99 !important;
 
-  opacity: 1;
-
-  transform:
-    translateX(4px);
+  transform: translateX(3px) !important;
 
   filter:
-    drop-shadow(0 0 10px rgba(53,212,122,.32));
+    drop-shadow(0 0 7px rgba(53,212,122,.28)) !important;
 }
 
-.sectionAction + .sectionAction {
-  margin-top: 8px;
-}
-
-.sectionAction + .sectionAction strong {
-  color: #e9f4ed !important;
+button.sectionAction + button.sectionAction {
+  margin-top: 8px !important;
 }
 
 /* =========================================================
@@ -2988,10 +2996,6 @@ header > span {
   margin: 0;
 }
 
-/* =========================================================
-   PRONOSTICI RANKING — TESTO HEADER
-   ========================================================= */
-
 .pronosticiRankingText {
   display: flex;
 
@@ -3038,6 +3042,7 @@ header > span {
 
 .reviewOverlay {
   position: fixed;
+
   inset: 0;
 
   z-index: 999;
@@ -3180,10 +3185,6 @@ header > span {
   transform: rotate(5deg);
 }
 
-/* =========================================================
-   REVIEW SUMMARY
-   ========================================================= */
-
 .reviewSummary {
   display: grid;
 
@@ -3230,10 +3231,6 @@ header > span {
 
   font-size: 27px;
 }
-
-/* =========================================================
-   REVIEW SECTIONS
-   ========================================================= */
 
 .reviewSection {
   margin-top: 25px;
@@ -3874,10 +3871,6 @@ header > span {
   line-height: 1.3;
 }
 
-/* =========================================================
-   ADMIN — STATO ACCOUNT
-   ========================================================= */
-
 .adminUserStatus {
   display: flex;
   align-items: center;
@@ -3906,10 +3899,6 @@ header > span {
   color: #e47d73 !important;
 }
 
-/* =========================================================
-   ADMIN — PRONOSTICI
-   ========================================================= */
-
 .adminPronosticiLabel {
   margin-top: 8px;
 
@@ -3937,10 +3926,6 @@ header > span {
 
   line-height: 1;
 }
-
-/* =========================================================
-   ADMIN — AZIONI UTENTE
-   ========================================================= */
 
 .adminUserActions {
   display: flex;
@@ -3981,7 +3966,7 @@ header > span {
     );
 
   border:
-    1px solid rgba(76,155,101,.28);
+    1px solid rgba(76, 155, 101, .28);
 
   border-radius: 9px;
 
@@ -4014,7 +3999,7 @@ header > span {
     translateY(-1px);
 
   box-shadow:
-    0 5px 15px rgba(244,200,78,.13);
+    0 5px 15px rgba(244, 200, 78, .13);
 }
 
 .pronosticiButton:active:not(:disabled) {
@@ -4029,10 +4014,6 @@ header > span {
   cursor: not-allowed;
 }
 
-/* =========================================================
-   ADMIN — BLOCCA / SBLOCCA
-   ========================================================= */
-
 .userBlockButton {
   min-height: 36px;
 
@@ -4040,12 +4021,12 @@ header > span {
     8px 12px;
 
   border:
-    1px solid rgba(210,150,50,.28);
+    1px solid rgba(210, 150, 50, .28);
 
   border-radius: 9px;
 
   background:
-    rgba(210,150,50,.08);
+    rgba(210, 150, 50, .08);
 
   color: var(--gold);
 
@@ -4068,10 +4049,10 @@ header > span {
 
 .userBlockButton:hover {
   background:
-    rgba(210,150,50,.15);
+    rgba(210, 150, 50, .15);
 
   border-color:
-    rgba(210,150,50,.5);
+    rgba(210, 150, 50, .5);
 
   box-shadow:
     0 5px 16px rgba(210,150,50,.08);
@@ -4087,20 +4068,20 @@ header > span {
 
 .userBlockButton.unblock {
   border-color:
-    rgba(100,170,120,.3);
+    rgba(100, 170, 120, .3);
 
   background:
-    rgba(100,170,120,.08);
+    rgba(100, 170, 120, .08);
 
   color: #8fbd9b;
 }
 
 .userBlockButton.unblock:hover {
   background:
-    rgba(100,170,120,.15);
+    rgba(100, 170, 120, .15);
 
   border-color:
-    rgba(100,170,120,.5);
+    rgba(100, 170, 120, .5);
 
   box-shadow:
     0 5px 16px rgba(100,170,120,.08);
@@ -4353,8 +4334,6 @@ nav button.active::before {
     font-size: 10px;
   }
 
-  /* HERO */
-
   .hero {
     padding: 36px 21px 42px;
 
@@ -4369,8 +4348,6 @@ nav button.active::before {
     font-size: 14px;
   }
 
-  /* CARDS */
-
   .grid2 {
     grid-template-columns: 1fr;
   }
@@ -4378,8 +4355,6 @@ nav button.active::before {
   .card {
     padding: 20px;
   }
-
-  /* DASHBOARD */
 
   .dashboardIconButton,
   .pronosticiDashboardButton {
@@ -4398,8 +4373,6 @@ nav button.active::before {
   .pronosticiCard strong {
     font-size: 35px;
   }
-
-  /* COUNTDOWN */
 
   .countdownCard {
     padding: 16px;
@@ -4422,8 +4395,6 @@ nav button.active::before {
   .countdownNumbers > b {
     font-size: 18px;
   }
-
-  /* QUIZ */
 
   .quizCard {
     padding: 22px 17px;
@@ -4448,8 +4419,6 @@ nav button.active::before {
   .previousButton {
     width: 100%;
   }
-
-  /* PENALTY */
 
   .penalty {
     padding: 20px 10px 28px;
@@ -4497,8 +4466,6 @@ nav button.active::before {
   .mult strong {
     font-size: 40px;
   }
-
-  /* TITLES */
 
   .title h1 {
     font-size: 50px;
@@ -4604,8 +4571,6 @@ nav button.active::before {
     font-size: 23px;
   }
 
-  /* PROFILO — STORICO */
-
   .profileHistorySection {
     margin-top: 19px;
   }
@@ -4655,44 +4620,48 @@ nav button.active::before {
   }
 
   /* =====================================================
-     PROFILO — AZIONI STORICO / CLASSIFICA
+     PROFILO — AZIONI
      ===================================================== */
 
-  .sectionAction {
-    gap: 13px;
+  button.sectionAction {
+    width: 100% !important;
 
-    margin-top: 8px;
+    min-height: 62px;
 
-    padding: 15px 15px;
+    gap: 13px !important;
 
-    border-radius: 13px;
+    margin-top: 8px !important;
+
+    padding: 15px !important;
+
+    border-radius: 13px !important;
   }
 
-  .sectionAction:first-of-type {
-    margin-top: 16px;
+  button.sectionAction:first-of-type {
+    margin-top: 16px !important;
   }
 
-  .sectionAction > span {
-    gap: 5px;
+  button.sectionAction > span {
+    gap: 5px !important;
   }
 
-  .sectionAction small {
-    font-size: 7px;
+  button.sectionAction small {
+    font-size: 7px !important;
 
-    letter-spacing: 1.35px;
+    letter-spacing: 1.35px !important;
   }
 
-  .sectionAction strong {
-    font-size: 17px;
+  button.sectionAction strong {
+    font-size: 17px !important;
 
-    letter-spacing: .15px;
+    letter-spacing: .15px !important;
 
-    line-height: 1.12;
+    line-height: 1.12 !important;
   }
 
-  .sectionAction .icon {
-    width: 18px;
-    height: 18px;
+  button.sectionAction .icon {
+    width: 18px !important;
+    height: 18px !important;
   }
 
   /* =====================================================
@@ -4737,8 +4706,6 @@ nav button.active::before {
     font-size: 24px;
   }
 
-  /* PRONOSTICI RANKING */
-
   .pronosticiRankingHeader {
     align-items: flex-start;
 
@@ -4761,8 +4728,6 @@ nav button.active::before {
     width: 43px;
     height: 43px;
   }
-
-  /* RANKING */
 
   .row {
     min-height: 64px;
@@ -4789,8 +4754,6 @@ nav button.active::before {
   .rankingHint {
     font-size: 8px;
   }
-
-  /* ADMIN */
 
   .adminForm {
     grid-template-columns: 1fr;
@@ -4830,8 +4793,6 @@ nav button.active::before {
 
     margin-right: 0;
   }
-
-  /* ADMIN UTENTI */
 
   .adminUserRow {
     align-items: flex-start;
@@ -4884,8 +4845,6 @@ nav button.active::before {
     font-size: 9px;
   }
 
-  /* STATO ACCOUNT */
-
   .adminUserStatus {
     margin-top: 5px;
 
@@ -4904,8 +4863,6 @@ nav button.active::before {
     font-size: 21px;
   }
 
-  /* BLOCCA / SBLOCCA */
-
   .userBlockButton {
     min-height: 32px;
 
@@ -4917,8 +4874,6 @@ nav button.active::before {
     letter-spacing: .3px;
   }
 
-  /* COMPLETED */
-
   .completedCard {
     margin: 40px auto;
 
@@ -4928,8 +4883,6 @@ nav button.active::before {
   .completedCard h1 {
     font-size: 38px;
   }
-
-  /* RULES */
 
   .rulesToggle {
     padding: 15px;
@@ -4948,8 +4901,6 @@ nav button.active::before {
   .ruleItem span {
     font-size: 11px;
   }
-
-  /* REVIEW */
 
   .reviewOverlay {
     align-items: flex-start;
@@ -4987,8 +4938,6 @@ nav button.active::before {
   .reviewQuestion {
     padding: 12px;
   }
-
-  /* NAV */
 
   nav {
     height: 70px;
@@ -5048,8 +4997,6 @@ nav button.active::before {
     height: 40px;
   }
 
-  /* PROFILE — SMALL PHONES */
-
   .profileHero {
     gap: 10px;
 
@@ -5101,8 +5048,6 @@ nav button.active::before {
     font-size: 21px;
   }
 
-  /* PROFILO — STORICO */
-
   .profileHistorySection {
     margin-top: 17px;
   }
@@ -5147,30 +5092,30 @@ nav button.active::before {
      PROFILO — AZIONI
      ===================================================== */
 
-  .sectionAction {
-    padding: 14px 13px;
+  button.sectionAction {
+    min-height: 58px;
 
-    border-radius: 12px;
+    padding: 14px 13px !important;
+
+    border-radius: 12px !important;
   }
 
-  .sectionAction small {
-    font-size: 6.5px;
+  button.sectionAction small {
+    font-size: 6.5px !important;
 
-    letter-spacing: 1.1px;
+    letter-spacing: 1.1px !important;
   }
 
-  .sectionAction strong {
-    font-size: 15.5px;
+  button.sectionAction strong {
+    font-size: 15.5px !important;
 
-    line-height: 1.15;
+    line-height: 1.15 !important;
   }
 
-  .sectionAction .icon {
-    width: 17px;
-    height: 17px;
+  button.sectionAction .icon {
+    width: 17px !important;
+    height: 17px !important;
   }
-
-  /* CLASSIFICA — SMALL PHONES */
 
   .myRankCard > div {
     min-height: 73px;
