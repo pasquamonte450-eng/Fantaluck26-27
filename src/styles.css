@@ -572,11 +572,6 @@ header > span {
     0 0 0 70px rgba(53,212,122,.018);
 }
 
-/*
-  La grande icona decorativa del campo viene ora
-  dal componente SVG del main.jsx.
-*/
-
 .badge,
 .qtype,
 .title small {
@@ -2022,7 +2017,6 @@ header > span {
   text-transform: uppercase;
 }
 
-/* Compatibilità con eventuale vecchio markup */
 .currentPlayer em {
   display: block;
 
@@ -2960,7 +2954,9 @@ header > span {
 .adminUserRow {
   align-items: center;
 
-  min-height: 82px;
+  min-height: 88px;
+
+  padding: 15px 20px;
 }
 
 .adminUserRow > span {
@@ -2969,21 +2965,29 @@ header > span {
   display: flex;
   flex-direction: column;
 
-  gap: 3px;
+  gap: 4px;
 
   min-width: 0;
 }
 
 .adminUserRow > span > b {
-  color: #e5eee7;
+  color: #e8f0ea;
+
+  font-family: "Work Sans", sans-serif;
 
   font-size: 14px;
+  font-weight: 700;
+
+  line-height: 1.25;
 }
 
 .adminUserRow > span > small {
   color: #718679;
 
   font-size: 10px;
+  font-weight: 500;
+
+  line-height: 1.3;
 }
 
 /* =========================================================
@@ -2991,24 +2995,31 @@ header > span {
    ========================================================= */
 
 .adminUserStatus {
-  display: inline-block;
+  display: flex;
+  align-items: center;
 
-  margin-top: 4px;
+  width: fit-content;
+
+  margin-top: 5px;
+
+  font-family: "Work Sans", sans-serif;
 
   font-size: 9px !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important;
 
-  letter-spacing: 1px;
+  letter-spacing: 1.1px;
+
+  line-height: 1;
 
   text-transform: uppercase;
 }
 
 .adminUserStatus.active {
-  color: #7fa88b !important;
+  color: #65c982 !important;
 }
 
 .adminUserStatus.blocked {
-  color: #d98282 !important;
+  color: #e47d73 !important;
 }
 
 /* =========================================================
@@ -3016,14 +3027,18 @@ header > span {
    ========================================================= */
 
 .adminPronosticiLabel {
-  margin-top: 7px;
+  margin-top: 8px;
 
-  color: #6d8576 !important;
+  color: #6f8677 !important;
+
+  font-family: "Work Sans", sans-serif;
 
   font-size: 8px !important;
-  font-weight: 800;
+  font-weight: 700 !important;
 
-  letter-spacing: 1.3px;
+  letter-spacing: 1.4px;
+
+  line-height: 1;
 
   text-transform: uppercase;
 }
@@ -3033,7 +3048,8 @@ header > span {
 
   font-family: Oswald, sans-serif;
 
-  font-size: 22px;
+  font-size: 23px;
+  font-weight: 600;
 
   line-height: 1;
 }
@@ -3085,6 +3101,8 @@ header > span {
 
   border-radius: 9px;
 
+  font-family: "Work Sans", sans-serif;
+
   font-size: 13px;
   font-weight: 800;
 
@@ -3135,7 +3153,7 @@ header > span {
   min-height: 36px;
 
   padding:
-    8px 11px;
+    8px 12px;
 
   border:
     1px solid rgba(210, 150, 50, .28);
@@ -3150,16 +3168,18 @@ header > span {
   font-family: "Work Sans", sans-serif;
 
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 700;
 
-  letter-spacing: .3px;
+  letter-spacing: .4px;
 
   cursor: pointer;
 
   transition:
     background .18s ease,
     border-color .18s ease,
-    transform .18s ease;
+    color .18s ease,
+    transform .18s ease,
+    box-shadow .18s ease;
 }
 
 .userBlockButton:hover {
@@ -3168,6 +3188,12 @@ header > span {
 
   border-color:
     rgba(210, 150, 50, .5);
+
+  box-shadow:
+    0 5px 16px rgba(210,150,50,.08);
+
+  transform:
+    translateY(-1px);
 }
 
 .userBlockButton:active {
@@ -3191,20 +3217,25 @@ header > span {
 
   border-color:
     rgba(100, 170, 120, .5);
+
+  box-shadow:
+    0 5px 16px rgba(100,170,120,.08);
 }
 
 .adminUserActions .danger {
   min-height: 36px;
 
   padding:
-    8px 11px;
+    8px 12px;
 
   border-radius: 9px;
 
-  font-size: 10px;
-  font-weight: 800;
+  font-family: "Work Sans", sans-serif;
 
-  letter-spacing: .3px;
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: .4px;
 }
 
 /* =========================================================
@@ -3323,8 +3354,7 @@ nav {
   backdrop-filter:
     blur(22px);
 
-  -webkit-backdrop-filter:
-    blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 
   box-shadow:
     0 -15px 45px rgba(0,0,0,.20);
@@ -3691,6 +3721,8 @@ nav button.active::before {
 
     gap: 10px;
 
+    min-height: 82px;
+
     padding:
       14px 12px;
   }
@@ -3701,6 +3733,10 @@ nav button.active::before {
 
   .adminUserRow > span > b {
     font-size: 13px;
+  }
+
+  .adminUserRow > span > small {
+    font-size: 9px;
   }
 
   .adminUserActions {
@@ -3731,6 +3767,26 @@ nav button.active::before {
     font-size: 9px;
   }
 
+  /* STATO ACCOUNT */
+
+  .adminUserStatus {
+    margin-top: 5px;
+
+    font-size: 8px !important;
+
+    letter-spacing: 1px;
+  }
+
+  .adminPronosticiLabel {
+    margin-top: 7px;
+
+    font-size: 7px !important;
+  }
+
+  .adminPronosticiValue {
+    font-size: 21px;
+  }
+
   /* BLOCCA / SBLOCCA */
 
   .userBlockButton {
@@ -3740,10 +3796,8 @@ nav button.active::before {
       7px 9px;
 
     font-size: 9px;
-  }
 
-  .adminUserStatus {
-    font-size: 8px !important;
+    letter-spacing: .3px;
   }
 
   /* COMPLETED */
