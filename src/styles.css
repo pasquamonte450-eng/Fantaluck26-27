@@ -1938,87 +1938,6 @@ header > span {
     );
 }
 
-.clickableRow {
-  cursor: pointer;
-
-  transition:
-    background .15s ease,
-    transform .15s ease;
-}
-
-.clickableRow:hover {
-  background:
-    rgba(53,212,122,.07);
-
-  transform:
-    translateX(2px);
-}
-
-.clickableRow:active {
-  transform:
-    translateX(1px)
-    scale(.997);
-}
-
-.clickableRow::after {
-  content: "›";
-
-  color: #496655;
-
-  font-family: Oswald, sans-serif;
-
-  font-size: 23px;
-
-  transition:
-    color .15s ease,
-    transform .15s ease;
-}
-
-.clickableRow:hover::after {
-  color: var(--gold);
-
-  transform:
-    translateX(2px);
-}
-
-/* =========================================================
-   ANSWER REVIEW HINT
-   ========================================================= */
-
-.answerReviewHint {
-  display: block;
-
-  margin-top: 4px;
-
-  color: var(--gold);
-
-  font-style: normal;
-
-  font-size: 8px;
-  font-weight: 800;
-
-  letter-spacing: 1px;
-
-  text-transform: uppercase;
-}
-
-.currentPlayer em {
-  display: block;
-
-  margin-top: 4px;
-
-  color: var(--gold);
-
-  font-style: normal;
-
-  font-size: 8px;
-  font-weight: 800;
-
-  letter-spacing: 1px;
-
-  text-transform: uppercase;
-}
-
 /* =========================================================
    CLASSIFICA — INDICAZIONE
    ========================================================= */
@@ -2502,79 +2421,31 @@ header > span {
 }
 
 /* =========================================================
-   PROFILO — STORICO
+   PROFILO — NAVIGAZIONE
    ========================================================= */
 
-.profileHistorySection {
+.profileNavigation {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
   margin-top: 22px;
 }
 
-.profileHistorySection > h3 {
-  margin: 0 0 12px;
+.profileNavigationCard {
+  width: 100%;
 
-  color: #e6efe8;
-
-  font-family: Oswald, sans-serif;
-
-  font-size: 23px;
-  font-weight: 600;
-
-  letter-spacing: .4px;
-  line-height: 1.1;
-
-  text-transform: uppercase;
-}
-
-.profileHistorySection > h3::after {
-  content: "";
-
-  display: block;
-
-  width: 34px;
-  height: 2px;
-
-  margin-top: 7px;
-
-  background: var(--gold);
-
-  border-radius: 2px;
-
-  box-shadow:
-    0 0 8px rgba(244,200,78,.18);
-}
-
-.profileHistoryTitle {
   display: flex;
-
   align-items: center;
 
-  gap: 9px;
+  gap: 14px;
 
-  margin-bottom: 12px;
+  padding: 16px 18px;
 
-  color: #cbd8cf;
+  text-align: left;
 
-  font-family: "Work Sans", sans-serif;
-
-  font-size: 10px;
-  font-weight: 800;
-
-  letter-spacing: 1.5px;
-  line-height: 1.1;
-
-  text-transform: uppercase;
-}
-
-.profileHistoryTitle .icon {
-  color: var(--gold);
-}
-
-/* =========================================================
-   VECCHIO STILE — MANTENUTO PER COMPATIBILITÀ
-   ========================================================= */
-
-.profileHistoryCard {
-  overflow: hidden;
+  color: #e9f3ec;
 
   background:
     linear-gradient(
@@ -2589,350 +2460,121 @@ header > span {
   border-radius: 14px;
 
   box-shadow:
-    0 10px 30px rgba(0,0,0,.18),
-    inset 0 1px 0 rgba(255,255,255,.025);
-}
-
-.profileHistoryCard > div {
-  display: flex;
-
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 12px;
-
-  min-height: 58px;
-
-  padding: 11px 14px;
-
-  background:
-    rgba(10,35,20,.88);
-
-  border-bottom:
-    1px solid rgba(53,212,122,.14);
-
-  transition:
-    background .15s ease;
-}
-
-.profileHistoryCard > div:hover {
-  background:
-    rgba(16,52,29,.96);
-}
-
-.profileHistoryCard > div:last-child {
-  border-bottom: 0;
-}
-
-.profileHistoryCard > div > span:first-child {
-  color: #e2eee5;
-
-  font-family: "Work Sans", sans-serif;
-
-  font-size: 12px;
-  font-weight: 700;
-
-  line-height: 1.2;
-}
-
-.profileHistoryCard > div > strong {
-  color: var(--gold);
-
-  font-family: Oswald, sans-serif;
-
-  font-size: 22px;
-  font-weight: 600;
-
-  line-height: 1;
-}
-
-/* =========================================================
-   PROFILO — PRONOSTICI INDOVINATI
-   ========================================================= */
-
-.profilePronosticiCard {
-  position: relative;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 15px;
-
-  margin-top: 16px;
-
-  padding: 16px 18px;
-
-  overflow: hidden;
-
-  background:
-    radial-gradient(
-      circle at 90% 15%,
-      rgba(244,200,78,.07),
-      transparent 34%
-    ),
-    linear-gradient(
-      135deg,
-      rgba(22,55,32,.96),
-      rgba(9,28,17,.98)
-    );
-
-  border:
-    1px solid rgba(244,200,78,.18);
-
-  border-radius: 13px;
-
-  box-shadow:
-    0 8px 24px rgba(0,0,0,.14);
-}
-
-.profilePronosticiCard::after {
-  content: "";
-
-  position: absolute;
-
-  right: -35px;
-  top: -35px;
-
-  width: 100px;
-  height: 100px;
-
-  border-radius: 50%;
-
-  background:
-    rgba(244,200,78,.045);
-
-  pointer-events: none;
-}
-
-.profilePronosticiCard > div:first-child {
-  min-width: 0;
-}
-
-.profilePronosticiCard small {
-  display: block;
-
-  color: #809589;
-
-  font-family: "Work Sans", sans-serif;
-
-  font-size: 8px;
-  font-weight: 800;
-
-  letter-spacing: 1.45px;
-  line-height: 1.1;
-
-  text-transform: uppercase;
-}
-
-.profilePronosticiCard strong {
-  display: block;
-
-  margin-top: 6px;
-
-  color: #edf5ef;
-
-  font-family: Oswald, sans-serif;
-
-  font-size: 28px;
-  font-weight: 600;
-
-  line-height: 1;
-}
-
-.profilePronosticiValue {
-  flex-shrink: 0;
-
-  color: var(--gold) !important;
-
-  font-family: Oswald, sans-serif;
-
-  font-size: 36px !important;
-  font-weight: 600 !important;
-
-  line-height: 1 !important;
-}
-
-/* =========================================================
-   PROFILO — AZIONI STORICO / CLASSIFICA
-   ========================================================= */
-
-button.sectionAction {
-  width: 100% !important;
-
-  min-height: 68px;
-
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-
-  flex-direction: row !important;
-
-  gap: 18px !important;
-
-  margin: 10px 0 0 !important;
-
-  padding: 16px 18px !important;
-
-  box-sizing: border-box !important;
-
-  appearance: none !important;
-  -webkit-appearance: none !important;
-
-  text-align: left !important;
-
-  color: #e9f3ec !important;
-
-  background:
-    linear-gradient(
-      145deg,
-      #123a22,
-      #092316
-    ) !important;
-
-  border:
-    1px solid rgba(53,212,122,.28) !important;
-
-  border-radius: 14px !important;
-
-  box-shadow:
     0 9px 28px rgba(0,0,0,.16),
-    inset 0 1px 0 rgba(255,255,255,.035),
-    0 0 0 1px rgba(53,212,122,.025) !important;
-
-  font-family: "Work Sans", sans-serif !important;
-
-  cursor: pointer !important;
-
-  outline: none !important;
+    inset 0 1px 0 rgba(255,255,255,.035);
 
   transition:
     transform .16s ease,
     border-color .16s ease,
     background .16s ease,
-    box-shadow .16s ease !important;
+    box-shadow .16s ease;
 }
 
-button.sectionAction:first-of-type {
-  margin-top: 18px !important;
-}
+.profileNavigationCard:hover {
+  transform: translateY(-1px);
 
-button.sectionAction:hover {
-  transform: translateY(-1px) !important;
-
-  color: #f0f8f2 !important;
+  color: #f0f8f2;
 
   background:
     linear-gradient(
       145deg,
       #174629,
       #0b2d1a
-    ) !important;
+    );
 
   border-color:
-    rgba(53,212,122,.52) !important;
+    rgba(53,212,122,.52);
 
   box-shadow:
     0 12px 32px rgba(0,0,0,.20),
     0 0 22px rgba(53,212,122,.07),
-    inset 0 1px 0 rgba(255,255,255,.045) !important;
+    inset 0 1px 0 rgba(255,255,255,.045);
 }
 
-button.sectionAction:active {
-  transform:
-    translateY(0)
-    scale(.985) !important;
+.profileNavigationCard:active {
+  transform: translateY(0) scale(.985);
 }
 
-button.sectionAction > span {
-  min-width: 0 !important;
+.profileNavigationIcon {
+  width: 40px;
+  height: 40px;
 
-  flex: 1 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  display: flex !important;
-  flex-direction: column !important;
+  flex-shrink: 0;
 
-  align-items: flex-start !important;
+  color: var(--green);
 
-  justify-content: center !important;
+  background:
+    rgba(53,212,122,.10);
 
-  gap: 5px !important;
+  border:
+    1px solid rgba(53,212,122,.22);
+
+  border-radius: 11px;
 }
 
-button.sectionAction small {
-  display: block !important;
+.profileNavigationText {
+  min-width: 0;
 
-  margin: 0 !important;
+  flex: 1;
 
-  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
 
-  color: #72a487 !important;
-
-  font-family: "Work Sans", sans-serif !important;
-
-  font-size: 8px !important;
-  font-weight: 800 !important;
-
-  letter-spacing: 1.7px !important;
-
-  line-height: 1 !important;
-
-  text-transform: uppercase !important;
-
-  white-space: nowrap !important;
+  gap: 5px;
 }
 
-button.sectionAction strong {
-  display: block !important;
+.profileNavigationText small {
+  display: block;
 
-  margin: 0 !important;
-  padding: 0 !important;
+  color: #72a487;
 
-  color: #e9f3ec !important;
+  font-size: 8px;
+  font-weight: 800;
 
-  font-family: Oswald, sans-serif !important;
+  letter-spacing: 1.7px;
 
-  font-size: 19px !important;
-  font-weight: 600 !important;
-
-  letter-spacing: .25px !important;
-
-  line-height: 1.1 !important;
-
-  text-transform: uppercase !important;
-
-  white-space: normal !important;
+  text-transform: uppercase;
 }
 
-button.sectionAction .icon {
-  width: 20px !important;
-  height: 20px !important;
+.profileNavigationText strong {
+  display: block;
 
-  flex-shrink: 0 !important;
+  color: #e9f3ec;
 
-  color: var(--green) !important;
-  stroke: var(--green) !important;
+  font-family: Oswald, sans-serif;
 
-  opacity: 1 !important;
+  font-size: 19px;
+  font-weight: 600;
+
+  letter-spacing: .25px;
+
+  line-height: 1.1;
+
+  text-transform: uppercase;
+}
+
+.profileNavigationArrow {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--green);
 
   transition:
     transform .16s ease,
-    filter .16s ease !important;
+    color .16s ease;
 }
 
-button.sectionAction:hover .icon {
-  color: #65ed99 !important;
-  stroke: #65ed99 !important;
+.profileNavigationCard:hover .profileNavigationArrow {
+  color: #65ed99;
 
-  transform: translateX(3px) !important;
-
-  filter:
-    drop-shadow(0 0 7px rgba(53,212,122,.28)) !important;
-}
-
-button.sectionAction + button.sectionAction {
-  margin-top: 8px !important;
+  transform: translateX(3px);
 }
 
 /* =========================================================
@@ -3029,436 +2671,6 @@ button.sectionAction + button.sectionAction {
   color: #64796b;
 }
 
-/* =========================================================
-   REVIEW MODAL
-   ========================================================= */
-
-.reviewOverlay {
-  position: fixed;
-
-  inset: 0;
-
-  z-index: 999;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 20px;
-
-  background:
-    rgba(1,6,4,.94) !important;
-
-  backdrop-filter:
-    blur(13px);
-
-  -webkit-backdrop-filter:
-    blur(13px);
-
-  animation:
-    reviewOverlayIn .18s ease;
-}
-
-@keyframes reviewOverlayIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-.reviewModal {
-  width: min(820px, 100%);
-
-  max-height: 90vh;
-
-  overflow-y: auto;
-
-  padding: 27px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #10291a 0%,
-      #091c11 55%,
-      #050e09 100%
-    ) !important;
-
-  border:
-    1px solid rgba(76,155,101,.28) !important;
-
-  border-radius: 23px;
-
-  box-shadow:
-    0 40px 120px rgba(0,0,0,.75),
-    inset 0 1px 0 rgba(255,255,255,.035);
-
-  color: #f5f7f5 !important;
-
-  animation:
-    reviewModalIn .22s ease;
-}
-
-@keyframes reviewModalIn {
-  from {
-    opacity: 0;
-    transform:
-      translateY(15px)
-      scale(.98);
-  }
-
-  to {
-    opacity: 1;
-    transform:
-      translateY(0)
-      scale(1);
-  }
-}
-
-.reviewModal h1,
-.reviewModal h2,
-.reviewModal h3,
-.reviewModal h4,
-.reviewModal p,
-.reviewModal span,
-.reviewModal small,
-.reviewModal strong,
-.reviewModal label {
-  background: transparent !important;
-}
-
-.reviewHeader {
-  display: flex;
-
-  align-items: flex-start;
-  justify-content: space-between;
-
-  gap: 20px;
-
-  padding-bottom: 18px;
-  margin-bottom: 18px;
-
-  background: transparent !important;
-
-  border-bottom:
-    1px solid rgba(53,212,122,.17);
-}
-
-.reviewHeader small {
-  color: var(--gold) !important;
-
-  font-size: 8px;
-  font-weight: 800;
-
-  letter-spacing: 2px;
-}
-
-.reviewHeader h2 {
-  margin: 5px 0 0;
-
-  color: #f5f8f5 !important;
-
-  font-family: Oswald, sans-serif;
-
-  font-size: 34px;
-
-  text-transform: uppercase;
-}
-
-.reviewClose {
-  width: 39px;
-  height: 39px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  flex-shrink: 0;
-
-  appearance: none !important;
-  -webkit-appearance: none !important;
-
-  color: #a8b9ae !important;
-
-  background:
-    #0c2416 !important;
-
-  background-image: none !important;
-
-  border:
-    1px solid rgba(83,153,103,.28) !important;
-
-  border-radius: 50%;
-
-  box-shadow: none !important;
-
-  transition: .15s ease;
-}
-
-.reviewClose:hover {
-  color: #fff !important;
-
-  background:
-    #174629 !important;
-
-  border-color:
-    rgba(244,200,78,.65) !important;
-
-  transform: rotate(5deg);
-}
-
-.reviewSummary {
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, 1fr);
-
-  gap: 9px;
-
-  margin-bottom: 25px;
-
-  background: transparent !important;
-}
-
-.reviewSummary > div {
-  padding: 15px;
-
-  background:
-    #081a10 !important;
-
-  background-image: none !important;
-
-  border:
-    1px solid rgba(76,155,101,.18) !important;
-
-  border-radius: 12px;
-
-  box-shadow: none !important;
-}
-
-.reviewSummary small {
-  display: block;
-
-  color: #698073 !important;
-
-  font-size: 8px;
-
-  letter-spacing: 1.2px;
-
-  text-transform: uppercase;
-}
-
-.reviewSummary strong {
-  display: block;
-
-  margin-top: 4px;
-
-  color: var(--gold) !important;
-
-  font-family: Oswald, sans-serif;
-
-  font-size: 27px;
-}
-
-.reviewSection {
-  margin-top: 25px;
-
-  background: transparent !important;
-}
-
-.reviewSection > h3 {
-  display: flex;
-
-  align-items: center;
-
-  gap: 8px;
-
-  margin: 0 0 11px;
-
-  color: var(--gold) !important;
-
-  font-family: Oswald, sans-serif;
-
-  font-size: 22px;
-
-  letter-spacing: .5px;
-
-  background: transparent !important;
-}
-
-.reviewQuestion {
-  margin-bottom: 8px;
-
-  padding: 15px;
-
-  background:
-    #081a10 !important;
-
-  background-image: none !important;
-
-  border:
-    1px solid rgba(76,155,101,.15) !important;
-
-  border-radius: 13px;
-
-  box-shadow: none !important;
-}
-
-.reviewCorrect {
-  border-color:
-    rgba(75,153,94,.45) !important;
-
-  background:
-    rgba(31,88,48,.16) !important;
-
-  background-image: none !important;
-}
-
-.reviewWrong {
-  border-color:
-    rgba(154,75,61,.45) !important;
-
-  background:
-    rgba(85,35,28,.16) !important;
-
-  background-image: none !important;
-}
-
-.reviewQuestionTop {
-  display: flex;
-
-  justify-content: space-between;
-
-  gap: 10px;
-
-  margin-bottom: 8px;
-
-  background: transparent !important;
-
-  font-family: Oswald, sans-serif;
-
-  font-size: 10px;
-
-  letter-spacing: 1px;
-}
-
-.reviewQuestionTop span {
-  color: #64796b !important;
-
-  background: transparent !important;
-}
-
-.reviewCorrect .reviewQuestionTop strong {
-  color: #6ee28c !important;
-
-  background: transparent !important;
-}
-
-.reviewWrong .reviewQuestionTop strong {
-  color: #ff8f82 !important;
-
-  background: transparent !important;
-}
-
-.reviewQuestion h3 {
-  margin: 0 0 11px;
-
-  color: #dce6df !important;
-
-  background: transparent !important;
-
-  font-size: 14px;
-
-  line-height: 1.45;
-}
-
-.reviewAnswer,
-.reviewCorrectAnswer {
-  margin-top: 6px;
-
-  padding: 9px 11px;
-
-  background:
-    rgba(255,255,255,.025) !important;
-
-  background-image: none !important;
-
-  border:
-    1px solid rgba(255,255,255,.045) !important;
-
-  border-radius: 8px;
-}
-
-.reviewAnswer small,
-.reviewCorrectAnswer small {
-  display: block;
-
-  margin-bottom: 3px;
-
-  color: #61766a !important;
-
-  background: transparent !important;
-
-  font-size: 8px;
-
-  letter-spacing: 1px;
-}
-
-.reviewAnswer strong,
-.reviewCorrectAnswer strong {
-  color: #c6d3ca !important;
-
-  background: transparent !important;
-
-  font-size: 12px;
-
-  line-height: 1.4;
-}
-
-.reviewCorrectAnswer {
-  border-color:
-    rgba(112,201,135,.15) !important;
-}
-
-.reviewModal .reviewBottomClose {
-  width: 100%;
-
-  margin-top: 20px;
-
-  padding: 13px;
-
-  border-radius: 10px;
-
-  font-weight: 800;
-
-  appearance: none !important;
-  -webkit-appearance: none !important;
-
-  color: #041008 !important;
-
-  background:
-    linear-gradient(
-      135deg,
-      #35d47a,
-      #1fa85b
-    ) !important;
-
-  background-image:
-    linear-gradient(
-      135deg,
-      #35d47a,
-      #1fa85b
-    ) !important;
-
-  border: 0 !important;
-
-  box-shadow: none !important;
-}
-
-/* =========================================================
    ADMIN
    ========================================================= */
 
@@ -4654,97 +3866,43 @@ nav button.active::before {
     font-size: 23px;
   }
 
-  .profileHistorySection {
+  /* =====================================================
+     PROFILO — NAVIGAZIONE
+     ===================================================== */
+
+  .profileNavigation {
+    gap: 6px;
+
     margin-top: 19px;
   }
 
-  .profileHistorySection > h3 {
-    font-size: 21px;
-  }
-
-  .profileHistoryTitle {
-    font-size: 9px;
-
-    letter-spacing: 1.25px;
-  }
-
-  .profileHistoryCard > div {
-    min-height: 54px;
-
-    padding: 10px 12px;
-  }
-
-  .profileHistoryCard > div > span:first-child {
-    font-size: 11px;
-  }
-
-  .profileHistoryCard > div > strong {
-    font-size: 20px;
-  }
-
-  .profilePronosticiCard {
-    padding: 14px 15px;
-
-    border-radius: 12px;
-  }
-
-  .profilePronosticiCard small {
-    font-size: 7px;
-
-    letter-spacing: 1.2px;
-  }
-
-  .profilePronosticiCard strong {
-    font-size: 25px;
-  }
-
-  .profilePronosticiValue {
-    font-size: 32px !important;
-  }
-
-  /* =====================================================
-     PROFILO — AZIONI
-     ===================================================== */
-
-  button.sectionAction {
-    width: 100% !important;
-
+  .profileNavigationCard {
     min-height: 62px;
 
-    gap: 13px !important;
+    gap: 13px;
 
-    margin-top: 8px !important;
+    padding: 15px;
 
-    padding: 15px !important;
-
-    border-radius: 13px !important;
+    border-radius: 13px;
   }
 
-  button.sectionAction:first-of-type {
-    margin-top: 16px !important;
+  .profileNavigationIcon {
+    width: 36px;
+    height: 36px;
   }
 
-  button.sectionAction > span {
-    gap: 5px !important;
+  .profileNavigationText small {
+    font-size: 7px;
+
+    letter-spacing: 1.35px;
   }
 
-  button.sectionAction small {
-    font-size: 7px !important;
+  .profileNavigationText strong {
+    font-size: 17px;
 
-    letter-spacing: 1.35px !important;
-  }
+    letter-spacing: .15px;
 
-  button.sectionAction strong {
-    font-size: 17px !important;
-
-    letter-spacing: .15px !important;
-
-    line-height: 1.12 !important;
-  }
-
-  button.sectionAction .icon {
-    width: 18px !important;
-    height: 18px !important;
+    line-height: 1.12;
   }
 
   /* =====================================================
@@ -4827,10 +3985,6 @@ nav button.active::before {
   }
 
   .row > strong {
-    font-size: 20px;
-  }
-
-  .clickableRow::after {
     font-size: 20px;
   }
 
@@ -4986,86 +4140,10 @@ nav button.active::before {
   }
 
   /* =====================================================
-     REVIEW
-     ===================================================== */
-
-  .reviewOverlay {
-    align-items: flex-start;
-
-    padding: 8px;
-
-    background:
-      rgba(1,6,4,.94) !important;
-  }
-
-  .reviewModal {
-    max-height: 94vh;
-
-    padding: 17px;
-
-    border-radius: 18px;
-
-    background:
-      linear-gradient(
-        145deg,
-        #10291a,
-        #091c11,
-        #050e09
-      ) !important;
-  }
-
-  .reviewHeader h2 {
-    font-size: 27px;
-  }
-
-  .reviewSummary {
-    grid-template-columns:
-      repeat(3, 1fr);
-
-    gap: 5px;
-  }
-
-  .reviewSummary > div {
-    padding: 10px 8px;
-
-    background:
-      #081a10 !important;
-  }
-
-  .reviewSummary strong {
-    font-size: 20px;
-  }
-
-  .reviewQuestion {
-    padding: 12px;
-
-    background:
-      #081a10 !important;
-  }
-
-  .reviewCorrect {
-    background:
-      rgba(31,88,48,.16) !important;
-  }
-
-  .reviewWrong {
-    background:
-      rgba(85,35,28,.16) !important;
-  }
-
-  .reviewAnswer,
-  .reviewCorrectAnswer {
-    background:
-      rgba(255,255,255,.025) !important;
-  }
-
-  /* =====================================================
-     STORICO REALE — MOBILE
+     STORICO — MOBILE
      ===================================================== */
 
   .historyCard {
-    width: 100% !important;
-
     min-height: 72px;
 
     padding: 11px !important;
@@ -5221,73 +4299,33 @@ nav button.active::before {
     font-size: 21px;
   }
 
-  .profileHistorySection {
-    margin-top: 17px;
-  }
-
-  .profileHistorySection > h3 {
-    font-size: 19px;
-  }
-
-  .profileHistoryTitle {
-    font-size: 8px;
-
-    letter-spacing: 1px;
-  }
-
-  .profileHistoryCard > div {
-    min-height: 51px;
-
-    padding: 9px 10px;
-  }
-
-  .profileHistoryCard > div > span:first-child {
-    font-size: 10px;
-  }
-
-  .profileHistoryCard > div > strong {
-    font-size: 19px;
-  }
-
-  .profilePronosticiCard {
-    padding: 13px;
-  }
-
-  .profilePronosticiCard small {
-    font-size: 6.5px;
-  }
-
-  .profilePronosticiValue {
-    font-size: 29px !important;
-  }
-
   /* =====================================================
-     PROFILO — AZIONI
+     PROFILO — NAVIGAZIONE
      ===================================================== */
 
-  button.sectionAction {
+  .profileNavigationCard {
     min-height: 58px;
 
-    padding: 14px 13px !important;
+    padding: 14px 13px;
 
-    border-radius: 12px !important;
+    border-radius: 12px;
   }
 
-  button.sectionAction small {
-    font-size: 6.5px !important;
-
-    letter-spacing: 1.1px !important;
+  .profileNavigationIcon {
+    width: 32px;
+    height: 32px;
   }
 
-  button.sectionAction strong {
-    font-size: 15.5px !important;
+  .profileNavigationText small {
+    font-size: 6.5px;
 
-    line-height: 1.15 !important;
+    letter-spacing: 1.1px;
   }
 
-  button.sectionAction .icon {
-    width: 17px !important;
-    height: 17px !important;
+  .profileNavigationText strong {
+    font-size: 15.5px;
+
+    line-height: 1.15;
   }
 
   .myRankCard > div {
@@ -5389,104 +4427,9 @@ nav button.active::before {
 }
 
 /* =========================================================
-   FINAL FORCE OVERRIDE
-   REVIEW + STORICO REALE
-   ========================================================= */
-
-/* ---------------------------------------------------------
-   REVIEW MODAL
-   --------------------------------------------------------- */
-
-.reviewModal,
-.reviewModal * {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.reviewModal {
-  color: #f5f7f5 !important;
-
-  background:
-    linear-gradient(
-      145deg,
-      #10291a 0%,
-      #091c11 55%,
-      #050e09 100%
-    ) !important;
-}
-
-.reviewModal button {
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  font-family: inherit !important;
-}
-
-.reviewModal .reviewSummary > div {
-  background:
-    #081a10 !important;
-
-  background-image: none !important;
-
-  color: #f5f7f5 !important;
-}
-
-.reviewModal .reviewQuestion {
-  background:
-    #081a10 !important;
-
-  background-image: none !important;
-
-  color: #f5f7f5 !important;
-}
-
-.reviewModal .reviewCorrect {
-  background:
-    rgba(31,88,48,.16) !important;
-}
-
-.reviewModal .reviewWrong {
-  background:
-    rgba(85,35,28,.16) !important;
-}
-
-.reviewModal .reviewAnswer,
-.reviewModal .reviewCorrectAnswer {
-  background:
-    rgba(255,255,255,.025) !important;
-
-  background-image: none !important;
-}
-
-.reviewModal .reviewClose {
-  background:
-    #0c2416 !important;
-
-  background-image: none !important;
-
-  color: #a8b9ae !important;
-}
-
-.reviewModal .reviewBottomClose {
-  background:
-    linear-gradient(
-      135deg,
-      #35d47a,
-      #1fa85b
-    ) !important;
-
-  background-image:
-    linear-gradient(
-      135deg,
-      #35d47a,
-      #1fa85b
-    ) !important;
-
-  color: #041008 !important;
-}
-
-/* ---------------------------------------------------------
-   STORICO
+   STORICO REALE
    QUESTE SONO LE CLASSI REALMENTE USATE DA HistoryPage
-   --------------------------------------------------------- */
+   ========================================================= */
 
 .historyList {
   width: 100%;
@@ -5500,113 +4443,39 @@ nav button.active::before {
 }
 
 .historyCard {
-  width: 100% !important;
+  width: 100%;
 
   min-width: 0;
 
-  display: flex !important;
+  display: flex;
 
-  align-items: center !important;
+  align-items: center;
 
-  gap: 14px !important;
+  gap: 14px;
 
-  padding: 13px 15px !important;
+  padding: 13px 15px;
 
-  margin: 0 !important;
+  font-family: "Work Sans", sans-serif;
 
-  appearance: none !important;
-  -webkit-appearance: none !important;
+  text-align: left;
 
-  font-family: "Work Sans", sans-serif !important;
-
-  text-align: left !important;
-
-  color: #f5f7f5 !important;
+  color: #f5f7f5;
 
   background:
     linear-gradient(
       145deg,
       #0d2517 0%,
       #07170e 100%
-    ) !important;
-
-  background-image:
-    linear-gradient(
-      145deg,
-      #0d2517 0%,
-      #07170e 100%
-    ) !important;
+    );
 
   border:
-    1px solid rgba(76,155,101,.18) !important;
+    1px solid rgba(76,155,101,.18);
 
-  border-radius: 14px !important;
+  border-radius: 14px;
 
   box-shadow:
     0 8px 24px rgba(0,0,0,.25),
-    inset 0 1px 0 rgba(255,255,255,.025) !important;
-
-  outline: none !important;
-
-  cursor: pointer !important;
-
-  transition:
-    transform .16s ease,
-    border-color .16s ease,
-    background .16s ease,
-    box-shadow .16s ease !important;
-}
-
-.historyCard:hover {
-  color: #f5f7f5 !important;
-
-  background:
-    linear-gradient(
-      145deg,
-      #102b1a 0%,
-      #081a10 100%
-    ) !important;
-
-  background-image:
-    linear-gradient(
-      145deg,
-      #102b1a 0%,
-      #081a10 100%
-    ) !important;
-
-  border-color:
-    rgba(76,155,101,.34) !important;
-
-  transform:
-    translateY(-1px) !important;
-
-  box-shadow:
-    0 12px 30px rgba(0,0,0,.28),
-    inset 0 1px 0 rgba(255,255,255,.035) !important;
-}
-
-.historyCard:active {
-  transform:
-    translateY(0)
-    scale(.995) !important;
-}
-
-.historyCard:focus {
-  outline: none !important;
-
-  background:
-    linear-gradient(
-      145deg,
-      #0d2517 0%,
-      #07170e 100%
-    ) !important;
-}
-
-.historyCard:focus-visible {
-  outline:
-    2px solid rgba(53,212,122,.35) !important;
-
-  outline-offset: 2px !important;
+    inset 0 1px 0 rgba(255,255,255,.025);
 }
 
 .historyCard,
@@ -5806,8 +4675,6 @@ button.historyCard:focus {
   color: #f5f7f5 !important;
 }
 
-/* Hover separato perché background-color sopra non deve
-   cancellare il gradient */
 button.historyCard:hover {
   background:
     linear-gradient(
@@ -5815,57 +4682,4 @@ button.historyCard:hover {
       #102b1a 0%,
       #081a10 100%
     ) !important;
-}
-
-/* ---------------------------------------------------------
-   SEZIONI COLLEGATE
-   --------------------------------------------------------- */
-
-button.sectionAction {
-  appearance: none !important;
-  -webkit-appearance: none !important;
-
-  background:
-    linear-gradient(
-      145deg,
-      #123a22,
-      #092316
-    ) !important;
-
-  border-color:
-    rgba(53,212,122,.28) !important;
-
-  color: #e9f3ec !important;
-}
-
-button.sectionAction:hover {
-  background:
-    linear-gradient(
-      145deg,
-      #174629,
-      #0b2d1a
-    ) !important;
-
-  border-color:
-    rgba(53,212,122,.52) !important;
-}
-
-button.sectionAction small {
-  color: #72a487 !important;
-}
-
-button.sectionAction strong {
-  color: #e9f3ec !important;
-}
-
-button.sectionAction .icon {
-  color: var(--green) !important;
-  stroke: var(--green) !important;
-}
-.historyCard {
-  background: red !important;
-}
-
-.reviewModal {
-  background: blue !important;
 }
