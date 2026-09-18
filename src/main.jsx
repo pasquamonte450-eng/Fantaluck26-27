@@ -4895,7 +4895,8 @@ function Admin({
                           .value,
                     })
                   }
-              />
+                />
+              </label>
 
               <QuestionEditor
                 title="DOMANDE PARTITA — 10"
