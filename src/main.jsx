@@ -1547,8 +1547,7 @@ function Quiz({
             {submitting
               ? "SALVATAGGIO..."
               : index ===
-                questions.length -
-                  1
+                questions.length - 1
               ? "VAI AI RIGORI"
               : "AVANTI"}
 
@@ -1930,26 +1929,554 @@ function Completed({
 }
 
 /* =========================================================
+   REVIEW RISPOSTE
+   ========================================================= */
+
+function AnswerReview({
+  week,
+  attempt,
+  profile,
+  onClose,
+}) {
+  const [loading, setLoading] =
+    useState(false);
+
+  const published =
+    Boolean(
+      week?.results_published
+    );
+
+  const questions = [
+    ...(week?.matchQuestions || []),
+    ...(week?.playerQuestions || []),
+  ];
+
+  const matchAnswers = Array.isArray(
+    attempt?.match_answers
+  )
+    ? attempt.match_answers
+    : [];
+
+  const playerAnswers = Array.isArray(
+    attempt?.player_answers
+  )
+    ? attempt.player_answers
+    : [];
+
+  const allAnswers = [
+    ...matchAnswers,
+    ...playerAnswers,
+  ];
+
+  const isOwnAttempt =
+    attempt?.username ===
+    profile?.username;
+
+  /*
+   * Per sicurezza il dettaglio delle risposte
+   * viene mostrato solo per la settimana
+   * pubblicata quando si tratta delle risposte
+   * di un altro partecipante.
+   *
+   * Le proprie risposte possono invece essere
+   * consultate anche prima della pubblicazione,
+   * ma senza soluzione/esito.
+   */
+  const showCorrections =
+    published;
+
+  const getQuestionResult = (
+    question,
+    index
+  ) => {
+    const given =
+      allAnswers[index] || "";
+
+    const correctAnswers =
+      getCorrectAnswers(
+        question
+      );
+
+    const correct =
+      Boolean(
+        given &&
+          correctAnswers.includes(
+            given
+          )
+      );
+
+    return {
+      given,
+      correctAnswers,
+      correct,
+    };
+  };
+
+  const renderQuestion = (
+    question,
+    index
+  ) => {
+    const result =
+      getQuestionResult(
+        question,
+        index
+      );
+
+    const hasGiven =
+      Boolean(result.given);
+
+    return (
+      <div
+        className="reviewQuestion"
+        key={
+          question?.id ||
+          `${index}-${question?.text}`
+        }
+      >
+        <div className="reviewQuestionNumber">
+          DOMANDA {index + 1}
+        </div>
+
+        <div className="reviewQuestionText">
+          {question?.text ||
+            "Domanda non disponibile"}
+        </div>
+
+        <div className="reviewAnswerLine">
+          <small>
+            LA TUA RISPOSTA
+          </small>
+
+          <strong>
+            {hasGiven
+              ? result.given
+              : "Nessuna risposta"}
+          </strong>
+        </div>
+
+        {showCorrections ? (
+          <>
+            <div className="reviewAnswerLine">
+              <small>
+                RISPOSTA CORRETTA
+              </small>
+
+              <strong>
+                {result.correctAnswers
+                  .length
+                  ? result.correctAnswers.join(
+                      " / "
+                    )
+                  : "Soluzione non disponibile"}
+              </strong>
+            </div>
+
+            <div
+              className={
+                result.correct
+                  ? "reviewOutcome correct"
+                  : "reviewOutcome wrong"
+              }
+            >
+              <span className="reviewOutcomeIcon">
+                <Icon
+                  name={
+                    result.correct
+                      ? "check"
+                      : "x"
+                  }
+                  size={17}
+                />
+              </span>
+
+              <strong>
+                {result.correct
+                  ? "CORRETTA"
+                  : "SBAGLIATA"}
+              </strong>
+
+              <span>
+                · +
+                {result.correct
+                  ? 10
+                  : 0}
+              </span>
+            </div>
+          </>
+        ) : (
+          <div className="reviewPending">
+            <Icon
+              name="info"
+              size={16}
+            />
+
+            <span>
+              La soluzione sarà
+              disponibile dopo la
+              pubblicazione dei risultati.
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const matchResults =
+    questions.slice(0, 10);
+
+  const playerResults =
+    questions.slice(10, 20);
+
+  const calculatedCorrect =
+    published
+      ? allAnswers.reduce(
+          (total, answer, index) => {
+            const question =
+              questions[index];
+
+            const correctAnswers =
+              getCorrectAnswers(
+                question
+              );
+
+            return (
+              total +
+              (answer &&
+              correctAnswers.includes(
+                answer
+              )
+                ? 1
+                : 0)
+            );
+          },
+          0
+        )
+      : Number(
+          attempt?.correct_answers ||
+            0
+        );
+
+  const baseScore = published
+    ? calculatedCorrect * 10
+    : Number(
+        attempt?.base_score || 0
+      );
+
+  const goals = Number(
+    attempt?.goals || 0
+  );
+
+  const multiplier = Number(
+    attempt?.multiplier || 1
+  );
+
+  const finalScore = Number(
+    attempt?.final_score || 0
+  );
+
+  return (
+    <div className="reviewOverlay">
+      <div className="reviewModal">
+        <div className="reviewHeader">
+          <div>
+            <small>
+              FANTALUCK · SETTIMANA #
+              {week?.number ?? "?"}
+            </small>
+
+            <h2>
+              {isOwnAttempt
+                ? "Le tue risposte"
+                : `Risposte di ${
+                    attempt?.name ||
+                    attempt?.username ||
+                    "giocatore"
+                  }`}
+            </h2>
+
+            <span>
+              {published
+                ? "Risultati pubblicati"
+                : "Risultati non ancora pubblicati"}
+            </span>
+          </div>
+
+          <button
+            className="reviewClose"
+            onClick={onClose}
+            aria-label="Chiudi"
+          >
+            <Icon
+              name="close"
+              size={21}
+            />
+          </button>
+        </div>
+
+        {!published && (
+          <div className="reviewNotice">
+            <Icon
+              name="info"
+              size={18}
+            />
+
+            <span>
+              Puoi vedere le risposte
+              date, ma la soluzione e
+              l'esito restano nascosti
+              fino alla pubblicazione
+              dei risultati.
+            </span>
+          </div>
+        )}
+
+        <section className="reviewSection">
+          <div className="reviewSectionTitle">
+            <div>
+              <small>
+                01
+              </small>
+
+              <h3>
+                MATCH
+              </h3>
+            </div>
+
+            <span>
+              10 DOMANDE
+            </span>
+          </div>
+
+          <div className="reviewQuestions">
+            {matchResults.map(
+              (
+                question,
+                index
+              ) =>
+                renderQuestion(
+                  question,
+                  index
+                )
+            )}
+          </div>
+        </section>
+
+        <section className="reviewSection">
+          <div className="reviewSectionTitle">
+            <div>
+              <small>
+                02
+              </small>
+
+              <h3>
+                PLAYER
+              </h3>
+            </div>
+
+            <span>
+              10 DOMANDE
+            </span>
+          </div>
+
+          <div className="reviewQuestions">
+            {playerResults.map(
+              (
+                question,
+                index
+              ) =>
+                renderQuestion(
+                  question,
+                  index + 10
+                )
+            )}
+          </div>
+        </section>
+
+        <section className="reviewSummary">
+          <div className="reviewSectionTitle">
+            <div>
+              <small>
+                03
+              </small>
+
+              <h3>
+                RIEPILOGO
+              </h3>
+            </div>
+          </div>
+
+          <div className="reviewSummaryGrid">
+            <div>
+              <small>
+                RISPOSTE CORRETTE
+              </small>
+
+              <strong>
+                {published
+                  ? `${calculatedCorrect}/20`
+                  : `${Number(
+                      attempt?.correct_answers ||
+                        0
+                    )}/20`}
+              </strong>
+            </div>
+
+            <div>
+              <small>
+                PUNTI QUIZ
+              </small>
+
+              <strong>
+                {published
+                  ? baseScore
+                  : "—"}
+              </strong>
+            </div>
+
+            <div>
+              <small>
+                RIGORI
+              </small>
+
+              <strong>
+                {attempt?.rigori_finished
+                  ? goals
+                  : "—"}
+              </strong>
+            </div>
+
+            <div>
+              <small>
+                MOLTIPLICATORE
+              </small>
+
+              <strong>
+                {attempt?.rigori_finished
+                  ? `x${multiplier.toFixed(
+                      2
+                    )}`
+                  : "—"}
+              </strong>
+            </div>
+          </div>
+
+          <div className="reviewFinalScore">
+            <small>
+              PUNTEGGIO FINALE
+            </small>
+
+            <strong>
+              {published
+                ? finalScore
+                : "—"}
+            </strong>
+          </div>
+        </section>
+
+        <button
+          className="reviewBackButton"
+          onClick={onClose}
+        >
+          CHIUDI RESOCONTO
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
    RANKING CLASSIFICA GENERALE
    ========================================================= */
 
 function Rank({
   week,
+  weeks,
   attempts,
+  allAttempts,
   profile,
 }) {
+  const publishedWeeks =
+    useMemo(
+      () =>
+        [...(weeks || [])]
+          .filter(
+            (item) =>
+              item?.results_published ===
+              true
+          )
+          .sort(
+            (a, b) =>
+              Number(
+                b.number || 0
+              ) -
+              Number(
+                a.number || 0
+              )
+          ),
+      [weeks]
+    );
+
+  const [
+    selectedWeekId,
+    setSelectedWeekId,
+  ] = useState(
+    week?.results_published
+      ? week.id
+      : publishedWeeks[0]?.id ||
+          ""
+  );
+
   const [
     rankAttempts,
     setRankAttempts,
-  ] = useState(
-    attempts || []
-  );
+  ] = useState([]);
 
   const [rankError, setRankError] =
     useState("");
 
+  const [
+    selectedAttempt,
+    setSelectedAttempt,
+  ] = useState(null);
+
+  const [
+    reviewWeek,
+    setReviewWeek,
+  ] = useState(null);
+
   useEffect(() => {
-    if (!week?.id) {
+    const preferred =
+      week?.results_published
+        ? week.id
+        : publishedWeeks[0]?.id ||
+          "";
+
+    setSelectedWeekId(
+      (current) =>
+        current &&
+        publishedWeeks.some(
+          (item) =>
+            item.id === current
+        )
+          ? current
+          : preferred
+    );
+  }, [
+    week?.id,
+    week?.results_published,
+    publishedWeeks,
+  ]);
+
+  const selectedWeek =
+    publishedWeeks.find(
+      (item) =>
+        item.id ===
+        selectedWeekId
+    ) ||
+    null;
+
+  useEffect(() => {
+    if (!selectedWeek?.id) {
       setRankAttempts([]);
       return;
     }
@@ -1958,7 +2485,9 @@ function Rank({
 
     setRankError("");
 
-    dbAttempts(week.id)
+    dbAttempts(
+      selectedWeek.id
+    )
       .then((data) => {
         if (!cancelled) {
           setRankAttempts(
@@ -1979,54 +2508,31 @@ function Rank({
     return () => {
       cancelled = true;
     };
-  }, [week?.id]);
+  }, [
+    selectedWeek?.id,
+  ]);
 
-  if (!week?.results_published) {
-    return (
-      <div className="wrap">
-        <div className="title">
-          <small>
-            FANTALUCK
-          </small>
-
-          <h1>
-            Classifica
-          </h1>
-        </div>
-
-        <div className="empty">
-          <div className="bigEmoji">
-            <Icon
-              name="trophy"
-              size={48}
-            />
-          </div>
-
-          <h2>
-            Risultati non ancora
-            pubblicati
-          </h2>
-
-          <p>
-            L'organizzatore deve
-            prima correggere le
-            risposte e pubblicare i
-            risultati.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  /*
+   * Se per qualche motivo la query della settimana
+   * non restituisce ancora dati, usiamo anche gli
+   * attempts già caricati globalmente.
+   */
+  const sourceAttempts =
+    rankAttempts.length
+      ? rankAttempts
+      : (allAttempts || []).filter(
+          (attempt) =>
+            attempt.week_id ===
+            selectedWeek?.id
+        );
 
   const rows = [
-    ...rankAttempts,
+    ...sourceAttempts,
   ]
     .filter(
       (attempt) =>
         attempt.results_published ===
-          true ||
-        week.results_published ===
-          true
+        true
     )
     .sort(
       (a, b) =>
@@ -2063,12 +2569,47 @@ function Rank({
         )
       : 0;
 
+  if (!publishedWeeks.length) {
+    return (
+      <div className="wrap">
+        <div className="title">
+          <small>
+            FANTALUCK
+          </small>
+
+          <h1>
+            Classifica
+          </h1>
+        </div>
+
+        <div className="empty">
+          <div className="bigEmoji">
+            <Icon
+              name="trophy"
+              size={48}
+            />
+          </div>
+
+          <h2>
+            Risultati non ancora
+            pubblicati
+          </h2>
+
+          <p>
+            Non ci sono ancora
+            settimane con risultati
+            pubblicati.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="wrap">
       <div className="title">
         <small>
-          SETTIMANA #
-          {week.number}
+          FANTALUCK
         </small>
 
         <h1>
@@ -2076,9 +2617,56 @@ function Rank({
         </h1>
 
         <p className="rankingHint">
-          La classifica della settimana.
+          Consulta la classifica e
+          il resoconto di ogni
+          partecipante.
         </p>
       </div>
+
+      <div className="rankingWeekSelector">
+        <label>
+          <small>
+            SETTIMANA
+          </small>
+
+          <select
+            value={
+              selectedWeekId
+            }
+            onChange={(e) =>
+              setSelectedWeekId(
+                e.target.value
+              )
+            }
+          >
+            {publishedWeeks.map(
+              (item) => (
+                <option
+                  key={item.id}
+                  value={item.id}
+                >
+                  Settimana #
+                  {item.number}
+                </option>
+              )
+            )}
+          </select>
+        </label>
+      </div>
+
+      {selectedWeek && (
+        <div className="rankingWeekHeading">
+          <small>
+            CLASSIFICA —
+            SETTIMANA #
+            {selectedWeek.number}
+          </small>
+
+          <strong>
+            RISULTATI PUBBLICATI
+          </strong>
+        </div>
+      )}
 
       {myPosition && (
         <div className="myRankCard">
@@ -2128,7 +2716,7 @@ function Rank({
         </div>
       )}
 
-      <div className="table">
+      <div className="table rankingTable">
         {rows.map(
           (
             attempt,
@@ -2142,15 +2730,15 @@ function Rank({
               <div
                 className={
                   isMine
-                    ? "row currentPlayer"
-                    : "row"
+                    ? "row currentPlayer rankingParticipantRow"
+                    : "row rankingParticipantRow"
                 }
                 key={
                   attempt.id ||
                   attempt.username
                 }
               >
-                <b>
+                <b className="rankingPosition">
                   {index + 1}
                 </b>
 
@@ -2170,10 +2758,32 @@ function Rank({
                   </small>
                 </span>
 
-                <strong>
+                <strong className="rankingScore">
                   {attempt.final_score ||
                     0}
                 </strong>
+
+                <button
+                  type="button"
+                  className="reviewOpenButton"
+                  onClick={() => {
+                    setSelectedAttempt(
+                      attempt
+                    );
+                    setReviewWeek(
+                      selectedWeek
+                    );
+                  }}
+                >
+                  <span>
+                    VEDI RISPOSTE
+                  </span>
+
+                  <Icon
+                    name="eye"
+                    size={17}
+                  />
+                </button>
               </div>
             );
           }
@@ -2182,10 +2792,32 @@ function Rank({
         {!rows.length && (
           <div className="empty">
             Nessun risultato
-            disponibile.
+            disponibile per questa
+            settimana.
           </div>
         )}
       </div>
+
+      {selectedAttempt &&
+        reviewWeek && (
+          <AnswerReview
+            week={
+              reviewWeek
+            }
+            attempt={
+              selectedAttempt
+            }
+            profile={profile}
+            onClose={() => {
+              setSelectedAttempt(
+                null
+              );
+              setReviewWeek(
+                null
+              );
+            }}
+          />
+        )}
     </div>
   );
 }
@@ -2642,10 +3274,6 @@ function ProfilePage({
         </div>
       </div>
 
-      {/* =====================================================
-          NAVIGAZIONE PROFILO
-          ===================================================== */}
-
       <div className="profileNavigation">
         <button
           className="profileNavigationCard"
@@ -2723,6 +3351,16 @@ function HistoryPage({
   weeks,
   setPage,
 }) {
+  const [
+    selectedAttempt,
+    setSelectedAttempt,
+  ] = useState(null);
+
+  const [
+    selectedWeek,
+    setSelectedWeek,
+  ] = useState(null);
+
   const myAttempts =
     attempts
       .filter(
@@ -2784,6 +3422,12 @@ function HistoryPage({
                   attempt.week_id
               );
 
+            const canReview =
+              Boolean(
+                week &&
+                  attempt
+              );
+
             return (
               <div
                 className="historyCard"
@@ -2816,6 +3460,27 @@ function HistoryPage({
                         ).toFixed(2)}`
                       : "Rigori non completati"}
                   </span>
+
+                  {canReview && (
+                    <button
+                      type="button"
+                      className="historyReviewButton"
+                      onClick={() => {
+                        setSelectedAttempt(
+                          attempt
+                        );
+                        setSelectedWeek(
+                          week
+                        );
+                      }}
+                    >
+                      RIVEDI LE TUE RISPOSTE
+                      <Icon
+                        name="arrow"
+                        size={16}
+                      />
+                    </button>
+                  )}
                 </div>
 
                 <div className="historyScore">
@@ -2856,6 +3521,27 @@ function HistoryPage({
         />
         TORNA AL PROFILO
       </button>
+
+      {selectedAttempt &&
+        selectedWeek && (
+          <AnswerReview
+            week={
+              selectedWeek
+            }
+            attempt={
+              selectedAttempt
+            }
+            profile={profile}
+            onClose={() => {
+              setSelectedAttempt(
+                null
+              );
+              setSelectedWeek(
+                null
+              );
+            }}
+          />
+        )}
     </div>
   );
 }
@@ -4209,8 +4895,7 @@ function Admin({
                           .value,
                     })
                   }
-                />
-              </label>
+              />
 
               <QuestionEditor
                 title="DOMANDE PARTITA — 10"
@@ -4913,7 +5598,11 @@ function App() {
       {page === "rank" && (
         <Rank
           week={activeWeek}
+          weeks={weeks}
           attempts={attempts}
+          allAttempts={
+            combinedAttempts
+          }
           profile={profile}
         />
       )}
