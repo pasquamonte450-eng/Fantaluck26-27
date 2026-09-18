@@ -3379,7 +3379,7 @@ header > span {
     rgba(100, 170, 120, .5);
 
   box-shadow:
-    0 5px 16px rgba(100,170,120,.08);
+    0 5px 16px rgba(100,170,50,.08);
 }
 
 .adminUserActions .danger {
@@ -3604,832 +3604,734 @@ nav button.active::before {
 }
 
 /* =========================================================
-   MOBILE
+   CLASSIFICA — SETTIMANA
    ========================================================= */
 
-@media (max-width: 700px) {
+.rankingWeekSelector {
+  display: flex;
 
-  .wrap {
-    width: calc(100% - 18px);
+  align-items: center;
+  justify-content: space-between;
 
-    padding-top: 18px;
-    padding-bottom: 105px;
-  }
+  gap: 12px;
 
-  header {
-    height: 58px;
+  margin-bottom: 12px;
 
-    padding: 0 13px;
-  }
+  padding: 11px 13px;
 
-  .brand {
-    font-size: 18px;
-  }
+  background:
+    linear-gradient(
+      145deg,
+      rgba(13,31,20,.96),
+      rgba(7,18,12,.98)
+    );
 
-  header > span {
-    font-size: 10px;
-  }
+  border:
+    1px solid rgba(76,155,101,.20);
 
-  .hero {
-    padding: 36px 21px 42px;
+  border-radius: 12px;
 
-    border-radius: 22px;
-  }
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.12),
+    inset 0 1px 0 rgba(255,255,255,.025);
+}
 
-  .hero h1 {
-    font-size: 58px;
-  }
+.rankingWeekHeading {
+  display: flex;
 
-  .hero p {
-    font-size: 14px;
-  }
+  align-items: baseline;
 
-  .grid2 {
-    grid-template-columns: 1fr;
-  }
+  gap: 7px;
 
-  .card {
-    padding: 20px;
-  }
+  color: #708579;
 
-  .dashboardIconButton,
-  .pronosticiDashboardButton {
-    width: 34px;
-    height: 34px;
+  font-size: 8px;
+  font-weight: 800;
 
-    top: 12px;
-    right: 12px;
-  }
+  letter-spacing: 1.6px;
 
-  .pronosticiDashboardButton .icon {
-    width: 19px;
-    height: 19px;
-  }
+  line-height: 1;
 
-  .pronosticiCard strong {
-    font-size: 35px;
-  }
+  text-transform: uppercase;
+}
 
-  .countdownCard {
-    padding: 16px;
-  }
+.rankingWeekHeading strong {
+  color: var(--gold);
 
-  .countdownNumbers {
-    justify-content: space-between;
+  font-family: Oswald, sans-serif;
 
-    gap: 4px;
-  }
+  font-size: 21px;
+  font-weight: 600;
 
-  .countdownNumbers strong {
-    font-size: 27px;
-  }
+  letter-spacing: .2px;
 
-  .countdownNumbers small {
-    font-size: 7px;
-  }
+  line-height: 1;
 
-  .countdownNumbers > b {
-    font-size: 18px;
-  }
+  text-shadow:
+    0 0 14px rgba(244,200,78,.10);
+}
 
-  .quizCard {
-    padding: 22px 17px;
-  }
+.rankingWeekSelector select {
+  min-width: 145px;
 
-  .quizCard h2 {
-    font-size: 30px;
-  }
+  padding: 8px 29px 8px 10px;
 
-  .answers {
-    grid-template-columns: 1fr;
-  }
+  color: #dce8df;
 
-  .answers button {
-    min-height: 61px;
-  }
+  background:
+    #0d2517;
 
-  .quizNavigation {
-    flex-direction: column-reverse;
-  }
+  border:
+    1px solid rgba(76,155,101,.24);
 
-  .previousButton {
-    width: 100%;
-  }
+  border-radius: 8px;
 
-  .penalty {
-    padding: 20px 10px 28px;
-  }
+  font-family: "Work Sans", sans-serif;
 
-  .penaltyTop {
-    font-size: 10px;
-  }
+  font-size: 10px;
+  font-weight: 700;
 
-  .keeper {
-    height: 91px;
+  cursor: pointer;
 
-    border-width: 4px;
-  }
+  transition:
+    border-color .15s ease,
+    background .15s ease,
+    color .15s ease,
+    box-shadow .15s ease;
+}
 
-  .keeper::before,
-  .keeper::after {
-    background-size: 25px 25px;
-  }
+.rankingWeekSelector select:hover,
+.rankingWeekSelector select:focus {
+  color: #f4f8f4;
 
-  .penalty h1 {
-    font-size: 49px;
-  }
+  background:
+    #102b1a;
 
-  .goalGrid {
-    width: 100%;
-
-    padding: 8px;
-
-    gap: 6px;
-
-    border-width: 4px;
-  }
-
-  .goalGrid button {
-    font-size: 20px;
-
-    aspect-ratio: 1.2;
-  }
-
-  .difficulty {
-    font-size: 11px;
-  }
-
-  .mult strong {
-    font-size: 40px;
-  }
-
-  .title h1 {
-    font-size: 50px;
-  }
-
-  /* =====================================================
-     PROFILE
-     ===================================================== */
-
-  .profileHero {
-    gap: 13px;
-
-    margin-bottom: 14px;
-
-    padding: 17px;
-
-    border-radius: 17px;
-  }
-
-  .profileAvatar {
-    width: 55px;
-    height: 55px;
-
-    border-radius: 14px;
-  }
-
-  .profileAvatar .icon {
-    width: 30px;
-    height: 30px;
-  }
-
-  .profileHero small {
-    margin-bottom: 4px;
-
-    font-size: 7px;
-
-    letter-spacing: 1.7px;
-  }
-
-  .profileHero h2 {
-    font-size: 25px;
-
-    letter-spacing: .1px;
-  }
-
-  .profileHero span {
-    margin-top: 4px;
-
-    font-size: 10px;
-  }
-
-  .statsGrid {
-    grid-template-columns:
-      1fr 1fr;
-
-    gap: 8px;
-
-    margin-bottom: 10px;
-  }
-
-  .statCard {
-    padding: 14px 13px;
-
-    border-radius: 13px;
-  }
-
-  .statCard small {
-    font-size: 7px;
-
-    letter-spacing: 1.15px;
-  }
-
-  .statCard strong {
-    margin: 6px 0 3px;
-
-    font-size: 27px;
-  }
-
-  .statCard span {
-    font-size: 8px;
-  }
-
-  .profileStatsCard {
-    grid-template-columns:
-      repeat(3, 1fr);
-
-    border-radius: 13px;
-  }
-
-  .profileStatsCard > div {
-    padding: 14px 10px;
-  }
-
-  .profileStatsCard small {
-    font-size: 6.5px;
-
-    letter-spacing: .9px;
-  }
-
-  .profileStatsCard strong {
-    margin-top: 5px;
-
-    font-size: 23px;
-  }
-
-  /* =====================================================
-     PROFILO — NAVIGAZIONE
-     ===================================================== */
-
-  .profileNavigation {
-    gap: 6px;
-
-    margin-top: 19px;
-  }
-
-  .profileNavigationCard {
-    min-height: 62px;
-
-    gap: 13px;
-
-    padding: 15px;
-
-    border-radius: 13px;
-  }
-
-  .profileNavigationIcon {
-    width: 36px;
-    height: 36px;
-  }
-
-  .profileNavigationText small {
-    font-size: 7px;
-
-    letter-spacing: 1.35px;
-  }
-
-  .profileNavigationText strong {
-    font-size: 17px;
-
-    letter-spacing: .15px;
-
-    line-height: 1.12;
-  }
-
-  /* =====================================================
-     CLASSIFICA — CARD PERSONALE
-     ===================================================== */
-
-  .myRankCard {
-    grid-template-columns:
-      1.2fr 1fr 1fr;
-
-    border-radius: 14px;
-  }
-
-  .myRankCard > div {
-    min-height: 78px;
-
-    padding: 13px 9px;
-  }
-
-  .myRankCard > div:first-child {
-    padding-left: 12px;
-  }
-
-  .myRankCard small {
-    margin-bottom: 5px;
-
-    font-size: 6.5px;
-
-    letter-spacing: 1px;
-  }
-
-  .myRankCard strong {
-    font-size: 25px;
-  }
-
-  .myRankCard > div:first-child strong {
-    font-size: 31px;
-  }
-
-  .myRankCard > div:nth-child(2) strong,
-  .myRankCard > div:nth-child(3) strong {
-    font-size: 24px;
-  }
-
-  .pronosticiRankingHeader {
-    align-items: flex-start;
-
-    flex-direction: column;
-
-    gap: 12px;
-  }
-
-  .pronosticiRankingTitle {
-    gap: 11px;
-  }
-
-  .pronosticiRankingTitle p {
-    margin-top: 8px;
-
-    line-height: 1.35;
-  }
-
-  .pronosticiRankingIcon {
-    width: 43px;
-    height: 43px;
-  }
-
-  .row {
-    min-height: 64px;
-
-    padding: 12px 13px;
-
-    gap: 10px;
-  }
-
-  .row > b {
-    min-width: 25px;
-
-    font-size: 19px;
-  }
-
-  .row > strong {
-    font-size: 20px;
-  }
-
-  .rankingHint {
-    font-size: 8px;
-  }
-
-  .adminForm {
-    grid-template-columns: 1fr;
-  }
-
-  .adminWeek {
-    align-items: flex-start;
-
-    flex-direction: column;
-  }
-
-  .adminActions {
-    width: 100%;
-
-    justify-content: flex-start;
-  }
-
-  .adminActions button {
-    flex: 1;
-  }
-
-  .adminEditor,
-  .resultsAdmin {
-    padding: 15px;
-  }
-
-  .optionGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .questionEditor {
-    padding: 13px;
-  }
-
-  .publishBox button {
-    width: 100%;
-
-    margin-right: 0;
-  }
-
-  .adminUserRow {
-    align-items: flex-start;
-
-    gap: 10px;
-
-    min-height: 82px;
-
-    padding:
-      14px 12px;
-  }
-
-  .adminUserRow > span {
-    min-width: 0;
-  }
-
-  .adminUserRow > span > b {
-    font-size: 13px;
-  }
-
-  .adminUserRow > span > small {
-    font-size: 9px;
-  }
-
-  .adminUserActions {
-    flex-direction: column;
-
-    align-items: flex-end;
-
-    gap: 7px;
-  }
-
-  .pronosticiControls {
-    gap: 4px;
-  }
-
-  .pronosticiButton {
-    width: 34px;
-    height: 34px;
-
-    font-size: 12px;
-  }
-
-  .adminUserActions .danger {
-    min-height: 32px;
-
-    padding:
-      7px 9px;
-
-    font-size: 9px;
-  }
-
-  .adminUserStatus {
-    margin-top: 5px;
-
-    font-size: 8px !important;
-
-    letter-spacing: 1px;
-  }
-
-  .adminPronosticiLabel {
-    margin-top: 7px;
-
-    font-size: 7px !important;
-  }
-
-  .adminPronosticiValue {
-    font-size: 21px;
-  }
-
-  .userBlockButton {
-    min-height: 32px;
-
-    padding:
-      7px 9px;
-
-    font-size: 9px;
-
-    letter-spacing: .3px;
-  }
-
-  .completedCard {
-    margin: 40px auto;
-
-    padding: 35px 20px;
-  }
-
-  .completedCard h1 {
-    font-size: 38px;
-  }
-
-  .rulesToggle {
-    padding: 15px;
-  }
-
-  .rulesCard {
-    padding: 12px;
-  }
-
-  .ruleItem {
-    grid-template-columns: 27px 1fr;
-
-    padding: 10px 8px;
-  }
-
-  .ruleItem span {
-    font-size: 11px;
-  }
-
-  /* =====================================================
-     STORICO — MOBILE
-     ===================================================== */
-
-  .historyCard {
-    min-height: 72px;
-
-    padding: 11px !important;
-
-    gap: 9px !important;
-  }
-
-  .historyWeek {
-    min-width: 48px !important;
-  }
-
-  .historyWeek small,
-  .historyScore small {
-    font-size: 6px !important;
-
-    letter-spacing: .9px !important;
-  }
-
-  .historyWeek strong {
-    font-size: 21px !important;
-  }
-
-  .historyMain {
-    min-width: 0 !important;
-  }
-
-  .historyMain strong {
-    font-size: 11px !important;
-
-    line-height: 1.2 !important;
-  }
-
-  .historyMain span {
-    font-size: 8px !important;
-
-    line-height: 1.2 !important;
-  }
-
-  .historyScore {
-    min-width: 55px !important;
-  }
-
-  .historyScore strong {
-    font-size: 22px !important;
-  }
-
-  nav {
-    height: 70px;
-  }
-
-  nav button {
-    width: 20%;
-
-    font-size: 19px;
-  }
-
-  nav button span {
-    font-size: 8px;
-  }
+  border-color:
+    rgba(244,200,78,.45);
+
+  box-shadow:
+    0 0 0 2px rgba(244,200,78,.045);
 }
 
 /* =========================================================
-   SMALL PHONES
+   CLASSIFICA — RIGA UTENTE
    ========================================================= */
 
-@media (max-width: 380px) {
+.rankingParticipantRow {
+  gap: 12px;
+}
 
-  .hero h1 {
-    font-size: 51px;
-  }
+.rankingPosition {
+  min-width: 30px;
 
-  .logo {
-    font-size: 45px;
-  }
+  color: var(--gold);
 
-  .countdownNumbers {
-    gap: 2px;
-  }
+  font-family: Oswald, sans-serif;
 
-  .countdownNumbers strong {
-    font-size: 24px;
-  }
+  font-size: 22px;
+  font-weight: 600;
 
-  .countdownNumbers > b {
-    font-size: 16px;
-  }
+  line-height: 1;
 
-  .quizCard h2 {
-    font-size: 27px;
-  }
+  text-align: center;
+}
 
-  .penalty h1 {
-    font-size: 43px;
-  }
+.rankingParticipantRow.currentPlayer .rankingPosition {
+  color: #f4c84e;
+}
 
-  .pronosticiCard strong {
-    font-size: 32px;
-  }
+.rankingScore {
+  min-width: 45px;
 
-  .pronosticiRankingIcon {
-    width: 40px;
-    height: 40px;
-  }
+  color: #f4f7f4;
 
-  .profileHero {
-    gap: 10px;
+  font-family: Oswald, sans-serif;
 
-    padding: 15px;
-  }
+  font-size: 23px;
+  font-weight: 600;
 
-  .profileAvatar {
-    width: 50px;
-    height: 50px;
-  }
+  line-height: 1;
 
-  .profileHero h2 {
-    font-size: 22px;
-  }
-
-  .profileHero span {
-    font-size: 9px;
-  }
-
-  .statCard {
-    padding: 13px 11px;
-  }
-
-  .statCard small {
-    font-size: 6.5px;
-
-    letter-spacing: 1px;
-  }
-
-  .statCard strong {
-    font-size: 25px;
-  }
-
-  .statCard span {
-    font-size: 7.5px;
-  }
-
-  .profileStatsCard > div {
-    padding: 13px 7px;
-  }
-
-  .profileStatsCard small {
-    font-size: 6px;
-
-    letter-spacing: .8px;
-  }
-
-  .profileStatsCard strong {
-    font-size: 21px;
-  }
-
-  /* =====================================================
-     PROFILO — NAVIGAZIONE
-     ===================================================== */
-
-  .profileNavigationCard {
-    min-height: 58px;
-
-    padding: 14px 13px;
-
-    border-radius: 12px;
-  }
-
-  .profileNavigationIcon {
-    width: 32px;
-    height: 32px;
-  }
-
-  .profileNavigationText small {
-    font-size: 6.5px;
-
-    letter-spacing: 1.1px;
-  }
-
-  .profileNavigationText strong {
-    font-size: 15.5px;
-
-    line-height: 1.15;
-  }
-
-  .myRankCard > div {
-    min-height: 73px;
-
-    padding: 11px 6px;
-  }
-
-  .myRankCard > div:first-child {
-    padding-left: 9px;
-  }
-
-  .myRankCard small {
-    font-size: 6px;
-
-    letter-spacing: .8px;
-  }
-
-  .myRankCard strong {
-    font-size: 22px;
-  }
-
-  .myRankCard > div:first-child strong {
-    font-size: 28px;
-  }
-
-  .myRankCard > div:nth-child(2) strong,
-  .myRankCard > div:nth-child(3) strong {
-    font-size: 21px;
-  }
-
-  .adminUserRow {
-    gap: 7px;
-  }
-
-  .adminUserActions {
-    gap: 5px;
-  }
-
-  .pronosticiButton {
-    width: 32px;
-    height: 32px;
-  }
-
-  .userBlockButton {
-    padding:
-      6px 8px;
-
-    font-size: 8px;
-  }
-
-  .adminUserActions .danger {
-    padding:
-      6px 8px;
-  }
-
-  /* =====================================================
-     STORICO REALE — SMALL PHONES
-     ===================================================== */
-
-  .historyCard {
-    min-height: 68px;
-
-    padding: 9px !important;
-
-    gap: 7px !important;
-  }
-
-  .historyWeek {
-    min-width: 43px !important;
-  }
-
-  .historyWeek small,
-  .historyScore small {
-    font-size: 5.5px !important;
-
-    letter-spacing: .7px !important;
-  }
-
-  .historyWeek strong {
-    font-size: 19px !important;
-  }
-
-  .historyMain strong {
-    font-size: 10px !important;
-  }
-
-  .historyMain span {
-    font-size: 7.5px !important;
-  }
-
-  .historyScore {
-    min-width: 48px !important;
-  }
-
-  .historyScore strong {
-    font-size: 20px !important;
-  }
+  text-align: right;
 }
 
 /* =========================================================
-   STORICO REALE
-   QUESTE SONO LE CLASSI REALMENTE USATE DA HistoryPage
+   CLASSIFICA — VEDI RISPOSTE
+   ========================================================= */
+
+.reviewOpenButton {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  flex-shrink: 0;
+
+  min-height: 31px;
+
+  padding: 7px 10px;
+
+  color: #9caf9f;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(19,49,29,.72),
+      rgba(8,27,16,.82)
+    );
+
+  border:
+    1px solid rgba(76,155,101,.25);
+
+  border-radius: 8px;
+
+  font-family: "Work Sans", sans-serif;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: .7px;
+
+  line-height: 1;
+
+  text-transform: uppercase;
+
+  white-space: nowrap;
+
+  transition:
+    color .16s ease,
+    background .16s ease,
+    border-color .16s ease,
+    transform .16s ease,
+    box-shadow .16s ease;
+}
+
+.reviewOpenButton .icon {
+  color: var(--gold);
+
+  width: 14px;
+  height: 14px;
+
+  transition:
+    transform .16s ease;
+}
+
+.reviewOpenButton:hover {
+  color: #f0f6f1;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(91,76,29,.48),
+      rgba(54,43,15,.42)
+    );
+
+  border-color:
+    rgba(244,200,78,.48);
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 5px 16px rgba(0,0,0,.18),
+    0 0 15px rgba(244,200,78,.04);
+}
+
+.reviewOpenButton:hover .icon {
+  transform: translateX(2px);
+
+  color: var(--gold);
+}
+
+.reviewOpenButton:active {
+  transform:
+    translateY(0)
+    scale(.97);
+}
+
+/* =========================================================
+   REVIEW — PANNELLO RISPOSTE
+   ========================================================= */
+
+.reviewOverlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 999;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 22px;
+
+  background:
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(35,116,66,.12),
+      transparent 38%
+    ),
+    rgba(1,7,4,.78);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  animation:
+    reviewOverlayIn .18s ease;
+}
+
+.reviewModal {
+  width: min(720px, 100%);
+
+  max-height: min(82vh, 760px);
+
+  overflow-y: auto;
+
+  position: relative;
+
+  padding: 0;
+
+  color: #edf4ef;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(14,34,21,.985),
+      rgba(5,15,9,.99)
+    );
+
+  border:
+    1px solid rgba(76,155,101,.28);
+
+  border-radius: 21px;
+
+  box-shadow:
+    0 35px 100px rgba(0,0,0,.60),
+    0 0 60px rgba(18,95,48,.08),
+    inset 0 1px 0 rgba(255,255,255,.045);
+
+  scrollbar-width: thin;
+
+  animation:
+    reviewModalIn .22s ease;
+}
+
+.reviewModal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reviewModal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.reviewModal::-webkit-scrollbar-thumb {
+  background: #285638;
+  border-radius: 20px;
+}
+
+.reviewHeader {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 3;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 18px 20px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(13,32,20,.99),
+      rgba(13,32,20,.95)
+    );
+
+  border-bottom:
+    1px solid rgba(76,155,101,.16);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.reviewHeader h2 {
+  margin: 0;
+
+  color: #f3f7f4;
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 25px;
+  font-weight: 600;
+
+  line-height: 1;
+
+  text-transform: uppercase;
+}
+
+.reviewClose {
+  width: 34px;
+  height: 34px;
+
+  display: grid;
+
+  place-items: center;
+
+  flex-shrink: 0;
+
+  color: #8da397;
+
+  background:
+    rgba(255,255,255,.025);
+
+  border:
+    1px solid rgba(76,155,101,.20);
+
+  border-radius: 9px;
+
+  transition:
+    color .15s ease,
+    background .15s ease,
+    border-color .15s ease,
+    transform .15s ease;
+}
+
+.reviewClose:hover {
+  color: var(--gold);
+
+  background:
+    rgba(244,200,78,.07);
+
+  border-color:
+    rgba(244,200,78,.35);
+
+  transform: rotate(3deg);
+}
+
+.reviewNotice {
+  margin: 15px 20px 0;
+
+  padding: 11px 13px;
+
+  color: #8da397;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(53,212,122,.045),
+      rgba(255,255,255,.012)
+    );
+
+  border:
+    1px solid rgba(76,155,101,.14);
+
+  border-radius: 10px;
+
+  font-size: 10px;
+
+  line-height: 1.45;
+}
+
+.reviewSection {
+  margin: 18px 20px 0;
+
+  padding: 15px;
+
+  background:
+    rgba(4,14,8,.62);
+
+  border:
+    1px solid rgba(76,155,101,.14);
+
+  border-radius: 14px;
+}
+
+.reviewSectionTitle {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 11px;
+
+  color: var(--gold);
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 15px;
+  font-weight: 500;
+
+  letter-spacing: .4px;
+
+  text-transform: uppercase;
+}
+
+.reviewQuestions {
+  display: grid;
+
+  gap: 8px;
+}
+
+.reviewQuestion {
+  padding: 11px 12px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15,37,23,.86),
+      rgba(8,22,13,.88)
+    );
+
+  border:
+    1px solid rgba(76,155,101,.13);
+
+  border-radius: 10px;
+}
+
+.reviewQuestionNumber {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  min-width: 22px;
+  height: 22px;
+
+  margin-bottom: 7px;
+
+  color: #071008;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f4c84e,
+      #d99f25
+    );
+
+  border-radius: 6px;
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.reviewQuestionText {
+  margin: 0;
+
+  color: #dce8df;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  line-height: 1.4;
+}
+
+.reviewAnswerLine {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-top: 9px;
+
+  padding-top: 8px;
+
+  border-top:
+    1px solid rgba(76,155,101,.10);
+
+  color: #82978a;
+
+  font-size: 9px;
+}
+
+.reviewAnswerLine strong {
+  color: #e6eee8;
+
+  font-size: 10px;
+}
+
+.reviewPending {
+  color: #778c7f;
+
+  font-size: 9px;
+
+  font-style: italic;
+}
+
+.reviewOutcome {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  flex-shrink: 0;
+
+  padding: 4px 7px;
+
+  border-radius: 6px;
+
+  font-size: 7px;
+  font-weight: 800;
+
+  letter-spacing: .7px;
+
+  text-transform: uppercase;
+}
+
+.reviewOutcomeIcon {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.reviewOutcome.correct {
+  color: #70df95;
+
+  background:
+    rgba(53,212,122,.08);
+
+  border:
+    1px solid rgba(53,212,122,.16);
+}
+
+.reviewOutcome.wrong {
+  color: #ed8b80;
+
+  background:
+    rgba(255,98,84,.07);
+
+  border:
+    1px solid rgba(255,98,84,.15);
+}
+
+.reviewSummary {
+  margin: 18px 20px 20px;
+
+  padding: 16px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(244,200,78,.055),
+      rgba(53,212,122,.025)
+    );
+
+  border:
+    1px solid rgba(244,200,78,.16);
+
+  border-radius: 14px;
+}
+
+.reviewSummaryGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 8px;
+}
+
+.reviewSummaryGrid > div {
+  padding: 10px;
+
+  text-align: center;
+
+  background:
+    rgba(0,0,0,.12);
+
+  border:
+    1px solid rgba(255,255,255,.035);
+
+  border-radius: 9px;
+}
+
+.reviewSummaryGrid small {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #718679;
+
+  font-size: 7px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  text-transform: uppercase;
+}
+
+.reviewSummaryGrid strong {
+  color: #edf4ef;
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 20px;
+}
+
+.reviewFinalScore {
+  margin-top: 12px;
+
+  padding-top: 13px;
+
+  text-align: center;
+
+  border-top:
+    1px solid rgba(244,200,78,.13);
+}
+
+.reviewFinalScore small {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #7a8f81;
+
+  font-size: 7px;
+  font-weight: 800;
+
+  letter-spacing: 1.3px;
+
+  text-transform: uppercase;
+}
+
+.reviewFinalScore strong {
+  color: var(--gold);
+
+  font-family: Oswald, sans-serif;
+
+  font-size: 34px;
+
+  line-height: 1;
+
+  text-shadow:
+    0 0 20px rgba(244,200,78,.13);
+}
+
+.reviewBackButton,
+.reviewBottomClose {
+  margin: 0 20px 20px;
+
+  width: calc(100% - 40px);
+}
+
+/* =========================================================
+   STORICO
    ========================================================= */
 
 .historyList {
@@ -4660,6 +4562,95 @@ nav button.active::before {
   background: transparent !important;
 }
 
+/* =========================================================
+   STORICO — RIVEDI LE TUE RISPOSTE
+   ========================================================= */
+
+.historyReviewButton {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 6px;
+
+  width: fit-content;
+  max-width: 100%;
+
+  margin-top: 5px;
+
+  padding: 6px 8px;
+
+  color: #8fa498;
+
+  background:
+    rgba(53,212,122,.035) !important;
+
+  border:
+    1px solid rgba(76,155,101,.18);
+
+  border-radius: 7px;
+
+  font-family: "Work Sans", sans-serif;
+
+  font-size: 7px;
+  font-weight: 800;
+
+  letter-spacing: .7px;
+
+  line-height: 1.1;
+
+  text-transform: uppercase;
+
+  white-space: nowrap;
+
+  transition:
+    color .16s ease,
+    background .16s ease,
+    border-color .16s ease,
+    transform .16s ease,
+    box-shadow .16s ease;
+}
+
+.historyReviewButton .icon {
+  width: 12px;
+  height: 12px;
+
+  color: var(--gold);
+
+  transition:
+    transform .16s ease,
+    color .16s ease;
+}
+
+.historyReviewButton:hover {
+  color: #eef5ef;
+
+  background:
+    rgba(244,200,78,.055) !important;
+
+  border-color:
+    rgba(244,200,78,.36);
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,.14);
+}
+
+.historyReviewButton:hover .icon {
+  color: #f4c84e;
+
+  transform: translateX(2px);
+}
+
+.historyReviewButton:active {
+  transform:
+    translateY(0)
+    scale(.98);
+}
+
 /* ---------------------------------------------------------
    IMPEDISCE AL BROWSER DI MOSTRARE IL BUTTON BIANCO
    --------------------------------------------------------- */
@@ -4686,321 +4677,390 @@ button.historyCard:hover {
 }
 
 /* =========================================================
-   MODIFICHE — CLASSIFICA / STORICO
-   ========================================================= */
-
-/* ---------------------------------------------------------
-   CLASSIFICA — SETTIMANA
-   --------------------------------------------------------- */
-
-.rankingWeekSelector {
-  display: flex;
-
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 12px;
-
-  margin-bottom: 12px;
-
-  padding: 11px 13px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(13,31,20,.94),
-      rgba(7,18,12,.96)
-    );
-
-  border:
-    1px solid rgba(76,155,101,.18);
-
-  border-radius: 11px;
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.025);
-}
-
-.rankingWeekHeading {
-  display: flex;
-
-  align-items: baseline;
-
-  gap: 7px;
-
-  color: #708579;
-
-  font-size: 8px;
-  font-weight: 800;
-
-  letter-spacing: 1.6px;
-
-  line-height: 1;
-
-  text-transform: uppercase;
-}
-
-.rankingWeekHeading strong {
-  color: var(--gold);
-
-  font-family: Oswald, sans-serif;
-
-  font-size: 19px;
-  font-weight: 600;
-
-  letter-spacing: .2px;
-
-  line-height: 1;
-}
-
-.rankingWeekSelector select {
-  min-width: 145px;
-
-  padding: 8px 29px 8px 10px;
-
-  color: #dce8df;
-
-  background:
-    #0d2517;
-
-  border:
-    1px solid rgba(76,155,101,.24);
-
-  border-radius: 8px;
-
-  font-family: "Work Sans", sans-serif;
-
-  font-size: 10px;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition:
-    border-color .15s ease,
-    background .15s ease,
-    color .15s ease;
-}
-
-.rankingWeekSelector select:hover,
-.rankingWeekSelector select:focus {
-  color: #f4f8f4;
-
-  background:
-    #102b1a;
-
-  border-color:
-    rgba(244,200,78,.45);
-}
-
-/* ---------------------------------------------------------
-   CLASSIFICA — RIGA UTENTE
-   --------------------------------------------------------- */
-
-.rankingParticipantRow {
-  gap: 12px;
-}
-
-.rankingPosition {
-  min-width: 30px;
-
-  color: var(--gold);
-
-  font-family: Oswald, sans-serif;
-
-  font-size: 22px;
-  font-weight: 600;
-
-  line-height: 1;
-
-  text-align: center;
-}
-
-.rankingParticipantRow.currentPlayer .rankingPosition {
-  color: #f4c84e;
-}
-
-.rankingScore {
-  min-width: 45px;
-
-  color: #f4f7f4;
-
-  font-family: Oswald, sans-serif;
-
-  font-size: 23px;
-  font-weight: 600;
-
-  line-height: 1;
-
-  text-align: right;
-}
-
-/* ---------------------------------------------------------
-   CLASSIFICA — VEDI RISPOSTE
-   --------------------------------------------------------- */
-
-.reviewOpenButton {
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 6px;
-
-  flex-shrink: 0;
-
-  min-height: 31px;
-
-  padding: 7px 10px;
-
-  color: #9caf9f;
-
-  background:
-    rgba(53,212,122,.035);
-
-  border:
-    1px solid rgba(76,155,101,.22);
-
-  border-radius: 8px;
-
-  font-family: "Work Sans", sans-serif;
-
-  font-size: 8px;
-  font-weight: 800;
-
-  letter-spacing: .7px;
-
-  line-height: 1;
-
-  text-transform: uppercase;
-
-  white-space: nowrap;
-
-  transition:
-    color .16s ease,
-    background .16s ease,
-    border-color .16s ease,
-    transform .16s ease,
-    box-shadow .16s ease;
-}
-
-.reviewOpenButton .icon {
-  color: var(--gold);
-
-  width: 14px;
-  height: 14px;
-
-  transition:
-    transform .16s ease;
-}
-
-.reviewOpenButton:hover {
-  color: #f0f6f1;
-
-  background:
-    rgba(244,200,78,.07);
-
-  border-color:
-    rgba(244,200,78,.42);
-
-  transform:
-    translateY(-1px);
-
-  box-shadow:
-    0 5px 15px rgba(0,0,0,.14);
-}
-
-.reviewOpenButton:hover .icon {
-  transform: translateX(2px);
-
-  color: var(--gold);
-}
-
-.reviewOpenButton:active {
-  transform:
-    translateY(0)
-    scale(.97);
-}
-
-/* ---------------------------------------------------------
-   STORICO — RIVEDI LE TUE RISPOSTE
-   --------------------------------------------------------- */
-
-.historyReviewButton {
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: flex-start;
-
-  gap: 5px;
-
-  width: fit-content;
-
-  margin-top: 5px;
-
-  padding: 0;
-
-  color: #81968a;
-
-  background: transparent !important;
-
-  border: 0;
-
-  font-family: "Work Sans", sans-serif;
-
-  font-size: 7px;
-  font-weight: 800;
-
-  letter-spacing: .75px;
-
-  line-height: 1.1;
-
-  text-transform: uppercase;
-
-  white-space: nowrap;
-
-  transition:
-    color .16s ease,
-    transform .16s ease;
-}
-
-.historyReviewButton .icon {
-  width: 12px;
-  height: 12px;
-
-  color: var(--gold);
-
-  transition:
-    transform .16s ease,
-    color .16s ease;
-}
-
-.historyReviewButton:hover {
-  color: #e7f0e9;
-
-  background: transparent !important;
-
-  transform: translateX(1px);
-}
-
-.historyReviewButton:hover .icon {
-  color: #f4c84e;
-
-  transform: translateX(2px);
-}
-
-.historyReviewButton:active {
-  transform: translateX(0) scale(.98);
-}
-
-/* =========================================================
-   MODIFICHE — MOBILE
+   MOBILE
    ========================================================= */
 
 @media (max-width: 700px) {
 
-  /* -------------------------------------------------------
-     CLASSIFICA — SETTIMANA
-     ------------------------------------------------------- */
+  .wrap {
+    width: calc(100% - 18px);
+
+    padding-top: 18px;
+    padding-bottom: 105px;
+  }
+
+  header {
+    height: 58px;
+
+    padding: 0 13px;
+  }
+
+  .brand {
+    font-size: 18px;
+  }
+
+  header > span {
+    font-size: 10px;
+  }
+
+  .hero {
+    padding: 36px 21px 42px;
+
+    border-radius: 22px;
+  }
+
+  .hero h1 {
+    font-size: 58px;
+  }
+
+  .hero p {
+    font-size: 14px;
+  }
+
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .dashboardIconButton,
+  .pronosticiDashboardButton {
+    width: 34px;
+    height: 34px;
+
+    top: 12px;
+    right: 12px;
+  }
+
+  .pronosticiDashboardButton .icon {
+    width: 19px;
+    height: 19px;
+  }
+
+  .pronosticiCard strong {
+    font-size: 35px;
+  }
+
+  .countdownCard {
+    padding: 16px;
+  }
+
+  .countdownNumbers {
+    justify-content: space-between;
+
+    gap: 4px;
+  }
+
+  .countdownNumbers strong {
+    font-size: 27px;
+  }
+
+  .countdownNumbers small {
+    font-size: 7px;
+  }
+
+  .countdownNumbers > b {
+    font-size: 18px;
+  }
+
+  .quizCard {
+    padding: 22px 17px;
+  }
+
+  .quizCard h2 {
+    font-size: 30px;
+  }
+
+  .answers {
+    grid-template-columns: 1fr;
+  }
+
+  .answers button {
+    min-height: 61px;
+  }
+
+  .quizNavigation {
+    flex-direction: column-reverse;
+  }
+
+  .previousButton {
+    width: 100%;
+  }
+
+  .penalty {
+    padding: 20px 10px 28px;
+  }
+
+  .penaltyTop {
+    font-size: 10px;
+  }
+
+  .keeper {
+    height: 91px;
+
+    border-width: 4px;
+  }
+
+  .keeper::before,
+  .keeper::after {
+    background-size: 25px 25px;
+  }
+
+  .penalty h1 {
+    font-size: 49px;
+  }
+
+  .goalGrid {
+    width: 100%;
+
+    padding: 8px;
+
+    gap: 6px;
+
+    border-width: 4px;
+  }
+
+  .goalGrid button {
+    font-size: 20px;
+
+    aspect-ratio: 1.2;
+  }
+
+  .difficulty {
+    font-size: 11px;
+  }
+
+  .mult strong {
+    font-size: 40px;
+  }
+
+  .title h1 {
+    font-size: 50px;
+  }
+
+  /* PROFILE */
+
+  .profileHero {
+    gap: 13px;
+
+    margin-bottom: 14px;
+
+    padding: 17px;
+
+    border-radius: 17px;
+  }
+
+  .profileAvatar {
+    width: 55px;
+    height: 55px;
+
+    border-radius: 14px;
+  }
+
+  .profileAvatar .icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .profileHero small {
+    margin-bottom: 4px;
+
+    font-size: 7px;
+
+    letter-spacing: 1.7px;
+  }
+
+  .profileHero h2 {
+    font-size: 25px;
+
+    letter-spacing: .1px;
+  }
+
+  .profileHero span {
+    margin-top: 4px;
+
+    font-size: 10px;
+  }
+
+  .statsGrid {
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 8px;
+
+    margin-bottom: 10px;
+  }
+
+  .statCard {
+    padding: 14px 13px;
+
+    border-radius: 13px;
+  }
+
+  .statCard small {
+    font-size: 7px;
+
+    letter-spacing: 1.15px;
+  }
+
+  .statCard strong {
+    margin: 6px 0 3px;
+
+    font-size: 27px;
+  }
+
+  .statCard span {
+    font-size: 8px;
+  }
+
+  .profileStatsCard {
+    grid-template-columns:
+      repeat(3, 1fr);
+
+    border-radius: 13px;
+  }
+
+  .profileStatsCard > div {
+    padding: 14px 10px;
+  }
+
+  .profileStatsCard small {
+    font-size: 6.5px;
+
+    letter-spacing: .9px;
+  }
+
+  .profileStatsCard strong {
+    margin-top: 5px;
+
+    font-size: 23px;
+  }
+
+  /* PROFILO — NAVIGAZIONE */
+
+  .profileNavigation {
+    gap: 6px;
+
+    margin-top: 19px;
+  }
+
+  .profileNavigationCard {
+    min-height: 62px;
+
+    gap: 13px;
+
+    padding: 15px;
+
+    border-radius: 13px;
+  }
+
+  .profileNavigationIcon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .profileNavigationText small {
+    font-size: 7px;
+
+    letter-spacing: 1.35px;
+  }
+
+  .profileNavigationText strong {
+    font-size: 17px;
+
+    letter-spacing: .15px;
+
+    line-height: 1.12;
+  }
+
+  /* CLASSIFICA — CARD PERSONALE */
+
+  .myRankCard {
+    grid-template-columns:
+      1.2fr 1fr 1fr;
+
+    border-radius: 14px;
+  }
+
+  .myRankCard > div {
+    min-height: 78px;
+
+    padding: 13px 9px;
+  }
+
+  .myRankCard > div:first-child {
+    padding-left: 12px;
+  }
+
+  .myRankCard small {
+    margin-bottom: 5px;
+
+    font-size: 6.5px;
+
+    letter-spacing: 1px;
+  }
+
+  .myRankCard strong {
+    font-size: 25px;
+  }
+
+  .myRankCard > div:first-child strong {
+    font-size: 31px;
+  }
+
+  .myRankCard > div:nth-child(2) strong,
+  .myRankCard > div:nth-child(3) strong {
+    font-size: 24px;
+  }
+
+  .pronosticiRankingHeader {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 12px;
+  }
+
+  .pronosticiRankingTitle {
+    gap: 11px;
+  }
+
+  .pronosticiRankingTitle p {
+    margin-top: 8px;
+
+    line-height: 1.35;
+  }
+
+  .pronosticiRankingIcon {
+    width: 43px;
+    height: 43px;
+  }
+
+  .row {
+    min-height: 64px;
+
+    padding: 12px 13px;
+
+    gap: 10px;
+  }
+
+  .row > b {
+    min-width: 25px;
+
+    font-size: 19px;
+  }
+
+  .row > strong {
+    font-size: 20px;
+  }
+
+  .rankingHint {
+    font-size: 8px;
+  }
+
+  /* CLASSIFICA — SETTIMANA */
 
   .rankingWeekSelector {
     align-items: center;
@@ -5032,9 +5092,7 @@ button.historyCard:hover {
     font-size: 9px;
   }
 
-  /* -------------------------------------------------------
-     CLASSIFICA — VEDI RISPOSTE
-     ------------------------------------------------------- */
+  /* CLASSIFICA — RIGA */
 
   .rankingParticipantRow {
     gap: 8px;
@@ -5069,16 +5127,310 @@ button.historyCard:hover {
     height: 12px;
   }
 
-  /* -------------------------------------------------------
-     STORICO — RIVEDI LE TUE RISPOSTE
-     ------------------------------------------------------- */
+  /* REVIEW */
+
+  .reviewOverlay {
+    align-items: flex-end;
+
+    padding: 0;
+
+    background:
+      rgba(1,7,4,.78);
+  }
+
+  .reviewModal {
+    width: 100%;
+
+    max-height: 88vh;
+
+    border-radius:
+      20px 20px 0 0;
+
+    border-bottom: 0;
+
+    box-shadow:
+      0 -20px 70px rgba(0,0,0,.50),
+      inset 0 1px 0 rgba(255,255,255,.045);
+  }
+
+  .reviewHeader {
+    padding: 15px 16px;
+  }
+
+  .reviewHeader h2 {
+    font-size: 21px;
+  }
+
+  .reviewClose {
+    width: 32px;
+    height: 32px;
+  }
+
+  .reviewNotice {
+    margin:
+      12px 15px 0;
+
+    padding: 10px 11px;
+
+    font-size: 9px;
+  }
+
+  .reviewSection {
+    margin:
+      14px 15px 0;
+
+    padding: 12px;
+  }
+
+  .reviewSectionTitle {
+    font-size: 14px;
+  }
+
+  .reviewQuestion {
+    padding: 10px;
+  }
+
+  .reviewQuestionText {
+    font-size: 10px;
+  }
+
+  .reviewAnswerLine {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 7px;
+  }
+
+  .reviewSummary {
+    margin:
+      14px 15px 16px;
+
+    padding: 13px;
+  }
+
+  .reviewSummaryGrid {
+    gap: 6px;
+  }
+
+  .reviewFinalScore strong {
+    font-size: 31px;
+  }
+
+  .reviewBackButton,
+  .reviewBottomClose {
+    margin-left: 15px;
+    margin-right: 15px;
+
+    width: calc(100% - 30px);
+  }
+
+  /* ADMIN */
+
+  .adminForm {
+    grid-template-columns: 1fr;
+  }
+
+  .adminWeek {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .adminActions {
+    width: 100%;
+
+    justify-content: flex-start;
+  }
+
+  .adminActions button {
+    flex: 1;
+  }
+
+  .adminEditor,
+  .resultsAdmin {
+    padding: 15px;
+  }
+
+  .optionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .questionEditor {
+    padding: 13px;
+  }
+
+  .publishBox button {
+    width: 100%;
+
+    margin-right: 0;
+  }
+
+  .adminUserRow {
+    align-items: flex-start;
+
+    gap: 10px;
+
+    min-height: 82px;
+
+    padding:
+      14px 12px;
+  }
+
+  .adminUserRow > span {
+    min-width: 0;
+  }
+
+  .adminUserRow > span > b {
+    font-size: 13px;
+  }
+
+  .adminUserRow > span > small {
+    font-size: 9px;
+  }
+
+  .adminUserActions {
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    gap: 7px;
+  }
+
+  .pronosticiControls {
+    gap: 4px;
+  }
+
+  .pronosticiButton {
+    width: 34px;
+    height: 34px;
+
+    font-size: 12px;
+  }
+
+  .adminUserActions .danger {
+    min-height: 32px;
+
+    padding:
+      7px 9px;
+
+    font-size: 9px;
+  }
+
+  .adminUserStatus {
+    margin-top: 5px;
+
+    font-size: 8px !important;
+
+    letter-spacing: 1px;
+  }
+
+  .adminPronosticiLabel {
+    margin-top: 7px;
+
+    font-size: 7px !important;
+  }
+
+  .adminPronosticiValue {
+    font-size: 21px;
+  }
+
+  .userBlockButton {
+    min-height: 32px;
+
+    padding:
+      7px 9px;
+
+    font-size: 9px;
+
+    letter-spacing: .3px;
+  }
+
+  .completedCard {
+    margin: 40px auto;
+
+    padding: 35px 20px;
+  }
+
+  .completedCard h1 {
+    font-size: 38px;
+  }
+
+  .rulesToggle {
+    padding: 15px;
+  }
+
+  .rulesCard {
+    padding: 12px;
+  }
+
+  .ruleItem {
+    grid-template-columns: 27px 1fr;
+
+    padding: 10px 8px;
+  }
+
+  .ruleItem span {
+    font-size: 11px;
+  }
+
+  /* STORICO */
+
+  .historyCard {
+    min-height: 72px;
+
+    padding: 11px !important;
+
+    gap: 9px !important;
+  }
+
+  .historyWeek {
+    min-width: 48px !important;
+  }
+
+  .historyWeek small,
+  .historyScore small {
+    font-size: 6px !important;
+
+    letter-spacing: .9px !important;
+  }
+
+  .historyWeek strong {
+    font-size: 21px !important;
+  }
+
+  .historyMain {
+    min-width: 0 !important;
+  }
+
+  .historyMain strong {
+    font-size: 11px !important;
+
+    line-height: 1.2 !important;
+  }
+
+  .historyMain span {
+    font-size: 8px !important;
+
+    line-height: 1.2 !important;
+  }
+
+  .historyScore {
+    min-width: 55px !important;
+  }
+
+  .historyScore strong {
+    font-size: 22px !important;
+  }
 
   .historyReviewButton {
     margin-top: 4px;
 
+    padding: 5px 7px;
+
     font-size: 6.5px;
 
-    letter-spacing: .55px;
+    letter-spacing: .5px;
 
     gap: 4px;
   }
@@ -5087,13 +5439,173 @@ button.historyCard:hover {
     width: 10px;
     height: 10px;
   }
+
+  nav {
+    height: 70px;
+  }
+
+  nav button {
+    width: 20%;
+
+    font-size: 19px;
+  }
+
+  nav button span {
+    font-size: 8px;
+  }
 }
 
 /* =========================================================
-   MODIFICHE — SMALL PHONES
+   SMALL PHONES
    ========================================================= */
 
 @media (max-width: 380px) {
+
+  .hero h1 {
+    font-size: 51px;
+  }
+
+  .logo {
+    font-size: 45px;
+  }
+
+  .countdownNumbers {
+    gap: 2px;
+  }
+
+  .countdownNumbers strong {
+    font-size: 24px;
+  }
+
+  .countdownNumbers > b {
+    font-size: 16px;
+  }
+
+  .quizCard h2 {
+    font-size: 27px;
+  }
+
+  .penalty h1 {
+    font-size: 43px;
+  }
+
+  .pronosticiCard strong {
+    font-size: 32px;
+  }
+
+  .pronosticiRankingIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .profileHero {
+    gap: 10px;
+
+    padding: 15px;
+  }
+
+  .profileAvatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .profileHero h2 {
+    font-size: 22px;
+  }
+
+  .profileHero span {
+    font-size: 9px;
+  }
+
+  .statCard {
+    padding: 13px 11px;
+  }
+
+  .statCard small {
+    font-size: 6.5px;
+
+    letter-spacing: 1px;
+  }
+
+  .statCard strong {
+    font-size: 25px;
+  }
+
+  .statCard span {
+    font-size: 7.5px;
+  }
+
+  .profileStatsCard > div {
+    padding: 13px 7px;
+  }
+
+  .profileStatsCard small {
+    font-size: 6px;
+
+    letter-spacing: .8px;
+  }
+
+  .profileStatsCard strong {
+    font-size: 21px;
+  }
+
+  /* PROFILO — NAVIGAZIONE */
+
+  .profileNavigationCard {
+    min-height: 58px;
+
+    padding: 14px 13px;
+
+    border-radius: 12px;
+  }
+
+  .profileNavigationIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .profileNavigationText small {
+    font-size: 6.5px;
+
+    letter-spacing: 1.1px;
+  }
+
+  .profileNavigationText strong {
+    font-size: 15.5px;
+
+    line-height: 1.15;
+  }
+
+  .myRankCard > div {
+    min-height: 73px;
+
+    padding: 11px 6px;
+  }
+
+  .myRankCard > div:first-child {
+    padding-left: 9px;
+  }
+
+  .myRankCard small {
+    font-size: 6px;
+
+    letter-spacing: .8px;
+  }
+
+  .myRankCard strong {
+    font-size: 22px;
+  }
+
+  .myRankCard > div:first-child strong {
+    font-size: 28px;
+  }
+
+  .myRankCard > div:nth-child(2) strong,
+  .myRankCard > div:nth-child(3) strong {
+    font-size: 21px;
+  }
+
+  /* CLASSIFICA */
 
   .rankingWeekSelector {
     padding: 9px 9px;
@@ -5136,26 +5648,171 @@ button.historyCard:hover {
   }
 
   .reviewOpenButton {
-    padding: 5px 7px;
+    min-height: 27px;
 
-    font-size: 6.5px;
+    padding: 5px 6px;
 
-    letter-spacing: .4px;
+    font-size: 6px;
+
+    letter-spacing: .3px;
+
+    gap: 3px;
   }
 
   .reviewOpenButton .icon {
-    width: 11px;
-    height: 11px;
+    width: 10px;
+    height: 10px;
+  }
+
+  /* REVIEW */
+
+  .reviewHeader {
+    padding: 13px 14px;
+  }
+
+  .reviewHeader h2 {
+    font-size: 19px;
+  }
+
+  .reviewSection {
+    margin-left: 12px;
+    margin-right: 12px;
+
+    padding: 10px;
+  }
+
+  .reviewNotice {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .reviewQuestionText {
+    font-size: 9.5px;
+  }
+
+  .reviewSummary {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .reviewBackButton,
+  .reviewBottomClose {
+    margin-left: 12px;
+    margin-right: 12px;
+
+    width: calc(100% - 24px);
+  }
+
+  /* ADMIN */
+
+  .adminUserRow {
+    gap: 7px;
+  }
+
+  .adminUserActions {
+    gap: 5px;
+  }
+
+  .pronosticiButton {
+    width: 32px;
+    height: 32px;
+  }
+
+  .userBlockButton {
+    padding:
+      6px 8px;
+
+    font-size: 8px;
+  }
+
+  .adminUserActions .danger {
+    padding:
+      6px 8px;
+  }
+
+  /* STORICO */
+
+  .historyCard {
+    min-height: 68px;
+
+    padding: 9px !important;
+
+    gap: 7px !important;
+  }
+
+  .historyWeek {
+    min-width: 43px !important;
+  }
+
+  .historyWeek small,
+  .historyScore small {
+    font-size: 5.5px !important;
+
+    letter-spacing: .7px !important;
+  }
+
+  .historyWeek strong {
+    font-size: 19px !important;
+  }
+
+  .historyMain strong {
+    font-size: 10px !important;
+  }
+
+  .historyMain span {
+    font-size: 7.5px !important;
+  }
+
+  .historyScore {
+    min-width: 48px !important;
+  }
+
+  .historyScore strong {
+    font-size: 20px !important;
   }
 
   .historyReviewButton {
-    font-size: 6px;
+    padding: 4px 5px;
 
-    letter-spacing: .45px;
+    font-size: 5.5px;
+
+    letter-spacing: .35px;
+
+    gap: 3px;
   }
 
   .historyReviewButton .icon {
     width: 9px;
     height: 9px;
+  }
+}
+
+/* =========================================================
+   ANIMAZIONI REVIEW
+   ========================================================= */
+
+@keyframes reviewOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes reviewModalIn {
+  from {
+    opacity: 0;
+    transform:
+      translateY(12px)
+      scale(.985);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
   }
 }
