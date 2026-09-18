@@ -3861,35 +3861,41 @@ nav button.active::before {
 
   inset: 0;
 
-  z-index: 999;
+  z-index: 9999;
 
   display: flex;
 
   align-items: center;
   justify-content: center;
 
-  padding: 22px;
+  padding: 20px;
 
   background:
     radial-gradient(
-      circle at 50% 20%,
-      rgba(35,116,66,.12),
-      transparent 38%
+      circle at 50% 15%,
+      rgba(53,212,122,.11),
+      transparent 34%
     ),
-    rgba(1,7,4,.78);
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(244,200,78,.035),
+      transparent 42%
+    ),
+    rgba(1,6,4,.86);
 
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 
   animation:
-    reviewOverlayIn .18s ease;
+    reviewOverlayIn .20s ease both;
 }
 
 .reviewModal {
-  width: min(720px, 100%);
+  width: min(790px, 100%);
 
-  max-height: min(82vh, 760px);
+  max-height: min(88vh, 820px);
 
+  overflow-x: hidden;
   overflow-y: auto;
 
   position: relative;
@@ -3899,26 +3905,57 @@ nav button.active::before {
   color: #edf4ef;
 
   background:
+    radial-gradient(
+      circle at 85% 0%,
+      rgba(53,212,122,.07),
+      transparent 30%
+    ),
     linear-gradient(
       145deg,
-      rgba(14,34,21,.985),
-      rgba(5,15,9,.99)
+      rgba(15,37,23,.985),
+      rgba(5,15,9,.995)
     );
 
   border:
-    1px solid rgba(76,155,101,.28);
+    1px solid rgba(76,155,101,.34);
 
-  border-radius: 21px;
+  border-radius: 23px;
 
   box-shadow:
-    0 35px 100px rgba(0,0,0,.60),
-    0 0 60px rgba(18,95,48,.08),
-    inset 0 1px 0 rgba(255,255,255,.045);
+    0 40px 120px rgba(0,0,0,.72),
+    0 0 70px rgba(18,95,48,.10),
+    inset 0 1px 0 rgba(255,255,255,.055);
 
   scrollbar-width: thin;
+  scrollbar-color: #285638 transparent;
 
   animation:
-    reviewModalIn .22s ease;
+    reviewModalIn .25s cubic-bezier(.22,.8,.25,1) both;
+}
+
+.reviewModal::before {
+  content: "";
+
+  position: absolute;
+
+  left: 12%;
+  right: 12%;
+  top: 0;
+
+  height: 1px;
+
+  z-index: 10;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(244,200,78,.70),
+      rgba(53,212,122,.75),
+      transparent
+    );
+
+  pointer-events: none;
 }
 
 .reviewModal::-webkit-scrollbar {
@@ -3930,7 +3967,13 @@ nav button.active::before {
 }
 
 .reviewModal::-webkit-scrollbar-thumb {
-  background: #285638;
+  background:
+    linear-gradient(
+      180deg,
+      #356d47,
+      #214c32
+    );
+
   border-radius: 20px;
 }
 
@@ -3939,7 +3982,7 @@ nav button.active::before {
 
   top: 0;
 
-  z-index: 3;
+  z-index: 20;
 
   display: flex;
 
@@ -3948,40 +3991,63 @@ nav button.active::before {
 
   gap: 15px;
 
-  padding: 18px 20px;
+  padding: 20px 23px;
 
   background:
     linear-gradient(
       180deg,
-      rgba(13,32,20,.99),
-      rgba(13,32,20,.95)
+      rgba(13,34,21,.995),
+      rgba(11,29,18,.965)
     );
 
   border-bottom:
-    1px solid rgba(76,155,101,.16);
+    1px solid rgba(76,155,101,.18);
 
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.reviewHeader::after {
+  content: "";
+
+  position: absolute;
+
+  left: 23px;
+  bottom: -1px;
+
+  width: 85px;
+  height: 2px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--gold),
+      transparent
+    );
+
+  opacity: .75;
 }
 
 .reviewHeader h2 {
   margin: 0;
 
-  color: #f3f7f4;
+  color: #f5f8f5;
 
   font-family: Oswald, sans-serif;
 
-  font-size: 25px;
+  font-size: 27px;
   font-weight: 600;
 
   line-height: 1;
+
+  letter-spacing: .25px;
 
   text-transform: uppercase;
 }
 
 .reviewClose {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
 
   display: grid;
 
@@ -3995,65 +4061,78 @@ nav button.active::before {
     rgba(255,255,255,.025);
 
   border:
-    1px solid rgba(76,155,101,.20);
+    1px solid rgba(76,155,101,.22);
 
-  border-radius: 9px;
+  border-radius: 10px;
 
   transition:
     color .15s ease,
     background .15s ease,
     border-color .15s ease,
-    transform .15s ease;
+    transform .15s ease,
+    box-shadow .15s ease;
 }
 
 .reviewClose:hover {
   color: var(--gold);
 
   background:
-    rgba(244,200,78,.07);
+    rgba(244,200,78,.075);
 
   border-color:
-    rgba(244,200,78,.35);
+    rgba(244,200,78,.38);
 
-  transform: rotate(3deg);
+  transform:
+    rotate(3deg)
+    scale(1.03);
+
+  box-shadow:
+    0 5px 18px rgba(0,0,0,.18);
 }
 
 .reviewNotice {
-  margin: 15px 20px 0;
+  margin: 17px 23px 0;
 
-  padding: 11px 13px;
+  padding: 12px 14px;
 
-  color: #8da397;
+  color: #8fa398;
 
   background:
     linear-gradient(
       145deg,
-      rgba(53,212,122,.045),
+      rgba(53,212,122,.055),
       rgba(255,255,255,.012)
     );
 
   border:
-    1px solid rgba(76,155,101,.14);
+    1px solid rgba(76,155,101,.16);
 
-  border-radius: 10px;
+  border-radius: 11px;
 
   font-size: 10px;
 
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .reviewSection {
-  margin: 18px 20px 0;
+  margin: 18px 23px 0;
 
-  padding: 15px;
+  padding: 17px;
 
   background:
-    rgba(4,14,8,.62);
+    linear-gradient(
+      145deg,
+      rgba(5,17,10,.78),
+      rgba(3,12,7,.68)
+    );
 
   border:
-    1px solid rgba(76,155,101,.14);
+    1px solid rgba(76,155,101,.17);
 
-  border-radius: 14px;
+  border-radius: 15px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.018);
 }
 
 .reviewSectionTitle {
@@ -4061,18 +4140,18 @@ nav button.active::before {
 
   align-items: center;
 
-  gap: 8px;
+  gap: 9px;
 
-  margin-bottom: 11px;
+  margin-bottom: 13px;
 
   color: var(--gold);
 
   font-family: Oswald, sans-serif;
 
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 500;
 
-  letter-spacing: .4px;
+  letter-spacing: .5px;
 
   text-transform: uppercase;
 }
@@ -4080,23 +4159,40 @@ nav button.active::before {
 .reviewQuestions {
   display: grid;
 
-  gap: 8px;
+  gap: 9px;
 }
 
 .reviewQuestion {
-  padding: 11px 12px;
+  padding: 13px 14px;
 
   background:
     linear-gradient(
       145deg,
-      rgba(15,37,23,.86),
-      rgba(8,22,13,.88)
+      rgba(15,38,23,.90),
+      rgba(8,22,13,.92)
     );
 
   border:
-    1px solid rgba(76,155,101,.13);
+    1px solid rgba(76,155,101,.15);
 
-  border-radius: 10px;
+  border-radius: 11px;
+
+  transition:
+    border-color .16s ease,
+    background .16s ease,
+    transform .16s ease;
+}
+
+.reviewQuestion:hover {
+  border-color:
+    rgba(76,177,110,.27);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(17,42,25,.94),
+      rgba(8,24,14,.95)
+    );
 }
 
 .reviewQuestionNumber {
@@ -4105,10 +4201,10 @@ nav button.active::before {
   align-items: center;
   justify-content: center;
 
-  min-width: 22px;
-  height: 22px;
+  min-width: 24px;
+  height: 24px;
 
-  margin-bottom: 7px;
+  margin-bottom: 8px;
 
   color: #071008;
 
@@ -4119,23 +4215,26 @@ nav button.active::before {
       #d99f25
     );
 
-  border-radius: 6px;
+  border-radius: 7px;
 
   font-family: Oswald, sans-serif;
 
   font-size: 11px;
   font-weight: 600;
+
+  box-shadow:
+    0 3px 10px rgba(244,200,78,.10);
 }
 
 .reviewQuestionText {
   margin: 0;
 
-  color: #dce8df;
+  color: #e0eae3;
 
   font-size: 11px;
   font-weight: 600;
 
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .reviewAnswerLine {
@@ -4146,12 +4245,12 @@ nav button.active::before {
 
   gap: 12px;
 
-  margin-top: 9px;
+  margin-top: 10px;
 
-  padding-top: 8px;
+  padding-top: 9px;
 
   border-top:
-    1px solid rgba(76,155,101,.10);
+    1px solid rgba(76,155,101,.11);
 
   color: #82978a;
 
@@ -4159,7 +4258,7 @@ nav button.active::before {
 }
 
 .reviewAnswerLine strong {
-  color: #e6eee8;
+  color: #edf4ef;
 
   font-size: 10px;
 }
@@ -4181,9 +4280,9 @@ nav button.active::before {
 
   flex-shrink: 0;
 
-  padding: 4px 7px;
+  padding: 5px 8px;
 
-  border-radius: 6px;
+  border-radius: 7px;
 
   font-size: 7px;
   font-weight: 800;
@@ -4204,28 +4303,36 @@ nav button.active::before {
   color: #70df95;
 
   background:
-    rgba(53,212,122,.08);
+    rgba(53,212,122,.09);
 
   border:
-    1px solid rgba(53,212,122,.16);
+    1px solid rgba(53,212,122,.18);
+
+  box-shadow:
+    0 0 12px rgba(53,212,122,.035);
 }
 
 .reviewOutcome.wrong {
   color: #ed8b80;
 
   background:
-    rgba(255,98,84,.07);
+    rgba(255,98,84,.075);
 
   border:
-    1px solid rgba(255,98,84,.15);
+    1px solid rgba(255,98,84,.16);
 }
 
 .reviewSummary {
-  margin: 18px 20px 20px;
+  margin: 19px 23px 23px;
 
-  padding: 16px;
+  padding: 17px;
 
   background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(244,200,78,.065),
+      transparent 50%
+    ),
     linear-gradient(
       145deg,
       rgba(244,200,78,.055),
@@ -4233,9 +4340,12 @@ nav button.active::before {
     );
 
   border:
-    1px solid rgba(244,200,78,.16);
+    1px solid rgba(244,200,78,.18);
 
-  border-radius: 14px;
+  border-radius: 15px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.025);
 }
 
 .reviewSummaryGrid {
@@ -4244,21 +4354,21 @@ nav button.active::before {
   grid-template-columns:
     repeat(2, 1fr);
 
-  gap: 8px;
+  gap: 9px;
 }
 
 .reviewSummaryGrid > div {
-  padding: 10px;
+  padding: 11px;
 
   text-align: center;
 
   background:
-    rgba(0,0,0,.12);
+    rgba(0,0,0,.14);
 
   border:
-    1px solid rgba(255,255,255,.035);
+    1px solid rgba(255,255,255,.04);
 
-  border-radius: 9px;
+  border-radius: 10px;
 }
 
 .reviewSummaryGrid small {
@@ -4281,24 +4391,24 @@ nav button.active::before {
 
   font-family: Oswald, sans-serif;
 
-  font-size: 20px;
+  font-size: 21px;
 }
 
 .reviewFinalScore {
-  margin-top: 12px;
+  margin-top: 13px;
 
-  padding-top: 13px;
+  padding-top: 14px;
 
   text-align: center;
 
   border-top:
-    1px solid rgba(244,200,78,.13);
+    1px solid rgba(244,200,78,.14);
 }
 
 .reviewFinalScore small {
   display: block;
 
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 
   color: #7a8f81;
 
@@ -4315,19 +4425,19 @@ nav button.active::before {
 
   font-family: Oswald, sans-serif;
 
-  font-size: 34px;
+  font-size: 37px;
 
   line-height: 1;
 
   text-shadow:
-    0 0 20px rgba(244,200,78,.13);
+    0 0 25px rgba(244,200,78,.15);
 }
 
 .reviewBackButton,
 .reviewBottomClose {
-  margin: 0 20px 20px;
+  margin: 0 23px 23px;
 
-  width: calc(100% - 40px);
+  width: calc(100% - 46px);
 }
 
 /* =========================================================
@@ -5110,6 +5220,12 @@ button.historyCard:hover {
     font-size: 20px;
   }
 
+  /*
+   * IMPORTANTE:
+   * IL PULSANTE "RIVEDI LE TUE RISPOSTE"
+   * RESTA INVARIATO.
+   */
+
   .reviewOpenButton {
     min-height: 29px;
 
@@ -5127,7 +5243,9 @@ button.historyCard:hover {
     height: 12px;
   }
 
-  /* REVIEW */
+  /* =======================================================
+     REVIEW — MOBILE
+     ======================================================= */
 
   .reviewOverlay {
     align-items: flex-end;
@@ -5135,13 +5253,23 @@ button.historyCard:hover {
     padding: 0;
 
     background:
-      rgba(1,7,4,.78);
+      radial-gradient(
+        circle at 50% 0%,
+        rgba(53,212,122,.08),
+        transparent 35%
+      ),
+      rgba(1,7,4,.88);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
   .reviewModal {
     width: 100%;
 
-    max-height: 88vh;
+    max-width: 100%;
+
+    max-height: calc(100vh - 10px);
 
     border-radius:
       20px 20px 0 0;
@@ -5149,12 +5277,26 @@ button.historyCard:hover {
     border-bottom: 0;
 
     box-shadow:
-      0 -20px 70px rgba(0,0,0,.50),
-      inset 0 1px 0 rgba(255,255,255,.045);
+      0 -25px 90px rgba(0,0,0,.68),
+      inset 0 1px 0 rgba(255,255,255,.05);
+
+    animation:
+      reviewModalMobileIn .28s cubic-bezier(.22,.8,.25,1) both;
+  }
+
+  .reviewModal::before {
+    left: 18%;
+    right: 18%;
   }
 
   .reviewHeader {
-    padding: 15px 16px;
+    padding: 16px 16px;
+
+    min-height: 61px;
+  }
+
+  .reviewHeader::after {
+    left: 16px;
   }
 
   .reviewHeader h2 {
@@ -5183,15 +5325,30 @@ button.historyCard:hover {
   }
 
   .reviewSectionTitle {
+    margin-bottom: 10px;
+
     font-size: 14px;
+  }
+
+  .reviewQuestions {
+    gap: 7px;
   }
 
   .reviewQuestion {
     padding: 10px;
   }
 
+  .reviewQuestionNumber {
+    min-width: 22px;
+    height: 22px;
+
+    margin-bottom: 6px;
+  }
+
   .reviewQuestionText {
     font-size: 10px;
+
+    line-height: 1.4;
   }
 
   .reviewAnswerLine {
@@ -5200,6 +5357,14 @@ button.historyCard:hover {
     flex-direction: column;
 
     gap: 7px;
+
+    margin-top: 8px;
+
+    padding-top: 8px;
+  }
+
+  .reviewOutcome {
+    padding: 4px 7px;
   }
 
   .reviewSummary {
@@ -5211,6 +5376,10 @@ button.historyCard:hover {
 
   .reviewSummaryGrid {
     gap: 6px;
+  }
+
+  .reviewSummaryGrid > div {
+    padding: 9px;
   }
 
   .reviewFinalScore strong {
@@ -5664,7 +5833,16 @@ button.historyCard:hover {
     height: 10px;
   }
 
-  /* REVIEW */
+  /* =======================================================
+     REVIEW — SMALL PHONES
+     ======================================================= */
+
+  .reviewModal {
+    max-height: calc(100vh - 6px);
+
+    border-radius:
+      18px 18px 0 0;
+  }
 
   .reviewHeader {
     padding: 13px 14px;
@@ -5805,8 +5983,8 @@ button.historyCard:hover {
   from {
     opacity: 0;
     transform:
-      translateY(12px)
-      scale(.985);
+      translateY(18px)
+      scale(.975);
   }
 
   to {
@@ -5814,5 +5992,19 @@ button.historyCard:hover {
     transform:
       translateY(0)
       scale(1);
+  }
+}
+
+@keyframes reviewModalMobileIn {
+  from {
+    opacity: 0;
+    transform:
+      translateY(45px);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0);
   }
 }
