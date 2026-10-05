@@ -13,8 +13,12 @@ import "./styles.css";
 
 const EMAIL_DOMAIN = "fantaluck.local";
 
+const SITE_URL =
+  "https://pasquamonte450-eng.github.io/Fantaluck26-27/";
+
 const toAuthEmail = (username) => {
   const value = username.trim().toLowerCase();
+
   return value.includes("@")
     ? value
     : `${value}@${EMAIL_DOMAIN}`;
@@ -205,6 +209,48 @@ function Icon({
         </svg>
       );
 
+    case "mail":
+      return (
+        <svg {...common}>
+          <rect
+            x="3"
+            y="5"
+            width="18"
+            height="14"
+            rx="2"
+          />
+          <path d="m3 7 9 6 9-6" />
+        </svg>
+      );
+
+    case "copy":
+      return (
+        <svg {...common}>
+          <rect
+            x="8"
+            y="8"
+            width="11"
+            height="11"
+            rx="2"
+          />
+          <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+        </svg>
+      );
+
+    case "lock":
+      return (
+        <svg {...common}>
+          <rect
+            x="4"
+            y="10"
+            width="16"
+            height="10"
+            rx="2"
+          />
+          <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+        </svg>
+      );
+
     default:
       return null;
   }
@@ -314,7 +360,8 @@ function getWeekState(week) {
   }
 
   if (
-    week.status === "published"
+    week.status ===
+    "published"
   ) {
     return "published";
   }
@@ -384,6 +431,98 @@ async function callFunction(
   }
 
   return data;
+}
+
+async function loginWithUsername(
+  username,
+  password
+) {
+  const data =
+    await callFunction(
+      "login-username",
+      {
+        username:
+          username
+            .trim()
+            .toLowerCase(),
+        password,
+      }
+    );
+
+  if (
+    !data?.access_token ||
+    !data?.refresh_token
+  ) {
+    throw new Error(
+      "Impossibile completare l'accesso."
+    );
+  }
+
+  const {
+    data: sessionData,
+    error,
+  } =
+    await supabase.auth.setSession({
+      access_token:
+        data.access_token,
+      refresh_token:
+        data.refresh_token,
+    });
+
+  if (error || !sessionData?.session) {
+    throw new Error(
+      "Impossibile creare la sessione."
+    );
+  }
+
+  return sessionData.session;
+}
+
+async function completeInvite(
+  token,
+  username,
+  name,
+  password
+) {
+  return callFunction(
+    "completa-invito",
+    {
+      token,
+      username:
+        username
+          .trim()
+          .toLowerCase(),
+      name:
+        name.trim(),
+      password,
+    }
+  );
+}
+
+async function createInvite(
+  email
+) {
+  return callFunction(
+    "crea-invito",
+    {
+      email:
+        email.trim().toLowerCase(),
+    }
+  );
+}
+
+async function requestPasswordRecovery(
+  username
+) {
+  return callFunction(
+    "recupera-password",
+    {
+      username:
+        username
+          .trim()
+          .toLowerCase(),
+    }
+  );
 }
 
 /* =========================================================
@@ -715,11 +854,378 @@ function Countdown({
 }
 
 /* =========================================================
+   PASSWORD RECOVERY
+   ========================================================= */
+
+function PasswordRecovery({
+  onBack,
+}) {
+  const [
+    username,
+    setUsername,
+  ] = useState("");
+
+  const [error, setError] =
+    useState("");
+
+  const [
+    success,
+    setSuccess,
+  ] = useState(false);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const submit = async (
+    event
+  ) => {
+    event.preventDefault();
+
+    setError("");
+    setSuccess(false);
+
+    if (!username.trim()) {
+      setError(
+        "Inserisci il tuo username."
+      );
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await requestPasswordRecovery(
+        username
+      );
+
+      setSuccess(true);
+    } catch (err) {
+      setError(
+        err.message ||
+          "Impossibile inviare il recupero password."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <main className="login">
+      <div className="loginCard">
+        <div className="logo">
+          <span className="logoIcon">
+            <Icon
+              name="lock"
+              size={25}
+            />
+          </span>
+
+          FANTALUCK
+        </div>
+
+        <p className="tag">
+          RECUPERO PASSWORD
+        </p>
+
+        {!success ? (
+          <>
+            <p className="loginInfo">
+              Inserisci il tuo
+              username. Riceverai
+              un'email all'indirizzo
+              associato al tuo account.
+            </p>
+
+            <form
+              onSubmit={submit}
+            >
+              <input
+                placeholder="Username"
+                value={username}
+                onChange={(e) =>
+                  setUsername(
+                    e.target.value
+                  )
+                }
+              />
+
+              <button
+                type="submit"
+                disabled={loading}
+              >
+                {loading
+                  ? "INVIO..."
+                  : "INVIA EMAIL"}
+              </button>
+            </form>
+          </>
+        ) : (
+          <div className="success">
+            Se l'username è associato
+            a un account, riceverai
+            un'email con le
+            istruzioni per reimpostare
+            la password.
+          </div>
+        )}
+
+        {error && (
+          <div className="error">
+            {error}
+          </div>
+        )}
+
+        <button
+          type="button"
+          className="backButton"
+          onClick={onBack}
+        >
+          <Icon
+            name="arrow-left"
+            size={16}
+          />
+          TORNA AL LOGIN
+        </button>
+      </div>
+    </main>
+  );
+}
+
+/* =========================================================
+   INVITO — CREAZIONE ACCOUNT
+   ========================================================= */
+
+function InviteSetup({
+  token,
+  onCompleted,
+}) {
+  const [
+    username,
+    setUsername,
+  ] = useState("");
+
+  const [name, setName] =
+    useState("");
+
+  const [
+    password,
+    setPassword,
+  ] = useState("");
+
+  const [
+    passwordConfirm,
+    setPasswordConfirm,
+  ] = useState("");
+
+  const [error, setError] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const submit = async (
+    event
+  ) => {
+    event.preventDefault();
+
+    setError("");
+
+    const cleanUsername =
+      username
+        .trim()
+        .toLowerCase();
+
+    const cleanName =
+      name.trim();
+
+    if (
+      !cleanUsername ||
+      !cleanName ||
+      !password
+    ) {
+      setError(
+        "Compila tutti i campi."
+      );
+      return;
+    }
+
+    if (
+      cleanUsername.length <
+      3
+    ) {
+      setError(
+        "Lo username deve avere almeno 3 caratteri."
+      );
+      return;
+    }
+
+    if (
+      !/^[a-z0-9_.]+$/.test(
+        cleanUsername
+      )
+    ) {
+      setError(
+        "Lo username può contenere solo lettere, numeri, punto e underscore."
+      );
+      return;
+    }
+
+    if (
+      password.length < 6
+    ) {
+      setError(
+        "La password deve avere almeno 6 caratteri."
+      );
+      return;
+    }
+
+    if (
+      password !==
+      passwordConfirm
+    ) {
+      setError(
+        "Le due password non coincidono."
+      );
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await completeInvite(
+        token,
+        cleanUsername,
+        cleanName,
+        password
+      );
+
+      await loginWithUsername(
+        cleanUsername,
+        password
+      );
+
+      onCompleted();
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        err.message ||
+          "Impossibile creare l'account."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <main className="login">
+      <div className="loginCard">
+        <div className="logo">
+          <span className="logoIcon">
+            <Icon
+              name="target"
+              size={25}
+            />
+          </span>
+
+          FANTALUCK
+        </div>
+
+        <p className="tag">
+          CREA IL TUO ACCOUNT
+        </p>
+
+        <div className="inviteIntro">
+          <strong>
+            Sei stato invitato a
+            partecipare.
+          </strong>
+
+          <span>
+            Scegli i tuoi dati di
+            accesso. Dopo la
+            registrazione utilizzerai
+            solo username e password
+            per entrare in Fantaluck.
+          </span>
+        </div>
+
+        <form
+          onSubmit={submit}
+        >
+          <input
+            placeholder="Nome"
+            value={name}
+            onChange={(e) =>
+              setName(
+                e.target.value
+              )
+            }
+          />
+
+          <input
+            placeholder="Username"
+            value={username}
+            onChange={(e) =>
+              setUsername(
+                e.target.value
+              )
+            }
+            autoCapitalize="none"
+            autoCorrect="off"
+          />
+
+          <input
+            placeholder="Password"
+            type="password"
+            value={password}
+            onChange={(e) =>
+              setPassword(
+                e.target.value
+              )
+            }
+          />
+
+          <input
+            placeholder="Ripeti password"
+            type="password"
+            value={
+              passwordConfirm
+            }
+            onChange={(e) =>
+              setPasswordConfirm(
+                e.target.value
+              )
+            }
+          />
+
+          <button
+            type="submit"
+            disabled={loading}
+          >
+            {loading
+              ? "CREAZIONE..."
+              : "CREA ACCOUNT"}
+          </button>
+        </form>
+
+        {error && (
+          <div className="error">
+            {error}
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
+
+/* =========================================================
    LOGIN
    ========================================================= */
 
 function Login({
   onLoggedIn,
+  onRecovery,
 }) {
   const [
     username,
@@ -756,47 +1262,20 @@ function Login({
 
     setLoading(true);
 
-    const {
-      data,
-      error: authError,
-    } =
-      await supabase.auth.signInWithPassword(
-        {
-          email:
-            toAuthEmail(
-              username
-            ),
-          password,
-        }
-      );
-
-    if (
-      authError ||
-      !data?.user
-    ) {
-      setLoading(false);
-      setError(
-        "Username o password non validi."
-      );
-      return;
-    }
-
     try {
-      await dbProfile(
-        data.user.id
+      await loginWithUsername(
+        username,
+        password
       );
 
-      setLoading(false);
       onLoggedIn();
     } catch (err) {
       console.error(err);
 
-      await supabase.auth.signOut();
-
       setLoading(false);
 
       setError(
-        "Impossibile verificare lo stato dell'account."
+        "Username o password non validi."
       );
     }
   };
@@ -827,6 +1306,8 @@ function Login({
                 e.target.value
               )
             }
+            autoCapitalize="none"
+            autoCorrect="off"
           />
 
           <input
@@ -855,6 +1336,16 @@ function Login({
             {error}
           </div>
         )}
+
+        <button
+          type="button"
+          className="loginRecoveryButton"
+          onClick={
+            onRecovery
+          }
+        >
+          PASSWORD DIMENTICATA?
+        </button>
       </div>
     </main>
   );
@@ -1005,7 +1496,7 @@ function Home({
         <div className="blockedBanner">
           <div>
             <strong>
-              🔒 ACCOUNT BLOCCATO
+              ACCOUNT BLOCCATO
             </strong>
 
             <span>
@@ -1057,7 +1548,7 @@ function Home({
           state === "open" && (
             <div className="notice blockedNotice">
               <strong>
-                🔒 Partecipazione
+                Partecipazione
                 disabilitata
               </strong>
               <br />
@@ -1591,11 +2082,15 @@ function Rigori({
   const [result, setResult] =
     useState(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
 
-  const [busy, setBusy] =
-    useState(false);
+  const [
+    busy,
+    setBusy,
+  ] = useState(false);
 
   const [error, setError] =
     useState("");
@@ -1938,9 +2433,6 @@ function AnswerReview({
   profile,
   onClose,
 }) {
-  const [loading, setLoading] =
-    useState(false);
-
   const published =
     Boolean(
       week?.results_published
@@ -1972,16 +2464,6 @@ function AnswerReview({
     attempt?.username ===
     profile?.username;
 
-  /*
-   * Per sicurezza il dettaglio delle risposte
-   * viene mostrato solo per la settimana
-   * pubblicata quando si tratta delle risposte
-   * di un altro partecipante.
-   *
-   * Le proprie risposte possono invece essere
-   * consultate anche prima della pubblicazione,
-   * ma senza soluzione/esito.
-   */
   const showCorrections =
     published;
 
@@ -2512,11 +2994,6 @@ function Rank({
     selectedWeek?.id,
   ]);
 
-  /*
-   * Se per qualche motivo la query della settimana
-   * non restituisce ancora dati, usiamo anche gli
-   * attempts già caricati globalmente.
-   */
   const sourceAttempts =
     rankAttempts.length
       ? rankAttempts
@@ -3147,7 +3624,7 @@ function ProfilePage({
         <div className="blockedBanner">
           <div>
             <strong>
-              🔒 ACCOUNT BLOCCATO
+              ACCOUNT BLOCCATO
             </strong>
 
             <span>
@@ -3880,20 +4357,30 @@ function Admin({
     setParticipants,
   ] = useState([]);
 
-  const [userForm, setUserForm] =
-    useState({
-      username: "",
-      name: "",
-      password: "",
-    });
-
-  const [userBusy, setUserBusy] =
-    useState(false);
+  const [
+    inviteEmail,
+    setInviteEmail,
+  ] = useState("");
 
   const [
-    userError,
-    setUserError,
+    inviteUrl,
+    setInviteUrl,
   ] = useState("");
+
+  const [
+    inviteBusy,
+    setInviteBusy,
+  ] = useState(false);
+
+  const [
+    inviteError,
+    setInviteError,
+  ] = useState("");
+
+  const [
+    inviteCopied,
+    setInviteCopied,
+  ] = useState(false);
 
   const [
     pronosticiBusyId,
@@ -4015,58 +4502,102 @@ function Admin({
       }
     };
 
-  const addUser = async (
-    event
-  ) => {
-    event.preventDefault();
+  const generateInvite =
+    async (
+      event
+    ) => {
+      event.preventDefault();
 
-    setUserError("");
+      setInviteError("");
+      setInviteCopied(false);
+      setInviteUrl("");
 
-    if (
-      !userForm.username.trim() ||
-      !userForm.name.trim() ||
-      !userForm.password
-    ) {
-      setUserError(
-        "Compila tutti i campi."
-      );
+      const email =
+        inviteEmail
+          .trim()
+          .toLowerCase();
 
-      return;
-    }
+      if (!email) {
+        setInviteError(
+          "Inserisci un indirizzo email."
+        );
+        return;
+      }
 
-    setUserBusy(true);
+      const emailRegex =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    try {
-      await callFunction(
-        "creazioneutente",
-        {
-          username:
-            userForm.username.trim(),
+      if (
+        !emailRegex.test(email)
+      ) {
+        setInviteError(
+          "Inserisci un indirizzo email valido."
+        );
+        return;
+      }
 
-          name:
-            userForm.name.trim(),
+      setInviteBusy(true);
 
-          password:
-            userForm.password,
+      try {
+        const data =
+          await createInvite(
+            email
+          );
+
+        if (
+          !data?.invite_url
+        ) {
+          throw new Error(
+            "Il link di invito non è stato generato."
+          );
         }
-      );
 
-      setUserForm({
-        username: "",
-        name: "",
-        password: "",
-      });
+        setInviteUrl(
+          data.invite_url
+        );
 
-      await reloadParticipants();
-    } catch (err) {
-      setUserError(
-        err.message ||
-          "Impossibile creare il giocatore."
-      );
-    } finally {
-      setUserBusy(false);
-    }
-  };
+        setInviteEmail("");
+        setMessage(
+          "Invito creato. Copia il link e invialo al partecipante."
+        );
+      } catch (err) {
+        setInviteError(
+          err.message ||
+            "Impossibile creare l'invito."
+        );
+      } finally {
+        setInviteBusy(false);
+      }
+    };
+
+  const copyInvite =
+    async () => {
+      if (!inviteUrl)
+        return;
+
+      try {
+        await navigator.clipboard.writeText(
+          inviteUrl
+        );
+
+        setInviteCopied(
+          true
+        );
+
+        setTimeout(
+          () =>
+            setInviteCopied(
+              false
+            ),
+          1800
+        );
+      } catch {
+        window.prompt(
+          "Copia questo link:",
+          inviteUrl
+        );
+      }
+    };
 
   const removeUser =
     async (
@@ -4605,74 +5136,128 @@ function Admin({
 
       {tab === "users" && (
         <>
-          <form
-            className="adminForm"
-            onSubmit={
-              addUser
-            }
-          >
-            <input
-              placeholder="Nome"
-              value={
-                userForm.name
-              }
-              onChange={(e) =>
-                setUserForm({
-                  ...userForm,
-                  name:
-                    e.target
-                      .value,
-                })
-              }
-            />
+          <div className="adminInviteCard">
+            <div className="adminInviteHeader">
+              <div className="adminInviteIcon">
+                <Icon
+                  name="mail"
+                  size={25}
+                />
+              </div>
 
-            <input
-              placeholder="Username"
-              value={
-                userForm.username
-              }
-              onChange={(e) =>
-                setUserForm({
-                  ...userForm,
-                  username:
-                    e.target
-                      .value,
-                })
-              }
-            />
+              <div>
+                <small>
+                  NUOVO PARTECIPANTE
+                </small>
 
-            <input
-              placeholder="Password"
-              type="password"
-              value={
-                userForm.password
-              }
-              onChange={(e) =>
-                setUserForm({
-                  ...userForm,
-                  password:
-                    e.target
-                      .value,
-                })
-              }
-            />
+                <h2>
+                  Genera invito
+                </h2>
+              </div>
+            </div>
 
-            <button
-              disabled={
-                userBusy
+            <p>
+              Inserisci l'email del
+              partecipante. Verrà
+              generato un link personale
+              che potrai inviargli.
+            </p>
+
+            <form
+              className="adminForm"
+              onSubmit={
+                generateInvite
               }
             >
-              {userBusy
-                ? "..."
-                : "AGGIUNGI"}
-            </button>
-          </form>
+              <input
+                type="email"
+                placeholder="Email del partecipante"
+                value={
+                  inviteEmail
+                }
+                onChange={(e) =>
+                  setInviteEmail(
+                    e.target.value
+                  )
+                }
+              />
 
-          {userError && (
-            <div className="error">
-              {userError}
-            </div>
-          )}
+              <button
+                disabled={
+                  inviteBusy
+                }
+              >
+                {inviteBusy
+                  ? "GENERAZIONE..."
+                  : "GENERA INVITO"}
+              </button>
+            </form>
+
+            {inviteError && (
+              <div className="error">
+                {inviteError}
+              </div>
+            )}
+
+            {inviteUrl && (
+              <div className="inviteResult">
+                <div className="inviteResultHeader">
+                  <strong>
+                    INVITO PRONTO
+                  </strong>
+
+                  <span>
+                    Invia questo link al
+                    partecipante.
+                  </span>
+                </div>
+
+                <div className="inviteLinkBox">
+                  <input
+                    value={
+                      inviteUrl
+                    }
+                    readOnly
+                    onFocus={(e) =>
+                      e.target.select()
+                    }
+                  />
+
+                  <button
+                    type="button"
+                    onClick={
+                      copyInvite
+                    }
+                  >
+                    <Icon
+                      name="copy"
+                      size={17}
+                    />
+
+                    {inviteCopied
+                      ? "COPIATO"
+                      : "COPIA"}
+                  </button>
+                </div>
+
+                <div className="inviteWarning">
+                  Il link è personale.
+                  Non pubblicarlo nel
+                  gruppo.
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="adminUsersTitle">
+            <small>
+              PARTECIPANTI
+            </small>
+
+            <strong>
+              Account registrati
+            </strong>
+          </div>
 
           <div className="table">
             {participants.map(
@@ -4705,8 +5290,8 @@ function Admin({
                       }
                     >
                       {p.blocked
-                        ? "● ACCOUNT BLOCCATO"
-                        : "● ACCOUNT ATTIVO"}
+                        ? "ACCOUNT BLOCCATO"
+                        : "ACCOUNT ATTIVO"}
                     </small>
 
                     <small className="adminPronosticiLabel">
@@ -4789,6 +5374,7 @@ function Admin({
                       </button>
 
                       <button
+                        type="button"
                         className="danger"
                         onClick={() =>
                           removeUser(
@@ -5104,6 +5690,21 @@ function App() {
     setAllAttempts,
   ] = useState([]);
 
+  const [
+    recoveryMode,
+    setRecoveryMode,
+  ] = useState(false);
+
+  const [
+    inviteToken,
+    setInviteToken,
+  ] = useState("");
+
+  const [
+    passwordRecovery,
+    setPasswordRecovery,
+  ] = useState(false);
+
   const isAdmin =
     profile?.role ===
     "admin";
@@ -5117,6 +5718,24 @@ function App() {
 
       setWeeks(data);
     };
+
+  /* -------------------------------------------------------
+     INVITO / RECUPERO
+  ------------------------------------------------------- */
+
+  useEffect(() => {
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const token =
+      params.get("invite");
+
+    if (token) {
+      setInviteToken(token);
+    }
+  }, []);
 
   /* -------------------------------------------------------
      SESSIONE
@@ -5142,12 +5761,21 @@ function App() {
     } =
       supabase.auth.onAuthStateChange(
         (
-          _event,
+          event,
           newSession
         ) => {
           setSession(
             newSession
           );
+
+          if (
+            event ===
+            "PASSWORD_RECOVERY"
+          ) {
+            setPasswordRecovery(
+              true
+            );
+          }
         }
       );
 
@@ -5463,6 +6091,7 @@ function App() {
       setAllAttempts([]);
       setProfile(null);
       setSession(null);
+      setPasswordRecovery(false);
     };
 
   /* -------------------------------------------------------
@@ -5487,6 +6116,80 @@ function App() {
     );
   }
 
+  /*
+   * Se siamo arrivati dal link di invito,
+   * mostriamo prima la pagina di
+   * creazione dell'account.
+   */
+  if (
+    inviteToken &&
+    !session?.user
+  ) {
+    return (
+      <InviteSetup
+        token={
+          inviteToken
+        }
+        onCompleted={() => {
+          const url =
+            new URL(
+              window.location.href
+            );
+
+          url.searchParams.delete(
+            "invite"
+          );
+
+          window.history.replaceState(
+            {},
+            "",
+            url.toString()
+          );
+
+          setInviteToken("");
+        }}
+      />
+    );
+  }
+
+  /*
+   * Recupero password:
+   * quando Supabase segnala PASSWORD_RECOVERY
+   * qui lasciamo la sessione disponibile
+   * per la pagina di aggiornamento password.
+   */
+  if (
+    passwordRecovery &&
+    session?.user
+  ) {
+    return (
+      <PasswordUpdatePage
+        onCompleted={async () => {
+          setPasswordRecovery(
+            false
+          );
+
+          await supabase.auth.signOut();
+
+          setSession(null);
+          setProfile(null);
+        }}
+      />
+    );
+  }
+
+  if (recoveryMode) {
+    return (
+      <PasswordRecovery
+        onBack={() =>
+          setRecoveryMode(
+            false
+          )
+        }
+      />
+    );
+  }
+
   if (loading) {
     return (
       <div className="loading">
@@ -5505,6 +6208,11 @@ function App() {
     return (
       <Login
         onLoggedIn={() => {}}
+        onRecovery={() =>
+          setRecoveryMode(
+            true
+          )
+        }
       />
     );
   }
@@ -5539,7 +6247,7 @@ function App() {
           <div className="wrap">
             <div className="empty blockedPage">
               <div className="blockedBigIcon">
-                🔒
+                ACCOUNT BLOCCATO
               </div>
 
               <h2>
@@ -5655,6 +6363,166 @@ function App() {
         onLogout={logout}
       />
     </>
+  );
+}
+
+/* =========================================================
+   PASSWORD UPDATE PAGE
+   ========================================================= */
+
+function PasswordUpdatePage({
+  onCompleted,
+}) {
+  const [
+    password,
+    setPassword,
+  ] = useState("");
+
+  const [
+    passwordConfirm,
+    setPasswordConfirm,
+  ] = useState("");
+
+  const [error, setError] =
+    useState("");
+
+  const [
+    loading,
+    setLoading,
+  ] = useState(false);
+
+  const submit = async (
+    event
+  ) => {
+    event.preventDefault();
+
+    setError("");
+
+    if (
+      password.length < 6
+    ) {
+      setError(
+        "La password deve avere almeno 6 caratteri."
+      );
+      return;
+    }
+
+    if (
+      password !==
+      passwordConfirm
+    ) {
+      setError(
+        "Le due password non coincidono."
+      );
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const {
+        error: updateError,
+      } =
+        await supabase.auth.updateUser(
+          {
+            password,
+          }
+        );
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      alert(
+        "Password aggiornata correttamente. Ora puoi accedere con la nuova password."
+      );
+
+      await onCompleted();
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        err.message ||
+          "Impossibile aggiornare la password."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <main className="login">
+      <div className="loginCard">
+        <div className="logo">
+          <span className="logoIcon">
+            <Icon
+              name="lock"
+              size={25}
+            />
+          </span>
+
+          FANTALUCK
+        </div>
+
+        <p className="tag">
+          NUOVA PASSWORD
+        </p>
+
+        <div className="inviteIntro">
+          <strong>
+            Reimposta la tua password.
+          </strong>
+
+          <span>
+            Scegli una nuova password
+            per il tuo account.
+          </span>
+        </div>
+
+        <form
+          onSubmit={submit}
+        >
+          <input
+            type="password"
+            placeholder="Nuova password"
+            value={password}
+            onChange={(e) =>
+              setPassword(
+                e.target.value
+              )
+            }
+          />
+
+          <input
+            type="password"
+            placeholder="Ripeti password"
+            value={
+              passwordConfirm
+            }
+            onChange={(e) =>
+              setPasswordConfirm(
+                e.target.value
+              )
+            }
+          />
+
+          <button
+            type="submit"
+            disabled={loading}
+          >
+            {loading
+              ? "SALVATAGGIO..."
+              : "SALVA PASSWORD"}
+          </button>
+        </form>
+
+        {error && (
+          <div className="error">
+            {error}
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
 
