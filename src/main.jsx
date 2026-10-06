@@ -433,6 +433,19 @@ async function callFunction(
   return data;
 }
 
+async function manageInvites(
+  action,
+  extra = {}
+) {
+  return callFunction(
+    "gestisci-inviti",
+    {
+      action,
+      ...extra,
+    }
+  );
+}
+
 async function loginWithUsername(
   username,
   password
@@ -4383,6 +4396,26 @@ function Admin({
   ] = useState(false);
 
   const [
+    invites,
+    setInvites,
+  ] = useState([]);
+
+  const [
+    invitesLoading,
+    setInvitesLoading,
+  ] = useState(false);
+
+  const [
+    inviteActionId,
+    setInviteActionId,
+  ] = useState("");
+
+  const [
+    lastGeneratedInviteId,
+    setLastGeneratedInviteId,
+  ] = useState("");
+
+  const [
     pronosticiBusyId,
     setPronosticiBusyId,
   ] = useState(null);
@@ -4393,9 +4426,42 @@ function Admin({
         .then(setParticipants)
         .catch(console.error);
 
+  const reloadInvites =
+    async () => {
+      setInvitesLoading(true);
+
+      try {
+        const data =
+          await manageInvites(
+            "list"
+          );
+
+        const list =
+          data?.invites || [];
+
+        setInvites(list);
+
+        return list;
+      } catch (err) {
+        console.error(err);
+
+        setInviteError(
+          err.message ||
+            "Impossibile caricare gli inviti."
+        );
+
+        return [];
+      } finally {
+        setInvitesLoading(
+          false
+        );
+      }
+    };
+
   useEffect(() => {
     if (tab === "users") {
       reloadParticipants();
+      reloadInvites();
     }
   }, [tab]);
 
@@ -4511,6 +4577,7 @@ function Admin({
       setInviteError("");
       setInviteCopied(false);
       setInviteUrl("");
+      setLastGeneratedInviteId("");
 
       const email =
         inviteEmail
@@ -4557,9 +4624,52 @@ function Admin({
         );
 
         setInviteEmail("");
+
         setMessage(
           "Invito creato. Copia il link e invialo al partecipante."
         );
+
+        try {
+          const refreshed =
+            await manageInvites(
+              "list"
+            );
+
+          const list =
+            refreshed?.invites ||
+            [];
+
+          setInvites(list);
+
+          const createdInvite =
+            data?.invite?.id
+              ? list.find(
+                  (item) =>
+                    item.id ===
+                    data.invite.id
+                )
+              : list.find(
+                  (item) =>
+                    String(
+                      item.email ||
+                        ""
+                    ).toLowerCase() ===
+                      email &&
+                    item.status ===
+                      "pending"
+                );
+
+          if (createdInvite) {
+            setLastGeneratedInviteId(
+              createdInvite.id
+            );
+          }
+        } catch (listErr) {
+          console.error(
+            "Invito creato ma lista non aggiornata:",
+            listErr
+          );
+        }
       } catch (err) {
         setInviteError(
           err.message ||
@@ -4567,6 +4677,154 @@ function Admin({
         );
       } finally {
         setInviteBusy(false);
+      }
+    };
+
+  const generateInviteLink =
+    async (
+      invite,
+      regenerate = false
+    ) => {
+      if (
+        !invite?.id ||
+        invite.status !==
+          "pending"
+      ) {
+        return;
+      }
+
+      setInviteError("");
+      setInviteCopied(false);
+      setInviteActionId(
+        invite.id
+      );
+
+      try {
+        const data =
+          await manageInvites(
+            regenerate
+              ? "regenerate_link"
+              : "generate_link",
+            {
+              invite_id:
+                invite.id,
+            }
+          );
+
+        if (
+          !data?.invite_url
+        ) {
+          throw new Error(
+            "Il link di invito non è stato generato."
+          );
+        }
+
+        setInviteUrl(
+          data.invite_url
+        );
+
+        setLastGeneratedInviteId(
+          invite.id
+        );
+
+        setMessage(
+          regenerate
+            ? "Link rigenerato. Il precedente link non è più valido."
+            : "Link generato. Copialo e invialo al partecipante."
+        );
+
+        try {
+          await navigator.clipboard.writeText(
+            data.invite_url
+          );
+
+          setInviteCopied(
+            true
+          );
+
+          setTimeout(
+            () =>
+              setInviteCopied(
+                false
+              ),
+            1800
+          );
+        } catch {
+          // il link resta comunque disponibile nel riquadro
+        }
+
+        await reloadInvites();
+      } catch (err) {
+        setInviteError(
+          err.message ||
+            "Impossibile generare il link."
+        );
+      } finally {
+        setInviteActionId(
+          ""
+        );
+      }
+    };
+
+  const revokeInvite =
+    async (
+      invite
+    ) => {
+      if (
+        !invite?.id ||
+        invite.status !==
+          "pending"
+      ) {
+        return;
+      }
+
+      const confirmed =
+        window.confirm(
+          `Vuoi revocare l'invito per ${invite.email}?`
+        );
+
+      if (!confirmed)
+        return;
+
+      setInviteError("");
+      setInviteActionId(
+        invite.id
+      );
+
+      try {
+        await manageInvites(
+          "revoke",
+          {
+            invite_id:
+              invite.id,
+          }
+        );
+
+        if (
+          lastGeneratedInviteId ===
+          invite.id
+        ) {
+          setInviteUrl("");
+          setLastGeneratedInviteId(
+            ""
+          );
+          setInviteCopied(false);
+        }
+
+        await reloadInvites();
+
+        setMessage(
+          "Invito revocato correttamente."
+        );
+      } catch (err) {
+        setInviteError(
+          err.message ||
+            "Impossibile revocare l'invito."
+        );
+      } finally {
+        setInviteActionId(
+          ""
+        );
       }
     };
 
@@ -4966,6 +5224,80 @@ function Admin({
       );
     };
 
+  const formatInviteDate =
+    (value) => {
+      if (!value) return "—";
+
+      const date =
+        new Date(value);
+
+      if (
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
+        return "—";
+      }
+
+      return date.toLocaleString(
+        "it-IT",
+        {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      );
+    };
+
+  const inviteStatusLabel =
+    (status) => {
+      if (
+        status ===
+        "pending"
+      ) {
+        return "PENDENTE";
+      }
+
+      if (
+        status ===
+        "used"
+      ) {
+        return "USATO";
+      }
+
+      if (
+        status ===
+        "expired"
+      ) {
+        return "SCADUTO";
+      }
+
+      if (
+        status ===
+        "revoked"
+      ) {
+        return "REVOCATO";
+      }
+
+      return String(
+        status || ""
+      ).toUpperCase();
+    };
+
+  const inviteStatusClass =
+    (status) => {
+      if (
+        status ===
+        "pending"
+      ) {
+        return "adminUserStatus active";
+      }
+
+      return "adminUserStatus blocked";
+    };
+
   return (
     <div className="wrap">
       <div className="title">
@@ -5160,7 +5492,7 @@ function Admin({
               Inserisci l'email del
               partecipante. Verrà
               generato un link personale
-              che potrai inviargli.
+              valido per 7 giorni.
             </p>
 
             <form
@@ -5248,6 +5580,265 @@ function Admin({
               </div>
             )}
           </div>
+
+          <div className="adminUsersTitle">
+            <small>
+              INVITI
+            </small>
+
+            <strong>
+              Inviti ai partecipanti
+            </strong>
+          </div>
+
+          {inviteError &&
+            !inviteUrl && (
+              <div className="error">
+                {inviteError}
+              </div>
+            )}
+
+          {invitesLoading ? (
+            <div className="empty">
+              Caricamento inviti...
+            </div>
+          ) : (
+            <div className="table">
+              {invites.map(
+                (invite) => {
+                  const pending =
+                    invite.status ===
+                    "pending";
+
+                  const active =
+                    lastGeneratedInviteId ===
+                    invite.id &&
+                    inviteUrl;
+
+                  const actionBusy =
+                    inviteActionId ===
+                    invite.id;
+
+                  return (
+                    <div
+                      className="row"
+                      key={
+                        invite.id
+                      }
+                      style={{
+                        alignItems:
+                          "center",
+                        gap:
+                          "16px",
+                        flexWrap:
+                          "wrap",
+                      }}
+                    >
+                      <span
+                        style={{
+                          flex:
+                            "1 1 260px",
+                          minWidth:
+                            "0",
+                        }}
+                      >
+                        <b
+                          style={{
+                            display:
+                              "block",
+                            wordBreak:
+                              "break-word",
+                          }}
+                        >
+                          {invite.email}
+                        </b>
+
+                        <small
+                          style={{
+                            display:
+                              "block",
+                            marginTop:
+                              "4px",
+                          }}
+                        >
+                          Creato:{" "}
+                          {formatInviteDate(
+                            invite.created_at
+                          )}
+                        </small>
+
+                        <small
+                          style={{
+                            display:
+                              "block",
+                            marginTop:
+                              "3px",
+                          }}
+                        >
+                          Scadenza:{" "}
+                          {formatInviteDate(
+                            invite.expires_at
+                          )}
+                        </small>
+
+                        {invite.used_at && (
+                          <small
+                            style={{
+                              display:
+                                "block",
+                              marginTop:
+                                "3px",
+                            }}
+                          >
+                            Utilizzato:{" "}
+                            {formatInviteDate(
+                              invite.used_at
+                            )}
+                          </small>
+                        )}
+                      </span>
+
+                      <span
+                        style={{
+                          display:
+                            "flex",
+                          flexDirection:
+                            "column",
+                          gap:
+                            "6px",
+                          minWidth:
+                            "110px",
+                        }}
+                      >
+                        <small
+                          className={inviteStatusClass(
+                            invite.status
+                          )}
+                          style={{
+                            display:
+                              "inline-flex",
+                            width:
+                              "fit-content",
+                          }}
+                        >
+                          {inviteStatusLabel(
+                            invite.status
+                          )}
+                        </small>
+                      </span>
+
+                      {pending && (
+                        <div
+                          style={{
+                            display:
+                              "flex",
+                            gap:
+                              "8px",
+                            flexWrap:
+                              "wrap",
+                            marginLeft:
+                              "auto",
+                          }}
+                        >
+                          <button
+                            type="button"
+                            onClick={() =>
+                              generateInviteLink(
+                                invite,
+                                Boolean(
+                                  active
+                                )
+                              )
+                            }
+                            disabled={
+                              actionBusy
+                            }
+                          >
+                            {actionBusy
+                              ? "ATTENDI..."
+                              : active
+                              ? "RIGENERA LINK"
+                              : "GENERA LINK"}
+                          </button>
+
+                          <button
+                            type="button"
+                            className="danger"
+                            onClick={() =>
+                              revokeInvite(
+                                invite
+                              )
+                            }
+                            disabled={
+                              actionBusy
+                            }
+                          >
+                            REVOCA
+                          </button>
+                        </div>
+                      )}
+
+                      {active && (
+                        <div
+                          style={{
+                            flex:
+                              "1 1 100%",
+                            display:
+                              "flex",
+                            gap:
+                              "8px",
+                            width:
+                              "100%",
+                            marginTop:
+                              "4px",
+                          }}
+                        >
+                          <input
+                            value={
+                              inviteUrl
+                            }
+                            readOnly
+                            onFocus={(e) =>
+                              e.target.select()
+                            }
+                            style={{
+                              flex:
+                                "1",
+                              minWidth:
+                                "0",
+                            }}
+                          />
+
+                          <button
+                            type="button"
+                            onClick={
+                              copyInvite
+                            }
+                          >
+                            <Icon
+                              name="copy"
+                              size={16}
+                            />
+
+                            {inviteCopied
+                              ? "COPIATO"
+                              : "COPIA"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+              )}
+
+              {!invites.length && (
+                <div className="empty">
+                  Nessun invito
+                  presente.
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="adminUsersTitle">
             <small>
