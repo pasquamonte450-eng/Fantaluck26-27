@@ -4878,6 +4878,27 @@ function Admin({
         );
 
         await reloadParticipants();
+
+        /*
+         * IMPORTANTE:
+         * dopo l'eliminazione aggiorniamo anche
+         * la lista degli inviti.
+         *
+         * La Edge Function "togliutente"
+         * elimina gli inviti associati
+         * all'account, quindi l'eventuale
+         * invito "USATO" non deve più
+         * rimanere visibile nella grafica.
+         */
+        await reloadInvites();
+
+        setInviteUrl("");
+        setLastGeneratedInviteId("");
+        setInviteCopied(false);
+
+        setMessage(
+          "Giocatore eliminato. L'email è nuovamente disponibile per un nuovo invito."
+        );
       } catch (err) {
         alert(
           err.message ||
